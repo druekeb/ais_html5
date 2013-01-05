@@ -1,0 +1,13 @@
+{
+  "name": "ais_dart",
+  "description": "Real-time AIS ship positions with nodejs-Websocket and dart-Client",
+  "version": "0.0.5",
+  "private": "true",
+  "dependencies": {
+    "connect": "~2.6",
+    "mongodb": "~1.1",
+    "hiredis": "~0.1",
+    "redis": "~0.8",
+    "websocket"	
+  }
+}
