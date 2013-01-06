@@ -101,7 +101,7 @@ function parseStreamMessage(message) {
     var json = JSON.parse(message);
   }
   catch (err) {
-    log('Error parsing received JSON: ' + err + ', ' + data);
+    log('Error parsing received JSON: ' + err + ', ' + message);
     return;
   }
   if (json.msgid < 4)  //Vessel Position Data
@@ -248,19 +248,19 @@ function storeVesselPos(json) {
     //sentences: json.sentences+'',
     //updated_at: new Date().getTime()+'',
   }
-  if(json.sog && json.sog < 1023)
+  if(typeof json.sog != "undefined" && json.sog < 1023)
   {
     obj.sog = json.sog/10;
   } 
-  if (json.cog && json.cog < 3600)
+  if (typeof json.cog != "undefined" && json.cog < 3600)
   {
     obj.cog = json.cog/10;
   }
-  if (json.true_heading && json.true_heading !=511 && json.true_heading < 360)
+  if (typeof json.true_heading != "undefined"  && json.true_heading !=511 && json.true_heading < 360)
   {
     obj.true_heading = json.true_heading;
   }
-  if (json.rot && json.rot > -127 && json.rot < 127)
+  if (typeof json.rot != "undefined" && json.rot > -127 && json.rot < 127)
   {
     var sign = json.rot < 0? -1 : 1;
     obj.rot = Math.round(Math.sqrt(Math.abs(json.rot))*4733 * sign)/1000;
@@ -270,8 +270,8 @@ function storeVesselPos(json) {
     { $set: obj },
     { safe: false, upsert: true }
   );
-    // console.log("VesselPos------------------------");
-    // console.log(obj);
+  // console.log("VesselPos------------------------");
+  // console.log(obj);
 }
 
  function storeVesselVoyage(json) {
@@ -290,15 +290,15 @@ function storeVesselPos(json) {
     //updated_at: new Date().getTime()+'',
     msgid: json.msgid
   }
-  if(json.imo)
+  if(typeof json.imo != "undefined")
   {
     obj.imo = json.imo+'';
   }
-  if(json.ship_type)
+  if(typeof json.ship_type != "undefined")
   {
      obj.ship_type = json.ship_type;
   }
-  if(json.name)
+  if(typeof json.name != "undefined")
   {
     obj.name = json.name;
   }
