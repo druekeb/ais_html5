@@ -69,8 +69,9 @@ wsServer.on('request', function(request) {
      if (message.type === 'utf8') 
      {
       var rquest = JSON.parse(message.utf8Data);
-      console.log(rquest);
       // process WebSocket message        
+      console.log(message);
+
       if (rquest.function == 'register')
       {
          connection.zoom = rquest.zoom;
@@ -159,7 +160,7 @@ function connectToRedis() {
           {
             if(sog !=null && sog > (zoomSpeedArray[client.zoom]))
             {
-              client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel: message} ));
+              client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
             }
           }
         }

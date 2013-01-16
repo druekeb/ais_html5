@@ -169,109 +169,6 @@ $(document).ready(function() {
         });
       }
 
-      // Listen for safetyMessageEvent
-      // socket.on('safetyMessageEvent', function (data) {
-      //    var json = JSON.parse(data);
-      //    console.debug(json);
-      // });
-
-
-      // Listen for vesselPosEvent
-     //  socket.on('vesselPosEvent', function (data) {
-     //     var json = JSON.parse(data);
-     //     //update 
-     //     var vessel = vessels[json.userid]?vessels[json.userid]:{};
-     //     vessel.mmsi = json.userid;
-     //     vessel.msgid = json.msgid;
-     //     vessel.time_received = json.time_received;
-     //     vessel.cog = json.cog;
-     //     vessel.sog = json.sog;
-     //     vessel.pos = json.pos;
-     //     vessel.true_heading = json.true_heading;
-        
-     //    if (typeof vessel.vector !="undefined")
-     //    {
-     //       featureLayer.removeLayer(vessel.vector);
-     //       delete vessel.vector;
-     //    }
-     //    if (typeof vessel.marker !="undefined")
-     //    {
-     //       featureLayer.removeLayer(vessel.marker);
-     //       delete vessel.marker;
-     //    }
-     //    if (typeof vessel.polygon !="undefined")
-     //    {
-     //      if (typeof vessel.polygon.stop ==='function')
-     //      {
-     //           vessel.polygon.stop();
-     //      }
-     //        featureLayer.removeLayer(vessel.polygon);
-     //        delete vessel.polygon;
-     //    }
-     //    if (typeof vessel.markerPolygon !="undefined")
-     //    {
-     //      if (typeof vessel.markerPolygon.stop ==='function')
-     //       {
-     //          vessel.markerPolygon.stop();
-     //      }
-     //      featureLayer.removeLayer(vessel.markerPolygon);
-     //      delete vessel.markerPolygon;
-     //    }
-     //    paintToMap(vessel, function(vesselWithMapObjects){
-     //      vessels[json.userid] = vesselWithMapObjects;
-     //      if (map.getZoom() > 12)
-     //      {
-     //        if (vesselWithMapObjects.markerPolygon && typeof vesselWithMapObjects.markerPolygon.start ==='function')
-     //        {
-     //          vesselWithMapObjects.markerPolygon.start();
-     //        }
-     //        if(vesselWithMapObjects.polygon && typeof vesselWithMapObjects.polygon.start ==='function')
-     //        {
-     //          vesselWithMapObjects.polygon.start();
-     //        }
-     //      }
-     //    });
-     //  });
-
-     //  // Listen for vesselsInBoundsEvent
-     //  socket.on('vesselsInBoundsEvent', function (data) {
-     //    console.debug("boundsEvent");
-     //    var jsonArray = JSON.parse(data);
-     //    $(".leaflet-zoom-animated").children().stop();
-        
-     //    featureLayer.clearLayers();
-     //    vessels = {};
-
-     //   // male vessel-Marker, Polygone und speedVectoren in die karte
-     //   for (var x in jsonArray)
-     //    {
-     //      paintToMap(jsonArray[x], function(vesselWithMapObjects){
-     //      vessels[jsonArray[x].mmsi] = vesselWithMapObjects;
-     //      if (map.getZoom() > 12)
-     //      {
-     //        if (vesselWithMapObjects.markerPolygon && typeof vesselWithMapObjects.markerPolygon.start ==='function' && map.getZoom() > 9)
-     //        {
-     //          vesselWithMapObjects.markerPolygon.start();
-     //        }
-     //        if(vesselWithMapObjects.polygon && typeof vesselWithMapObjects.polygon.start ==='function')
-     //        {
-     //          vesselWithMapObjects.polygon.start();
-     //        }
-     //      }
-     //    });
-     //    }
-     //    // zeige eine Infobox über die aktuelle minimal-Geschwindigkeit angezeigter Schiffe
-     //     if (map.getZoom() < 13)
-     //     {
-     //        $('#zoomSpeed').html("vessels reporting > "+(zoomSpeedArray[map.getZoom()])+" knots");
-     //       $('#zoomSpeed').css('display', 'block');
-     //     }
-     //     else 
-     //     {
-     //       $('#zoomSpeed').css('display', 'none');
-     //     }
-     // });
-
     function paintToMap(v, callback){
       if(v.pos != null)
       {    
@@ -393,7 +290,7 @@ $(document).ready(function() {
             v.marker = L.circleMarker([v.pos[1], v.pos[0]], circleOptions);
             if(shipStatics)
             {
-              v.polygon = L.polygon(createShipPoints(v));
+              v.polygon = L.polygon(L.createShipPoints(v));
               v.polygon.addTo(featureLayer); 
             }
           }
@@ -655,11 +552,11 @@ var shipTypeColors = {
                   99:'#d2d2d2'/*Other Type*/
 }
 var nav_stati = {
-                  0:'under way using engine',
+                  0:'under way us. engine',
                   1:'at anchor',
                   2: 'not under command',
-                  3: 'restricted maneuverability',
-                  4: 'constrained by her draught',
+                  3: 'restr. maneuverability',
+                  4: 'constr. by draught',
                   5: 'moored',
                   6: 'aground',
                   7: 'engaged in fishing',

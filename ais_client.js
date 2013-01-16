@@ -122,7 +122,9 @@ function parseStreamMessage(message) {
   }
   if(json.msgid == 9) //SAR Aircraft
   {
-    storeNavigationalAid(json);
+    //TODO: Hubschrauber werden nie gelöscht
+  //   storeNavigationalAid(json);
+  console.log("SAR Aircraft received");
   }
   if(json.msgid == 12) //Addressed Safety
   {
