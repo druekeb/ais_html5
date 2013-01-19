@@ -4,9 +4,8 @@ $(document).ready(function() {
      
       // Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
       var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-      //var zoomSpeedArray = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
-     
-     var map = L.map('map').setView([53.54,9.95], 12);
+
+      var map = L.map('map').setView([53.54,9.95], 14);
 
       L.tileLayer('http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png', {
             attribution:  'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors',
@@ -52,8 +51,7 @@ $(document).ready(function() {
        }
       if (json.type == "vesselPosEvent")
       {
-        console.debug("vesselPosEvent: "+json.vessel);
-        processVesselPosition(JSON.parse(json.vessel));
+        processVesselPosition(json.vessel);
       }
        if (json.type == "safetyMessageEvent")
       {
@@ -92,9 +90,9 @@ $(document).ready(function() {
           vessels[jsonArray[x].mmsi] = vesselWithMapObjects;
           if (map.getZoom() > 12)
           {
-            if (vesselWithMapObjects.markerPolygon && typeof vesselWithMapObjects.markerPolygon.start ==='function' && map.getZoom() > 9)
+            if (vesselWithMapObjects.feature && typeof vesselWithMapObjects.feature.start ==='function' && map.getZoom() > 9)
             {
-              vesselWithMapObjects.markerPolygon.start();
+              vesselWithMapObjects.feature.start();
             }
             if(vesselWithMapObjects.polygon && typeof vesselWithMapObjects.polygon.start ==='function')
             {
@@ -130,11 +128,6 @@ $(document).ready(function() {
              featureLayer.removeLayer(vessel.vector);
             delete vessel.vector;
           }
-          if (typeof vessel.marker !="undefined")
-          {
-            featureLayer.removeLayer(vessel.marker);
-            delete vessel.marker;
-          }  
           if (typeof vessel.polygon !="undefined")
           {
             if (typeof vessel.polygon.stop ==='function')
@@ -144,22 +137,22 @@ $(document).ready(function() {
               featureLayer.removeLayer(vessel.polygon);
               delete vessel.polygon;
           }
-          if (typeof vessel.markerPolygon !="undefined")
+          if (typeof vessel.feature !="undefined")
           {
-            if (typeof vessel.markerPolygon.stop ==='function')
+            if (typeof vessel.feature.stop ==='function')
              {
-                vessel.markerPolygon.stop();
+                vessel.feature.stop();
             }
-            featureLayer.removeLayer(vessel.markerPolygon);
-            delete vessel.markerPolygon;
+            featureLayer.removeLayer(vessel.feature);
+            delete vessel.feature;
           }
           paintToMap(vessel, function(vesselWithMapObjects){
           vessels[jsonVessel.userid] = vesselWithMapObjects;
           if (map.getZoom() > 12)
           {
-            if (vesselWithMapObjects.markerPolygon && typeof vesselWithMapObjects.markerPolygon.start ==='function')
+            if (vesselWithMapObjects.feature && typeof vesselWithMapObjects.feature.start ==='function')
             {
-              vesselWithMapObjects.markerPolygon.start();
+              vesselWithMapObjects.feature.start();
             }
             if(vesselWithMapObjects.polygon && typeof vesselWithMapObjects.polygon.start ==='function')
             {
@@ -172,7 +165,7 @@ $(document).ready(function() {
     function paintToMap(v, callback){
       if(v.pos != null)
       {    
-        function onClick(e){}
+        //gemeinsame eventHandler für mouseEvents auf dreieckige Polygone und CircleMarker 
         function onMouseout(e) {map.closePopup();}
         function onMouseover(e) {
           var popupOptions, latlng;
@@ -190,13 +183,8 @@ $(document).ready(function() {
         }
 
         v.ship_type = v.ship_type?v.ship_type:56;
-        var markerIcon;
-        if(v.msgid == 4 ||v.msgid == 6||v.msgid == 9 ||v.msgid == 12 ||v.msgid == 14||v.msgid == 21 )
-        {
-          markerIcon = chooseIcon(v); 
-          v.marker = L.marker([v.pos[1], v.pos[0]], {icon:markerIcon});
-        }
-        else
+        // für Schiffe zeichne... 
+        if(v.msgid < 4 || v.msgid == 5)
         {
           var moving = (v.sog && v.sog > 0.4 && v.sog!=102.3) ; //nur Schiffe, die sich mit mind. 0,3 Knoten bewegen
           var shipStatics = (map.getZoom() > 11) &&  (v.cog ||(v.true_heading && v.true_heading!=0.0 && v.true_heading !=511)) && (v.dim_port && v.dim_stern) ;
@@ -204,12 +192,11 @@ $(document).ready(function() {
           v.angle = calcAngle(v);
           var cos_angle=Math.cos(v.angle);
           var sin_angle=Math.sin(v.angle);
-
-          if (moving) //nur Schiffe, die sich mit mind. 1 Knoten bewegen
+          var vectorPoints = [];
+          var shipPoint = new L.LatLng(v.pos[1],v.pos[0]);
+          vectorPoints.push(shipPoint);
+          if (moving) // zeichne für fahrende Schiffe einen Speedvector, ein Richtungsdreieck und möglichst ein Polygon
           {
-            var vectorPoints = [];
-            var shipPoint = new L.LatLng(v.pos[1],v.pos[0]);
-            vectorPoints.push(shipPoint);
             vectorPoints.push(shipPoint);
             vectorPoints.push(shipPoint);
             var vectorLength = v.sog >30?v.sog/10:v.sog;
@@ -218,6 +205,7 @@ $(document).ready(function() {
             var vectorWidth = (v.sog > 30?5:2); 
             v.vector = L.polyline(vectorPoints, {color: 'red', weight: vectorWidth });
             v.vector.addTo(featureLayer);
+          
             if (shipStatics)
             {
               v.polygon = new L.animatedPolygon(vectorPoints,{
@@ -234,12 +222,13 @@ $(document).ready(function() {
                                                      fill:true,
                                                      fillColor:shipTypeColors[v.ship_type],
                                                      fillOpacity:0.6,
-                                                     clickable:false
+                                                     clickable:false,
+                                                     animation:true
               });
               v.polygon.addTo(featureLayer); 
             }
 
-            v.markerPolygon = L.animatedPolygon(vectorPoints,{
+            v.feature = L.animatedPolygon(vectorPoints,{
                                                     autoStart: false,
                                                     distance: vectorLength/10,
                                                     interval:200,
@@ -250,34 +239,30 @@ $(document).ready(function() {
                                                     fill:true,
                                                     fillColor:shipTypeColors[v.ship_type],
                                                     fillOpacity:0.8,
-                                                    clickable:true
+                                                    clickable:true,
+                                                    animation:true
             })
-            v.markerPolygon.addTo(featureLayer);
-
-            v.markerPolygon.on('click',function(e){
-            var popup = L.popup({closeButton:false ,autoPan:false , offset:new L.Point(-120,100)})
-              .setLatLng(e.latlng)
-              .setContent(createMouseOverPopup(v))
-              .openOn(map);
-              v.markerPolygon.off('mouseout', onMouseout);
-            });
-            v.markerPolygon.on('mouseover',function(e){
-            var popup = L.popup({closeButton:false ,autoPan:false , offset:new L.Point(-120,100)})
-              .setLatLng(e.latlng)
-              .setContent(createMouseOverPopup(v))
-              .openOn(map);
-            });
-
-            function onMouseout(e) {
-              map.closePopup();
-            }
-            
-            v.markerPolygon.on('click', onClick);
-            v.markerPolygon.on('mouseover', onMouseover);
-            v.markerPolygon.on('mouseout', onMouseout);
           }
-          else
+          else //zeichne für nicht fahrende Schiffe einen Circlemarker und möglichst ein Polygon
           {
+            if(shipStatics)
+            {
+              v.polygon = L.animatedPolygon( vectorPoints,{
+                                                     dim_stern:v.dim_stern,
+                                                     dim_port: v.dim_port,
+                                                     dim_bow:v.dim_bow,
+                                                     dim_starboard: v.dim_starboard,
+                                                     angle: v.angle,
+                                                     color: "blue",
+                                                     weight: 3,
+                                                     fill:true,
+                                                     fillColor:shipTypeColors[v.ship_type],
+                                                     fillOpacity:0.6,
+                                                     clickable:false,
+                                                     animation:false
+              });
+              v.polygon.addTo(featureLayer); 
+            }
             var circleOptions = {
                         radius:4,
                         fill:true,
@@ -287,19 +272,19 @@ $(document).ready(function() {
                         strokeOpacity:1,
                         strokeWidth:0.5
             };
-            v.marker = L.circleMarker([v.pos[1], v.pos[0]], circleOptions);
-            if(shipStatics)
-            {
-              v.polygon = L.polygon(L.createShipPoints(v));
-              v.polygon.addTo(featureLayer); 
-            }
+             v.feature = L.circleMarker(vectorPoints[0], circleOptions);
           }
+          v.feature.addTo(featureLayer);
+          v.feature.on('mouseover',onMouseover);
+          v.feature.on('mouseout', onMouseout);
         }
-        if (v.marker)
+        else //für Seezeichen, Helicopter und AIS Base Stations zeichne Marker mit Icons
         {
-         v.marker.addTo(featureLayer);
-         v.marker.on('mouseover',onMouseover);
-         v.marker.on('mouseout', onMouseout);
+           var markerIcon = chooseIcon(v); 
+           v.marker = L.marker([v.pos[1], v.pos[0]], {icon:markerIcon});
+           v.marker.addTo(featureLayer);
+           v.marker.on('mouseover',onMouseover);
+           v.marker.on('mouseout', onMouseout);
         }
         callback(v);
       }
