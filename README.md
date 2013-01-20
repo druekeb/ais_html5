@@ -1,5 +1,4 @@
-# AIS ship positions with node.js - websocket-server and Google Dart websocket-client
-solution of ais_nodejs with a html5 websocket-server in node.js and a dart-websocket-client
+# AIS ship positions with a html5 websocket-server in node.js and a javascript-client
 
 ## Getting started
 
@@ -10,11 +9,6 @@ solution of ais_nodejs with a html5 websocket-server in node.js and a dart-webso
     $ sudo add-apt-repository -y ppa:chris-lea/node.js
     $ sudo apt-get update 
     $ sudo apt-get install nodejs nodejs-dev npm
-
-#### 2. Install dart
-
-    
-
 
 #### 3. Install MongoDB
 
@@ -35,6 +29,7 @@ To get the newest stable version we have to add the official MongoDB repository 
 
     git clone https://github.com/druekeb/ais_dart.git
 
-#### 4. Install modules via NPM
+4. Install modules via NPM
 
     npm install
+
