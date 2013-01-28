@@ -28,90 +28,71 @@ function log(message) {
   console.log(message);
 }
 
-/**
- * HTTP server (use the connect package that gives static file server support)
- */
 
-var app = connect().use(connect.static('public'));
-httpServer = http.createServer(app).listen(8090);
-console.log("server listens on 8090");
+function startHTTPServer(callback){
+  /**
+   * HTTP server (use the connect package that gives static file server support)
+   */
+  var app = connect().use(connect.static('public'));
+  httpServer = http.createServer(app).listen(8090);
+  console.log("server listens on 8090");
+  callback();
+}
+function startWebSocketServer(callback){
+  /**
+  *HTML5 - WebsocketServer
+  */
+  var WebSocketServer = require('websocket').server;
 
+  // create the server
+  wsServer = new WebSocketServer({
+      httpServer: httpServer
+  });
+  console.log("HTML5-WebSocket-Server created");
 
-/**
-*WebsocketServer
-*/
-var WebSocketServer = require('websocket').server;
+  // This callback function is called every time someone
+  // tries to connect to the WebSocket server
+  wsServer.on('request', function(request) {
+    console.log((new Date()) + ' Connection from origin ' + request.origin + '.');
 
-// create the server
-wsServer = new WebSocketServer({
-    httpServer: httpServer
-});
-console.log("ws-server created");
+    // accept connection - you should check 'request.origin' to make sure that
+    // client is connecting from your website
+    // (http://en.wikipedia.org/wiki/Same_origin_policy)
+    var connection = request.accept(null, request.origin);
+    console.log("connected");
 
-// This callback function is called every time someone
-// tries to connect to the WebSocket server
-wsServer.on('request', function(request) {
-  console.log((new Date()) + ' Connection from origin ' + request.origin + '.');
+    // we need to know client index to remove them on 'close' event
+    var index = clients.push(connection) - 1;
+    console.log((new Date()) + ' Connection accepted.');
 
-  // accept connection - you should check 'request.origin' to make sure that
-  // client is connecting from your website
-  // (http://en.wikipedia.org/wiki/Same_origin_policy)
-  var connection = request.accept(null, request.origin);
-  console.log("connected");
+    // This is the most important callback for us, we'll handle
+    // all messages from users here.
+    connection.on('message', function(message) {
+       if (message.type === 'utf8') 
+       {
+        var rquest = JSON.parse(message.utf8Data);
+        // process WebSocket message        
+        // console.log(message);
 
-  // we need to know client index to remove them on 'close' event
-  var index = clients.push(connection) - 1;
-  console.log((new Date()) + ' Connection accepted.');
+        if (rquest.function == 'register')
+        {
+           connection.zoom = rquest.zoom;
+           connection.bounds = rquest.bounds;
+           getVesselsInBounds(connection, rquest.bounds, rquest.zoom);
+         }
+      }
+     });
 
-  // This is the most important callback for us, we'll handle
-  // all messages from users here.
-  connection.on('message', function(message) {
-     if (message.type === 'utf8') 
-     {
-      var rquest = JSON.parse(message.utf8Data);
-      // process WebSocket message        
-      console.log(message);
+    connection.on('close', function(connection) {
+      console.log((new Date()) + " Peer "+ request.origin + " disconnected.");
+      // remove user from the list of connected clients
+      clients.splice(index, 1);
+      // close user connection
+      });
+  });
+callback();
+}
 
-      if (rquest.function == 'register')
-      {
-         connection.zoom = rquest.zoom;
-         connection.bounds = rquest.bounds;
-         getVesselsInBounds(connection, rquest.bounds, rquest.zoom);
-       }
-    }
-   });
-
-  connection.on('close', function(connection) {
-    console.log((new Date()) + " Peer "+ request.origin + " disconnected.");
-    // remove user from the list of connected clients
-    clients.splice(index, 1);
-    // close user connection
-    });
-});
-
-connectToRedis();
-
-/**
- * Socket.IO
- */
-
-// function startSocketIO() {
-//   io = sio.listen(httpServer);
-
-//   connectToRedis();
-
- //   io.sockets.on('connection', function(client) {
-//     client.on('register', function(bounds, zoom) {
-//       client.set('zoom', zoom);
-//       client.set('bounds', bounds, function() {
-//       getVesselsInBounds(client, bounds, zoom);
-//       });
-//     });
-//     client.on('unregister', function() {
-//       client.del('bounds');
-//     });
-//   });
-// }
 
 /**
  * Redis
@@ -208,8 +189,11 @@ function connectToMongoDB() {
             else
             {
               navigationalAidCollection = coll;
-              //startHTTPServer();
-              //startWebsocketSever();
+              startHTTPServer(function(){
+                startWebSocketServer(function(){
+                  connectToRedis();
+                });
+              });
             }
           });
         }
@@ -231,8 +215,9 @@ function getVesselsInBounds(client, bounds, zoom) {
       var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
       console.log('(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString +" with sog > "+zoomSpeedArray[zoom]);
       var navigationalAidCursor = navigationalAidCollection.find({
-          pos: { $within: { $box:[ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat]]} }
-          });
+          pos: { $within: { $box:[ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat]]} },
+          time_received: { $gt: (new Date() - 10 * 60 * 1000) }
+         });
        navigationalAidCursor.toArray(function(err, navigationalAids){
           console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
           var vesNavArr = vesselData.concat(navigationalAids);

@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    
+    var timeQuery;
      var vessels = {};
      
       // Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
@@ -47,6 +47,7 @@ $(document).ready(function() {
       if (json.type == "vesselsInBoundsEvent")
       {
         console.debug("vesselsInBoundsEvent: "+json.vessels.length);
+        console.debug("time Query = "+(new Date().getTime() -timeQuery));
         processVesselsInBounds(json.vessels);
        }
       if (json.type == "vesselPosEvent")
@@ -73,6 +74,7 @@ $(document).ready(function() {
         message.function = "register"
         message.zoom = map.getZoom();
         message.bounds = map.getBounds();
+        timeQuery = new Date().getTime();
         connection.send(JSON.stringify(message));
       } 
 
@@ -85,9 +87,11 @@ $(document).ready(function() {
 
        // male vessel-Marker, Polygone und speedVectoren in die karte
        for (var x in jsonArray)
-        {
+        { 
+          var timeFlex  = new Date().getTime();
           paintToMap(jsonArray[x], function(vesselWithMapObjects){
           vessels[jsonArray[x].mmsi] = vesselWithMapObjects;
+         // console.debug("painted ready after "+(new Date().getTime() -timeFlex));
           if (map.getZoom() > 12)
           {
             if (vesselWithMapObjects.feature && typeof vesselWithMapObjects.feature.start ==='function' && map.getZoom() > 9)
@@ -114,6 +118,10 @@ $(document).ready(function() {
       }
 
       function processVesselPosition(jsonVessel){
+        console.debug("zeit seit absenden der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_captured));
+        console.debug("zeit seit Empfang der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_received));
+        console.debug("utc_sec: "+jsonVessel.utc_sec+" : "+new Date().getSeconds()+ " => "+(new Date().getSeconds() -jsonVessel.utc_sec));
+
           var vessel = vessels[jsonVessel.userid]?vessels[jsonVessel.userid]:{};
           vessel.mmsi = jsonVessel.userid;
           vessel.msgid = jsonVessel.msgid;
@@ -146,8 +154,10 @@ $(document).ready(function() {
             featureLayer.removeLayer(vessel.feature);
             delete vessel.feature;
           }
+          var timeFlex  = new Date().getTime();
           paintToMap(vessel, function(vesselWithMapObjects){
           vessels[jsonVessel.userid] = vesselWithMapObjects;
+           // console.debug("painted ready after "+(new Date().getTime() -timeFlex));
           if (map.getZoom() > 12)
           {
             if (vesselWithMapObjects.feature && typeof vesselWithMapObjects.feature.start ==='function')
