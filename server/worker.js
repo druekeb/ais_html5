@@ -33,7 +33,7 @@ function startHTTPServer(callback){
   /**
    * HTTP server (use the connect package that gives static file server support)
    */
-  var app = connect().use(connect.static('public'));
+  var app = connect().use(connect.static('client'));
   httpServer = http.createServer(app).listen(8090);
   console.log("server listens on 8090");
   callback();
@@ -141,6 +141,7 @@ function connectToRedis() {
           {
             if(sog !=null && sog > (zoomSpeedArray[client.zoom]))
             {
+              log("sendUTF for "+json.userid +" at "+new Date().getTime());
               client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
             }
           }
@@ -203,7 +204,8 @@ function connectToMongoDB() {
 }
 
 function getVesselsInBounds(client, bounds, zoom) {
-  var vesselCursor = vesselsCollection.find({
+   var timeFlex = new Date().getTime();
+   var vesselCursor = vesselsCollection.find({
     pos: { $within: { $box: [ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat] ] } },
     time_received: { $gt: (new Date() - 10 * 60 * 1000) },
     $or:[{sog: { $exists:true },sog: { $gt: zoomSpeedArray[zoom]*10}},{msgid:4},{ $gt:{msgid: 5}}]
@@ -221,7 +223,9 @@ function getVesselsInBounds(client, bounds, zoom) {
        navigationalAidCursor.toArray(function(err, navigationalAids){
           console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
           var vesNavArr = vesselData.concat(navigationalAids);
-           client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
+          
+          client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
+          log("getVesselsInBounds queried in "+(new Date().getTime() -timeFlex) + " msec");
           });
     }
   });

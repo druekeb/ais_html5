@@ -1,5 +1,8 @@
 /node_modules
 /log/*.log
+/server/log/
+/client/log/
+
 testCluster.js
 lib-cov
 *.seed
