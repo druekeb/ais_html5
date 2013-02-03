@@ -6,7 +6,7 @@ $(document).ready(function() {
       // Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
       var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
 
-      var map = L.map('map').setView([53.54,9.95], 14);
+      var map = L.map('map').setView([53.545,9.96], 16);
 
       L.tileLayer('http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png', {
             attribution:  'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors',
@@ -47,9 +47,8 @@ $(document).ready(function() {
         }
       if (json.type == "vesselsInBoundsEvent")
       {
-        console.debug("vesselsInBoundsEvent: "+json.vessels.length);
-        console.debug("time Query = "+(new Date().getTime() -timeQuery));
-        processVesselsInBounds(json.vessels);
+            console.debug(map.getZoom()+"|"+json.vessels.length+"|"+(new Date().getTime() -timeQuery));
+            processVesselsInBounds(json.vessels);
        }
       if (json.type == "vesselPosEvent")
       {
@@ -119,9 +118,9 @@ $(document).ready(function() {
       }
 
       function processVesselPosition(jsonVessel){
-        console.debug("zeit seit absenden der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_captured));
-        console.debug("zeit seit Empfang der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_received));
-        console.debug("utc_sec: "+jsonVessel.utc_sec+" : "+new Date().getSeconds()+ " => "+(new Date().getSeconds() -jsonVessel.utc_sec));
+        // console.debug("zeit seit absenden der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_captured));
+        // console.debug("zeit seit Empfang der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_received));
+        // console.debug("utc_sec: "+jsonVessel.utc_sec+" : "+new Date().getSeconds()+ " => "+(new Date().getSeconds() -jsonVessel.utc_sec));
 
           var vessel = vessels[jsonVessel.userid]?vessels[jsonVessel.userid]:{};
           vessel.mmsi = jsonVessel.userid;

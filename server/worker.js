@@ -133,15 +133,16 @@ function connectToRedis() {
       }
       var lon = json.pos[0];
       var lat = json.pos[1];
-      var sog = json.sog/10;
+      json.sog = json.sog/10;
+      json.cog = json.cog/10;
       clients.forEach(function(client) {
         if (client.bounds != null && lon != null && lat != null) 
         {
           if (positionInBounds(lon, lat, client.bounds)) 
           {
-            if(sog !=null && sog > (zoomSpeedArray[client.zoom]))
+            if(json.sog !=null && json.sog > (zoomSpeedArray[client.zoom]))
             {
-              log("sendUTF for "+json.userid +" at "+new Date().getTime());
+             // log("sendUTF for "+json.userid +" at "+new Date().getTime());
               client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
             }
           }
@@ -222,10 +223,14 @@ function getVesselsInBounds(client, bounds, zoom) {
          });
        navigationalAidCursor.toArray(function(err, navigationalAids){
           console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
-          var vesNavArr = vesselData.concat(navigationalAids);
+          //var vesNavArr = vesselData.concat(navigationalAids);
           
-          client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
-          log("getVesselsInBounds queried in "+(new Date().getTime() -timeFlex) + " msec");
+          client.sendUTF(JSON.stringify( { 
+            type: 'vesselsInBoundsEvent', 
+            vessels: vesselData,
+            navigationals: navigationalAids
+          } ));
+         // log("getVesselsInBounds queried in "+(new Date().getTime() -timeFlex) + " msec");
           });
     }
   });
