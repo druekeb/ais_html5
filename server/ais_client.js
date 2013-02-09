@@ -159,7 +159,7 @@ function parseStreamMessage(message) {
 var mongoHost = 'localhost';
 var mongoPort = 27017;
 var mongoServer = new mongo.Server(mongoHost, mongoPort, { auto_reconnect: true });
-var mongoDB = new mongo.Db('ais', mongoServer, { safe: true, native_parser: true });
+var mongoDB = new mongo.Db('ais', mongoServer, { safe: true, native_parser: false });
 var vesselsCollection;
 var baseStationsCollection;
 
