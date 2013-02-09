@@ -159,7 +159,7 @@ function parseStreamMessage(message) {
 var mongoHost = 'localhost';
 var mongoPort = 27017;
 var mongoServer = new mongo.Server(mongoHost, mongoPort, { auto_reconnect: true });
-var mongoDB = new mongo.Db('ais', mongoServer, { safe: true, native_parser: true });
+var mongoDB = new mongo.Db('ais', mongoServer, { safe: true, native_parser: false });
 var vesselsCollection;
 var baseStationsCollection;
 
@@ -283,8 +283,8 @@ function storeVesselPos(json) {
     { $set: obj },
     { safe: false, upsert: true }
   );
-   console.log("VesselPos------------------------");
-   console.log(obj);
+   // console.log("VesselPos------------------------");
+   // console.log(obj);
 }
 
  function storeVesselVoyage(json) {
@@ -320,8 +320,8 @@ function storeVesselPos(json) {
   { $set: obj },
   { safe: false, upsert: true }
   );
-   console.log("VesselVoyage------------------------");
-   console.log(obj);
+   // console.log("VesselVoyage------------------------");
+   // console.log(obj);
 }
 
 function storeObject(json){
