@@ -28,6 +28,19 @@ function log(message) {
   console.log(message);
 }
 
+function logPosEvent(message) {
+  var message = message +" "+new Date().getTime();
+  fs.appendFile(__dirname + '/log/PosEvent.log', message + '\n', function(err) {
+    if (err != null) console.log("couldn't write PosEvent :"+message+", Error: "+err);
+  });
+}
+
+function logBoundsEvent(message) {
+  var message =  message +" | "+new Date().getTime();
+  fs.appendFile(__dirname + '/log/BoundsEvent.log', message + '\n', function(err) {
+    if (err != null) console.log("couldn't write BoundsEvent :"+message+", Error: "+err);
+  });
+}
 
 function startHTTPServer(callback){
   /**
@@ -142,7 +155,7 @@ function connectToRedis() {
           {
             if(json.sog !=null && json.sog > (zoomSpeedArray[client.zoom]))
             {
-             // log("sendUTF for "+json.userid +" at "+new Date().getTime());
+              logPosEvent(json.userid +" "+json.utc_sec);
               client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
             }
           }
@@ -213,6 +226,7 @@ function getVesselsInBounds(client, bounds, zoom) {
   });
   vesselCursor.toArray(function(err, vesselData) 
   {
+
     if (!err)
     {
       var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
@@ -223,15 +237,10 @@ function getVesselsInBounds(client, bounds, zoom) {
          });
        navigationalAidCursor.toArray(function(err, navigationalAids){
           console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
-          //var vesNavArr = vesselData.concat(navigationalAids);
-          
-          client.sendUTF(JSON.stringify( { 
-            type: 'vesselsInBoundsEvent', 
-            vessels: vesselData,
-            navigationals: navigationalAids
-          } ));
-         // log("getVesselsInBounds queried in "+(new Date().getTime() -timeFlex) + " msec");
-          });
+          var vesNavArr = vesselData.concat(navigationalAids);
+          logBoundsEvent(' queried '+ vesNavArr.length + " "+new Date().getTime()-timeFlex );
+          client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
+        });
     }
   });
 }

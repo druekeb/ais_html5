@@ -17,6 +17,13 @@ function log(message) {
   console.log(message);
 }
 
+function logPosEvent(message) {
+  var message = message +" | "+new Date().getTime();
+  fs.appendFile(__dirname + '/log/PosEvent.log', message + '\n', function(err) {
+    if (err != null) console.log("couldn't write PosEvent :"+message+", Error: "+err);
+  });
+}
+
 /**
  * Redis
  */
@@ -109,10 +116,11 @@ function parseStreamMessage(message) {
     if (json.pos[0] < 180 && json.pos[0] >= -180 && json.pos[1] < 90 && json.pos[1] >= -90) 
     {
       storeVesselPos(json);
-      if(json.userid == 211472760)
-      {
-        console.log(json.userid);
-      }
+      // if(json.userid == 211472760)
+      // {
+      //   console.log(json.userid);
+      // }
+      //logPosEvent(json.userid +" "+json.utc_sec);
       redisClient.publish('vesselPos', message);
     }
   }
@@ -127,7 +135,7 @@ function parseStreamMessage(message) {
   if(json.msgid == 9) //SAR Aircraft
   {
     storeNavigationalAid(json);
-    console.log("SAR Aircraft received");
+    // console.log("SAR Aircraft received");
   }
   if(json.msgid == 12) //Addressed Safety
   {

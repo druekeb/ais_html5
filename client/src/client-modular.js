@@ -48,15 +48,16 @@ $(document).ready(function() {
         }
       if (json.type == "vesselsInBoundsEvent")
       {
-            console.debug(map.getZoom()+"|"+json.vessels.length+"|"+(new Date().getTime() -timeQuery));
+//            console.debug(map.getZoom()+"|"+json.vessels.length+"|"+(new Date().getTime() -timeQuery));
+            console.debug(json.vessels.length + " vessels "+new Date().getTime());
             processVesselsInBounds(json.vessels);
-            processNavigationalAids(json.navigationals);
        }
-      if (json.type == "vesselPosEvent")
+      else if (json.type == "vesselPosEvent")
       {
+        console.debug(json.vessel.userid + " "+json.vessel.utc_sec +" "+ new Date().getTime());
         processVesselPosition(json.vessel);
       }
-       if (json.type == "safetyMessageEvent")
+       else if (json.type == "safetyMessageEvent")
       {
         console.debug("safetyMessageEvent: "+json.text);
       }
@@ -102,7 +103,7 @@ $(document).ready(function() {
                  function onMouseout(e) {map.closePopup();}
                  function onMouseover(e) {
                         var latlng = e.latlng;
-                        var offsetPoint = new L.Point([100,120]);
+                        var offsetPoint = new L.Point(100,120);
                         var popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:offsetPoint};
                         L.popup(popupOptions).setLatLng(latlng).setContent(popupContent).openOn(map);
                  }
@@ -144,7 +145,7 @@ $(document).ready(function() {
           function onMouseout(e) {map.closePopup();}
           function onMouseover(e) {
             var latlng = e.target.latlng;
-           var offsetPoint = new L.Point([-60,30]);
+           var offsetPoint = new L.Point(-60,30);
             var popupContent = createMouseOverPopup();
             var popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:offsetPoint};
             L.popup(popupOptions).setLatLng(latlng).setContent(popupContent).openOn(map);
@@ -185,7 +186,7 @@ $(document).ready(function() {
                  function onMouseout(e) {map.closePopup();}
                  function onMouseover(e) {
                         var latlng = e.latlng;
-                        var offsetPoint = new L.Point([100,120]);
+                        var offsetPoint = new L.Point(100,120);
                         var popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:offsetPoint};
                         L.popup(popupOptions).setLatLng(latlng).setContent(popupContent).openOn(map);
                  }
