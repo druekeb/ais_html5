@@ -50,7 +50,7 @@ function connectToAISStream() {
   aisClient = net.connect({port: aisPort, host: aisHost}, function() {
     clearReconnectionTimeout();
     reconnectionCount = 0;
-    aisClient.setEncoding('utf8');
+    //aisClient.setEncoding('utf8');
     log('Connection to ' + aisHost + ':' + aisPort + ' established');
 
     aisClient.on('end', function() {
@@ -283,8 +283,8 @@ function storeVesselPos(json) {
     { $set: obj },
     { safe: false, upsert: true }
   );
-  // console.log("VesselPos------------------------");
-  // console.log(obj);
+   console.log("VesselPos------------------------");
+   console.log(obj);
 }
 
  function storeVesselVoyage(json) {
@@ -320,8 +320,8 @@ function storeVesselPos(json) {
   { $set: obj },
   { safe: false, upsert: true }
   );
-  // console.log("VesselVoyage------------------------");
-  // console.log(obj);
+   console.log("VesselVoyage------------------------");
+   console.log(obj);
 }
 
 function storeObject(json){
