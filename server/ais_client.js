@@ -18,7 +18,7 @@ function log(message) {
 }
 
 function logPosEvent(message) {
-  var message = message +" | "+new Date().getTime();
+  var message = message +" "+new Date().getTime();
   fs.appendFile(__dirname + '/log/PosEvent.log', message + '\n', function(err) {
     if (err != null) console.log("couldn't write PosEvent :"+message+", Error: "+err);
   });

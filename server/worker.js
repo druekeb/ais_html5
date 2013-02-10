@@ -36,7 +36,6 @@ function logPosEvent(message) {
 }
 
 function logBoundsEvent(message) {
-  var message =  message +" | "+new Date().getTime();
   fs.appendFile(__dirname + '/log/BoundsEvent.log', message + '\n', function(err) {
     if (err != null) console.log("couldn't write BoundsEvent :"+message+", Error: "+err);
   });
@@ -238,7 +237,8 @@ function getVesselsInBounds(client, bounds, zoom) {
        navigationalAidCursor.toArray(function(err, navigationalAids){
           console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
           var vesNavArr = vesselData.concat(navigationalAids);
-          logBoundsEvent(vesNavArr.length + " "+new Date().getTime()-timeFlex );
+          // console.log ("vesNavArr: "+typeof vesNavArr +vesNavArr.length);
+          logBoundsEvent(vesNavArr.length + " "+(new Date().getTime()-timeFlex ));
           client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
         });
     }
