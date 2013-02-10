@@ -48,18 +48,17 @@ $(document).ready(function() {
         }
       if (json.type == "vesselsInBoundsEvent")
       {
-//            console.debug(map.getZoom()+"|"+json.vessels.length+"|"+(new Date().getTime() -timeQuery));
-            console.debug(json.vessels.length + " vessels "+new Date().getTime());
-            processVesselsInBounds(json.vessels);
+           console.debug("BoundsEvent " +map.getZoom()+" "+json.vessels.length+" "+(new Date().getTime() -timeQuery));
+           processVesselsInBounds(json.vessels);
        }
       else if (json.type == "vesselPosEvent")
       {
-        console.debug(json.vessel.userid + " "+json.vessel.utc_sec +" "+ new Date().getTime());
+        console.debug("PosEvent "+json.vessel.userid + " "+json.vessel.utc_sec +" "+ new Date().getTime());
         processVesselPosition(json.vessel);
       }
        else if (json.type == "safetyMessageEvent")
       {
-        console.debug("safetyMessageEvent: "+json.text);
+        // console.debug("safetyMessageEvent: "+json.text);
       }
     };
 
@@ -71,7 +70,7 @@ $(document).ready(function() {
           map.zoomTo(3);
           return;
         }
-        console.debug("zoomLevel="+map.getZoom());
+        // console.debug("zoomLevel="+map.getZoom());
         var bounds = map.getBounds();
         var message = {};
         message.function = "register"

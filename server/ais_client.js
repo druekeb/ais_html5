@@ -115,12 +115,13 @@ function parseStreamMessage(message) {
   {
     if (json.pos[0] < 180 && json.pos[0] >= -180 && json.pos[1] < 90 && json.pos[1] >= -90) 
     {
+      logPosEvent(json.userid +" "+json.utc_sec);
       storeVesselPos(json);
       // if(json.userid == 211472760)
       // {
       //   console.log(json.userid);
       // }
-      //logPosEvent(json.userid +" "+json.utc_sec);
+      
       redisClient.publish('vesselPos', message);
     }
   }

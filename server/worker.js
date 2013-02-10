@@ -155,7 +155,7 @@ function connectToRedis() {
           {
             if(json.sog !=null && json.sog > (zoomSpeedArray[client.zoom]))
             {
-              logPosEvent(json.userid +" "+json.utc_sec);
+              // logPosEvent(json.userid +" "+json.utc_sec);
               client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
             }
           }
@@ -238,7 +238,7 @@ function getVesselsInBounds(client, bounds, zoom) {
        navigationalAidCursor.toArray(function(err, navigationalAids){
           console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
           var vesNavArr = vesselData.concat(navigationalAids);
-          logBoundsEvent(' queried '+ vesNavArr.length + " "+new Date().getTime()-timeFlex );
+          logBoundsEvent(vesNavArr.length + " "+new Date().getTime()-timeFlex );
           client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
         });
     }
