@@ -35,33 +35,31 @@
                 var moving = (this.sog && this.sog > 0.4 && this.sog!=102.3) ; //nur Schiffe, die sich mit mind. 0,3 Knoten bewegen
                 var shipStatics = (this.cog ||(this.true_heading &&  this.true_heading!=0.0 &&  this.true_heading !=511)) && (this.dim_port && this.dim_stern) ;
          
-                var angle = calcAngle(this);
-                var cos_angle=Math.cos(angle);
-                var sin_angle=Math.sin(angle);
+                var brng = calcAngle(this);
                 var vectorPoints = [];
                 var shipPoint = new L.LatLng(this.lat,this.lon);
                 vectorPoints.push(shipPoint);
                 if (moving) // zeichne für fahrende Schiffe einen Speedvector, ein Richtungsdreieck und möglichst ein Polygon
                 {
-                  vectorPoints.push(shipPoint);
-                  vectorPoints.push(shipPoint);
-                  var vectorLength = this.sog >30? this.sog/10: this.sog;
-                  var targetPoint = calcVector(this.lon,this.lat, vectorLength, sin_angle, cos_angle);
+                  var meterProSekunde = this.sog *0.51444;
+                  var vectorLength = meterProSekunde * 30; //meter, die in 30 sec zurückgelegt werden
+                  var targetPoint = destinationPoint(this.lat, this.lon, this.cog, vectorLength);
                   vectorPoints.push(targetPoint);
                   var vectorWidth = (this.sog > 30?5:2); 
                   this.vector = L.polyline(vectorPoints, {color: 'red', weight: vectorWidth });
-                
+                  var animationPartsSize = vectorLength/(zoom * 1.1); //in wieviele Teilstücke wird der vector zerlegt
+                  var animationIntervalLength = zoom * 100; //wie lang ist die Zeitspanne zwischen zwei Animationsschritten
                   if (shipStatics)
                   {
                     this.polygon = new L.animatedPolygon(vectorPoints,{
                                                            autoStart:false,
-                                                           distance: vectorLength/10,
-                                                           interval: 200,
+                                                           distance: animationPartsSize,
+                                                           interval: animationIntervalLength,
                                                            dim_stern: this.dim_stern,
                                                            dim_port: this.dim_port,
                                                            dim_bow: this.dim_bow,
                                                            dim_starboard: this.dim_starboard,
-                                                           angle: angle,
+                                                           brng:brng,
                                                            color: "blue",
                                                            weight: 3,
                                                            fill:true,
@@ -74,9 +72,9 @@
 
                   this.feature = L.animatedPolygon(vectorPoints,{
                                                           autoStart: false,
-                                                          distance: vectorLength/10,
-                                                          interval:200,
-                                                          angle: angle,
+                                                          distance: animationPartsSize,
+                                                          interval:animationIntervalLength,
+                                                          brng:brng,
                                                           zoom: zoom,
                                                           color: "black",
                                                           weight: 1,
@@ -96,7 +94,7 @@
                                                            dim_port: this.dim_port,
                                                            dim_bow: this.dim_bow,
                                                            dim_starboard: this.dim_starboard,
-                                                           angle: angle,
+                                                           brng:brng,
                                                            color: "blue",
                                                            weight: 3,
                                                            fill:true,
@@ -146,19 +144,6 @@
               mouseOverPopup+="</table></div>";
               return mouseOverPopup;
             }
-      function calcVector(lon, lat, sog, sin, cos){
-      var dy_deg = -(sog * cos)/10000;
-      var dx_deg = -(- sog * sin)/Math.cos((lat)*(Math.PI/180.0))/10000;
-      return new L.LatLng(lat - dy_deg, lon - dx_deg);
-    }
-
-    function calcPoint(lon, lat, dx, dy, sin_angle, cos_angle){
-      var dy_deg = -((dx*sin_angle + dy*cos_angle)/(1852.0))/60.0;
-      var dx_deg = -(((dx*cos_angle - dy*sin_angle)/(1852.0))/60.0)/Math.cos(lat * (Math.PI /180.0));
-      return new L.LatLng(lat - dy_deg, lon - dx_deg);
-    }
-
-
 
 function calcAngle (vessel) {
        //benötigte Daten
@@ -216,6 +201,25 @@ function calcAngle (vessel) {
       }
       return curr_min;
     }
+
+function destinationPoint(lat, lng, brng, dist) {
+   dist = dist / 6371000;  
+   brng = brng.toRad();  
+   var lat1 = lat.toRad();
+   var lon1 = lng.toRad();
+   var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
+   var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat1), Math.cos(dist) - Math.sin(lat1) * Math.sin(lat2));
+   if (isNaN(lat2) || isNaN(lon2)) return null;
+   return new L.LatLng(lat2.toDeg(), lon2.toDeg());
+}
+
+Number.prototype.toRad = function() {
+   return this * Math.PI / 180;
+}
+
+Number.prototype.toDeg = function() {
+   return this * 180 / Math.PI;
+}
 
   var shipTypes = {
                   2:'Other Type', // eigene Zuweisung
@@ -379,6 +383,7 @@ var aton_types = {
                   29: 'SafeWater',
                   30: 'SpecialMark',
                   31: 'LightVessel/LANBY/Rigs'
-                }
+                 }
+
 
  }
