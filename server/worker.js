@@ -238,7 +238,7 @@ function getVesselsInBounds(client, bounds, zoom) {
           console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
           var vesNavArr = vesselData.concat(navigationalAids);
           // console.log ("vesNavArr: "+typeof vesNavArr +vesNavArr.length);
-          logBoundsEvent(vesNavArr.length + " "+(new Date().getTime()-timeFlex ));
+          logBoundsEvent(zoom+ " "+ vesNavArr.length + " "+(new Date().getTime()-timeFlex ));
           client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
         });
     }
