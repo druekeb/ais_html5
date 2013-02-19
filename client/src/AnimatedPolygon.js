@@ -79,7 +79,7 @@ L.AnimatedPolygon = L.Polygon.extend({
     var self = this,
         len = this._points.length,
         speed = this.options.interval;
-        console.debug("this._points.length: ="+this._points.length);
+        // console.debug("this._points.length: ="+this._points.length);
 
     // Normalize the transition speed from vertex to vertex
     if (this._i < len) {

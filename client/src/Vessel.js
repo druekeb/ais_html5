@@ -29,11 +29,13 @@
               this.true_heading = jsonObject.true_heading;
             }
 
-            this.paintToMap = function(zoom, callback){
+            this.createMapObjects = function(zoom, callback){
               if(this.lat != null)
               {    
                 var moving = (this.sog && this.sog > 0.4 && this.sog!=102.3) ; //nur Schiffe, die sich mit mind. 0,3 Knoten bewegen
-                var shipStatics = (this.cog ||(this.true_heading &&  this.true_heading!=0.0 &&  this.true_heading !=511)) && (this.dim_port && this.dim_stern) ;
+                var shipStatics = (this.cog ||(this.true_heading &&  this.true_heading!=0.0 &&  this.true_heading !=511)) 
+                                  && (this.dim_port && this.dim_stern)
+                                  && zoom > 12 ;
          
                 var brng = calcAngle(this);
                 var vectorPoints = [];
@@ -47,8 +49,8 @@
                   vectorPoints.push(targetPoint);
                   var vectorWidth = (this.sog > 30?5:2); 
                   this.vector = L.polyline(vectorPoints, {color: 'red', weight: vectorWidth });
-                  var animationPartsSize = vectorLength/(zoom * 1.1); //in wieviele Teilstücke wird der vector zerlegt
-                  var animationIntervalLength = zoom * 100; //wie lang ist die Zeitspanne zwischen zwei Animationsschritten
+                  var animationPartsSize = vectorLength/(zoom * 1.5); //in wieviele Teilstücke wird der vector zerlegt
+                  var animationIntervalLength = 1500; //wie lang ist die Zeitspanne zwischen zwei Animationsschritten
                   if (shipStatics)
                   {
                     this.polygon = new L.animatedPolygon(vectorPoints,{
@@ -82,7 +84,7 @@
                                                           fillColor:shipTypeColors[this.ship_type],
                                                           fillOpacity:0.8,
                                                           clickable:true,
-                                                          animation:true
+                                                          animation:shipStatics
                   })
                 }
                 else //zeichne für nicht fahrende Schiffe einen Circlemarker und möglichst ein Polygon
@@ -116,11 +118,11 @@
                    this.feature = L.circleMarker(vectorPoints[0], circleOptions);
                 }
               }
-          callback([this.vector,this.polygon, this.feature], getPopupContent(this));
+          this.popupContent = getPopupContent(this);
+          callback();
         };
 
         function getPopupContent(vessel){
-              var timeNow = new Date();
               var mouseOverPopup ="<div><table>";
               if(vessel.name) mouseOverPopup+="<tr><td colspan='2'><b>"+vessel.name+"</b></nobr></td></tr>";
               if(vessel.imo)mouseOverPopup+="<tr><td>IMO</td><td>"+(vessel.imo)+"</b></nobr></td></tr>  ";
@@ -349,41 +351,5 @@ var nav_stati = {
                   14: 'AIS-SART (active)',
                   15: 'not defined' 
                 }
-
-var aton_types = {
-                  0:'notSpecified',
-                  1:'ReferencePoint',
-                  2: 'RACON',
-                  3: 'off-shoreStructure',
-                  4: 'futureUse',
-                  5: 'LightWithoutSectors',
-                  6: 'LightWithSectors',
-                  7: 'LeadingLightFront',
-                  8: 'LeadingLightRear',
-                  9: 'BeaconCardinalN',
-                  10: 'BeaconCardinalE',
-                  11: 'BeaconCardinalS',
-                  12: 'BeaconCardinalW',
-                  13: 'BeaconPorthand', 
-                  14: 'BeaconStarboardhand',
-                  15: 'BeaconPreferredChannelPortHand',
-                  16: 'BeaconPreferredChannelStarboardHand',
-                  17: 'BeaconIsolatedDanger',
-                  18: 'BeacoSafeWater',
-                  19: 'BeaconSpecialMark',
-                  20: 'CardinalMarkN',
-                  21: 'CardinalMarkE',
-                  22: 'CardinalMarkS',
-                  23: 'CardinalMarkW',
-                  24: 'PortHandMark',
-                  25: 'StarboardHandMark',
-                  26: 'PreferredChannelPortHand',
-                  27: 'PreferredChannelStarboardHand',
-                  28: 'IsolatedDanger',
-                  29: 'SafeWater',
-                  30: 'SpecialMark',
-                  31: 'LightVessel/LANBY/Rigs'
-                 }
-
 
  }
