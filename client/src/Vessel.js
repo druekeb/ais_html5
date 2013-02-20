@@ -49,14 +49,14 @@
                   vectorPoints.push(targetPoint);
                   var vectorWidth = (this.sog > 30?5:2); 
                   this.vector = L.polyline(vectorPoints, {color: 'red', weight: vectorWidth });
-                  var animationPartsSize = vectorLength/(zoom * 1.5); //in wieviele Teilstücke wird der vector zerlegt
-                  var animationIntervalLength = 1500; //wie lang ist die Zeitspanne zwischen zwei Animationsschritten
+                  var animationPartsSize = vectorLength/zoom ; //in wieviele Teilstücke wird der vector zerlegt
+                  var animationInterval = 2000; //wie lang ist die Zeitspanne zwischen zwei Animationsschritten
                   if (shipStatics)
                   {
                     this.polygon = new L.animatedPolygon(vectorPoints,{
                                                            autoStart:false,
                                                            distance: animationPartsSize,
-                                                           interval: animationIntervalLength,
+                                                           interval: animationInterval,
                                                            dim_stern: this.dim_stern,
                                                            dim_port: this.dim_port,
                                                            dim_bow: this.dim_bow,
@@ -75,7 +75,7 @@
                   this.feature = L.animatedPolygon(vectorPoints,{
                                                           autoStart: false,
                                                           distance: animationPartsSize,
-                                                          interval:animationIntervalLength,
+                                                          interval:animationInterval,
                                                           brng:brng,
                                                           zoom: zoom,
                                                           color: "black",
@@ -204,9 +204,9 @@ function calcAngle (vessel) {
       return curr_min;
     }
 
-function destinationPoint(lat, lng, brng, dist) {
+function destinationPoint(lat, lng, cog, dist) {
    dist = dist / 6371000;  
-   brng = brng.toRad();  
+   var brng = cog.toRad();  
    var lat1 = lat.toRad();
    var lon1 = lng.toRad();
    var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
