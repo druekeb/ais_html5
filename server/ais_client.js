@@ -38,7 +38,7 @@ redisClient.on("error", function (err) {
  * AIS stream socket connection
  */
 
-var aisPort = 44447;
+var aisPort = 44444;
 var aisHost = 'aisstaging.vesseltracker.com';
 var aisClient;
 var reconnectionTimeout;
@@ -127,7 +127,7 @@ function parseStreamMessage(message) {
   }
   if (json.msgid == 4 ) //AIS Base Station
   {
-     storeObject(json);
+     //storeObject(json);
   }
   if (json.msgid == 5) //Vessel Voyage Data
   {
@@ -135,20 +135,20 @@ function parseStreamMessage(message) {
   }
   if(json.msgid == 9) //SAR Aircraft
   {
-    storeNavigationalAid(json);
+    //storeNavigationalAid(json);
     // console.log("SAR Aircraft received");
   }
   if(json.msgid == 12) //Addressed Safety
   {
-     redisClient.publish('safetyMessage', message);
+     //redisClient.publish('safetyMessage', message);
   }
   if(json.msgid == 14)//Broadcast Safety
   {
-    redisClient.publish('safetyMessage', message);
+    //redisClient.publish('safetyMessage', message);
   }
   if(json.msgid == 21) //navigational Aid
   {
-    storeNavigationalAid(json);
+    //storeNavigationalAid(json);
   }
 
 }

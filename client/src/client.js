@@ -104,7 +104,7 @@ $(document).ready(function() {
        {
          $('#zoomSpeed').css('display', 'none');
        }
-       console.debug("painted " +vessels.length+ "  "+(new Date().getTime() -timeMessage));
+       console.debug("painted " +Object.keys(vessels).length+ "  "+(new Date().getTime() -timeMessage));
     }
 
     //   function processNavigationalAids(jsonArray){
