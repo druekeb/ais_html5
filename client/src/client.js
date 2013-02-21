@@ -14,8 +14,8 @@ $(document).ready(function() {
 
     // if user is running mozilla then use it's built-in WebSocket
     var WebSocket = window.WebSocket || window.MozWebSocket;
-    var connection = new WebSocket('ws://127.0.0.1:8090');
-   // var connection = new WebSocket('ws://192.168.1.112:8090');
+    //var connection = new WebSocket('ws://127.0.0.1:8090');
+   var connection = new WebSocket('ws://192.168.1.112:8090');
      
     connection.onopen = function () {
         // connection is opened and ready to use
@@ -40,6 +40,7 @@ $(document).ready(function() {
 
     connection.onmessage = function (message) {
        // try to decode json (I assume that each message from server is json)
+
         try
         {
           var json = JSON.parse(message.data);
@@ -49,8 +50,9 @@ $(document).ready(function() {
         }
       if (json.type == "vesselsInBoundsEvent")
       {
-           console.debug("BoundsEvent " +LM.getZoom()+" "+json.vessels.length+" "+(new Date().getTime() -connection.timeQuery));
-           processVesselsInBounds(json.vessels);
+        var timeMessage = new Date().getTime();
+           console.debug("BoundsEvent " +LM.getZoom()+" "+json.vessels.length+" "+(timeMessage -connection.timeQuery));
+           processVesselsInBounds(json.vessels, timeMessage);
        }
       else if (json.type == "vesselPosEvent")
       {
@@ -63,7 +65,7 @@ $(document).ready(function() {
       }
     };
 
-      function processVesselsInBounds(jsonArray){
+      function processVesselsInBounds(jsonArray, timeMessage){
         for (var v in vessels)
         {
           LM.clearFeature(vessels[v]);
@@ -102,6 +104,7 @@ $(document).ready(function() {
        {
          $('#zoomSpeed').css('display', 'none');
        }
+       console.debug("painted " +vessels.length+ "  "+(new Date().getTime() -timeMessage));
     }
 
     //   function processNavigationalAids(jsonArray){
