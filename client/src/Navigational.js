@@ -113,5 +113,4 @@
                   30: 'SpecialMark',
                   31: 'LightVessel/LANBY/Rigs'
                 }
-
 }

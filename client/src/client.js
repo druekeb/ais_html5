@@ -1,6 +1,6 @@
 $(document).ready(function() {
    var vessels = {};
-    var navigationals = {};
+    // var navigationals = {};
     
        // Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
     var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
@@ -14,8 +14,8 @@ $(document).ready(function() {
 
     // if user is running mozilla then use it's built-in WebSocket
     var WebSocket = window.WebSocket || window.MozWebSocket;
-    //var connection = new WebSocket('ws://127.0.0.1:8090');
-   var connection = new WebSocket('ws://192.168.1.112:8090');
+    var connection = new WebSocket('ws://127.0.0.1:8090');
+    // var connection = new WebSocket('ws://192.168.1.112:8090');
      
     connection.onopen = function () {
         // connection is opened and ready to use
@@ -86,13 +86,13 @@ $(document).ready(function() {
             });
             vessels[vessel.mmsi] = vessel;
           }
-          else if (zoom > 6)
-          {
-            var staticObject = new Navigational(jsonObject);
-            staticObject.createMapObjects(LM.getZoom(),function(){
-              LM.paintMarker(staticObject);
-            });
-          }
+          // else if (zoom > 6)
+          // {
+          //   var staticObject = new Navigational(jsonObject);
+          //   staticObject.createMapObjects(LM.getZoom(),function(){
+          //     LM.paintMarker(staticObject);
+          //   });
+          // }
         }
       // zeige eine Infobox über die aktuelle minimal-Geschwindigkeit angezeigter Schiffe
        if (LM.getZoom() < 13)
@@ -107,39 +107,10 @@ $(document).ready(function() {
        console.debug("painted " +Object.keys(vessels).length+ "  "+(new Date().getTime() -timeMessage));
     }
 
-    //   function processNavigationalAids(jsonArray){
-
-    //     navigationals = {};
-
-    //    // male vessel-Marker, Polygone und speedVectoren in die karte
-    //    for (var x in jsonArray)
-    //     { 
-    //       var timeFlex  = new Date().getTime();
-    //       var navigational = new Navigational(jsonArray[x]);
-
-    //       //gemeinsame eventHandler für mouseEvents 
-    //       function onMouseout(e) {map.closePopup();}
-    //       function onMouseover(e) {
-    //         var latlng = e.target.latlng;
-    //        var offsetPoint = new L.Point(-60,30);
-    //         var popupContent = createMouseOverPopup();
-    //         var popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:offsetPoint};
-    //         L.popup(popupOptions).setLatLng(latlng).setContent(popupContent).openOn(map);
-    //       }
-    //       navigational.paintToMap(function(marker){
-    //         marker.addTo(featureLayer);
-    //         marker.on('mouseover',onMouseover);
-    //         marker.on('mouseout', onMouseout);
-    //         navigationals[navigational.mmsi] = navigational;
-    //     });
-    //   }
-    // }
+   
      
 
       function processVesselPosition(jsonVessel){
-        // console.debug("zeit seit absenden der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_captured));
-        // console.debug("zeit seit Empfang der positionsmeldung: "+(new Date().getTime() - jsonVessel.time_received));
-        // console.debug("utc_sec: "+jsonVessel.utc_sec+" : "+new Date().getSeconds()+ " => "+(new Date().getSeconds() -jsonVessel.utc_sec));
         var vessel = vessels[jsonVessel.userid];
         if(vessel != undefined)
         {

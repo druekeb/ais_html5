@@ -152,7 +152,7 @@ function connectToRedis() {
         {
           if (positionInBounds(lon, lat, client.bounds)) 
           {
-            if(json.sog !=null && json.sog > (zoomSpeedArray[client.zoom]))
+            if(json.sog !=null && json.sog > (zoomSpeedArray[client.zoom]) && json.sog != 102.3)
             {
               // logPosEvent(json.userid +" "+json.utc_sec);
               client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
@@ -221,26 +221,32 @@ function getVesselsInBounds(client, bounds, zoom) {
    var vesselCursor = vesselsCollection.find({
     pos: { $within: { $box: [ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat] ] } },
     time_received: { $gt: (new Date() - 10 * 60 * 1000) },
-    $or:[{sog: { $exists:true },sog: { $gt: zoomSpeedArray[zoom]}},{msgid:4},{ $gt:{msgid: 5}}]
+    $or:[{sog: { $exists:true },sog: { $gt: zoomSpeedArray[zoom]},sog: {$ne: 102.3}},/*{msgid:4},*/{ $gt:{msgid: 5}}]
   });
   vesselCursor.toArray(function(err, vesselData) 
   {
-
     if (!err)
     {
       var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
       console.log('(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString +" with sog > "+zoomSpeedArray[zoom]);
-      var navigationalAidCursor = navigationalAidCollection.find({
-          pos: { $within: { $box:[ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat]]} },
-          time_received: { $gt: (new Date() - 10 * 60 * 1000) }
-         });
-       navigationalAidCursor.toArray(function(err, navigationalAids){
-          console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
-          var vesNavArr = vesselData.concat(navigationalAids);
-          // console.log ("vesNavArr: "+typeof vesNavArr +vesNavArr.length);
-          logBoundsEvent(zoom+ " "+ vesNavArr.length + " "+(new Date().getTime()-timeFlex ));
-          client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
-        });
+      // if(zoom < 6)
+      // {
+          client.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
+      // }
+      // else
+      // {
+      //   var navigationalAidCursor = navigationalAidCollection.find({
+      //     pos: { $within: { $box:[ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat]]} },
+      //     time_received: { $gt: (new Date() - 10 * 60 * 1000) }
+      //    });
+      //    navigationalAidCursor.toArray(function(err, navigationalAids){
+      //      console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
+      //      var vesNavArr = vesselData.concat(navigationalAids);
+      //       // console.log ("vesNavArr: "+typeof vesNavArr +vesNavArr.length);
+      //       // logBoundsEvent(zoom+ " "+ vesNavArr.length + " "+(new Date().getTime()-timeFlex ));
+      //       client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
+      //     });
+      //  }
     }
   });
 }

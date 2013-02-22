@@ -125,31 +125,31 @@ function parseStreamMessage(message) {
       redisClient.publish('vesselPos', message);
     }
   }
-  if (json.msgid == 4 ) //AIS Base Station
-  {
-     //storeObject(json);
-  }
+  // if (json.msgid == 4 ) //AIS Base Station
+  // {
+  //    //storeObject(json);
+  // }
   if (json.msgid == 5) //Vessel Voyage Data
   {
     storeVesselVoyage(json);
   }
-  if(json.msgid == 9) //SAR Aircraft
-  {
-    //storeNavigationalAid(json);
-    // console.log("SAR Aircraft received");
-  }
-  if(json.msgid == 12) //Addressed Safety
-  {
-     //redisClient.publish('safetyMessage', message);
-  }
-  if(json.msgid == 14)//Broadcast Safety
-  {
-    //redisClient.publish('safetyMessage', message);
-  }
-  if(json.msgid == 21) //navigational Aid
-  {
-    //storeNavigationalAid(json);
-  }
+  // if(json.msgid == 9) //SAR Aircraft
+  // {
+  //   //storeNavigationalAid(json);
+  //   // console.log("SAR Aircraft received");
+  // }
+  // if(json.msgid == 12) //Addressed Safety
+  // {
+  //    //redisClient.publish('safetyMessage', message);
+  // }
+  // if(json.msgid == 14)//Broadcast Safety
+  // {
+  //   //redisClient.publish('safetyMessage', message);
+  // }
+  // if(json.msgid == 21) //navigational Aid
+  // {
+  //   //storeNavigationalAid(json);
+  // }
 
 }
 

@@ -125,7 +125,7 @@
         function getPopupContent(vessel){
               var mouseOverPopup ="<div><table>";
               if(vessel.name) mouseOverPopup+="<tr><td colspan='2'><b>"+vessel.name+"</b></nobr></td></tr>";
-              if(vessel.imo)mouseOverPopup+="<tr><td>IMO</td><td>"+(vessel.imo)+"</b></nobr></td></tr>  ";
+              if(vessel.imo && vessel.imo > 0)mouseOverPopup+="<tr><td>IMO</td><td>"+(vessel.imo)+"</b></nobr></td></tr>  ";
               mouseOverPopup+="<tr><td>MMSI: &nbsp;</td><td><nobr>"+(vessel.mmsi)+"</nobr></td></tr>";
               if(vessel.nav_status && vessel.nav_status < 15 && vessel.nav_status > -1)
               {
