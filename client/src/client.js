@@ -14,8 +14,8 @@ $(document).ready(function() {
 
     // if user is running mozilla then use it's built-in WebSocket
     var WebSocket = window.WebSocket || window.MozWebSocket;
-    //var connection = new WebSocket('ws://127.0.0.1:8090');
-    var connection = new WebSocket('ws://192.168.1.112:8090');
+    var connection = new WebSocket('ws://127.0.0.1:8090');
+    //var connection = new WebSocket('ws://192.168.1.112:8090');
      
     connection.onopen = function () {
         // connection is opened and ready to use
@@ -58,8 +58,9 @@ $(document).ready(function() {
       if (json.type == "vesselsInBoundsEvent")
       {
         var timeMessage = new Date().getTime();
-           console.debug("BoundsEvent " +LM.getZoom()+" "+json.vessels.length+" "+(timeMessage -connection.timeQuery));
-           processVesselsInBounds(json.vessels, timeMessage);
+        //console.debug("BoundsEvent " +LM.getZoom()+" "+json.vessels.length+" "+(timeMessage -connection.timeQuery));
+        console.debug("boundsEvent "+createDate(timeMessage, true,true));
+        processVesselsInBounds(json.vessels, timeMessage);
        }
       else if (json.type == "vesselPosEvent")
       {
@@ -92,7 +93,7 @@ $(document).ready(function() {
               LM.paintVessel(vessel);
             });
             vessels[vessel.mmsi] = vessel;
-            console.debug("Latency Bounds "+ (new Date().getTime() - vessel.time_captured) + " "+createDate(vessel.time_captured, true));
+            // console.debug("Latency Bounds "+ (new Date().getTime() - vessel.time_captured) + " "+createDate(vessel.time_captured, true));
           }
           // else if (zoom > 6)
           // {
@@ -133,7 +134,8 @@ $(document).ready(function() {
         vessel.createMapObjects(LM.getZoom(), function(){
             LM.paintVessel(vessel);
             vessels[vessel.mmsi] = vessel;
-            console.debug("Latency Pos "+ (new Date().getTime() - vessel.time_captured)  + " "+createDate(vessel.time_captured, true));
+            var now = new Date().getTime();
+            console.debug(createDate(now,true,true) +" LatencyPos "+ (now - vessel.time_captured));
         });
     }
 
