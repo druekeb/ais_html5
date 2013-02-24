@@ -17,7 +17,7 @@
             this.nav_status = jsonObject.nav_status;
             this.dest = jsonObject.dest;
             this.draught = jsonObject.draught;
-
+            this.time_captured = jsonObject.time_captured;
             
             this.updatePosition = function(jsonObject){
               this.lat = jsonObject.pos[1]            
@@ -27,6 +27,7 @@
               this.cog = jsonObject.cog;
               this.sog = jsonObject.sog;
               this.true_heading = jsonObject.true_heading;
+              this.time_captured = jsonObject.time_captured;
             }
 
             this.createMapObjects = function(zoom, callback){

@@ -3,18 +3,17 @@ var LM = function(){
 	var map, featureLayer, tileLayer, zoom, socket;
 	
 function init(divName, options){
-
     map =  L.map(divName,options.mapOptions);
     zoom = options.zoom?options.zoom:14;
     center = options.center?options.center: [52.410,4.790];
     map.setView(center, zoom);
+
     if (options.tileLayer )
     {
-      var tileLayer =  L.tileLayer('http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png', {
-            attribution:  'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors',
-            maxZoom: 18,
-            minZoom:3
-          }).addTo(map);
+      var osmAttribution = 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors';
+      var osmUrl = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
+      var osmLayer =  new L.tileLayer(osmUrl, {attribution: osmAttribution});
+      osmLayer.addTo(map);
     }
     if (options.featureLayer)
     {
