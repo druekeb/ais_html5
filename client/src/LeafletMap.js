@@ -1,6 +1,6 @@
 var LM = function(){
 
-	var map, featureLayer, tileLayer, zoom, socket;
+	var map, featureLayer, tileLayer, zoom, socket, boundsTimeout;
 	
 function init(divName, options){
     map =  L.map(divName,options.mapOptions);
@@ -35,23 +35,18 @@ function init(divName, options){
     changeRegistration();
   }
 
-
-	
-
      function changeRegistration()
      {
-        if(map.getZoom() < 3)
-        { 
-           map.zoomTo(3);
-          return;
-        }
-       // console.debug("zoomLevel="+map.getZoom());
-       var message = {};
-       message.function = "register"
-       message.zoom = map.getZoom();
-       message.bounds = map.getBounds();
-       socket.timeQuery = new Date().getTime();
-       socket.send(JSON.stringify(message));
+        // console.debug("zoomLevel="+map.getZoom());
+        var message = {};
+        message.function = "register"
+        message.zoom = map.getZoom();
+        message.bounds = map.getBounds();
+        socket.timeQuery = new Date().getTime();
+        socket.send(JSON.stringify(message));
+        if (boundsTimeout) clearTimeout(boundsTimeout);
+        boundsTimeout = setTimeout(changeRegistration, 60000);
+
      } 
 
 	   
