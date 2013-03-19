@@ -189,7 +189,7 @@ function createShipPoints(pos, options) {
       var divisor;
       if(zoom)
       {
-        zoom = (zoom < 13?(zoom + 1):zoom);
+        zoom = (zoom < 13?(zoom + 0.5):zoom);
         var divisor = Math.pow(2,zoom);
       }
       else

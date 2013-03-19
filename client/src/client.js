@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  var pageRefreshTimer;
    var vessels = {};
     // var navigationals = {};
     
@@ -6,16 +7,17 @@ $(document).ready(function() {
     var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
   
     var zoom = getParam('zoom');
-    zoom = zoom.length >0? zoom : 14;
-    var lon = getParam('lon');
-    lon = lon.length > 0? lon : 9.86;
-    var lat = getParam('lat');
-    lat = lat.length > 0? lat : 53.54;
+      zoom = zoom.length >0? zoom : 16;
+      var lon = getParam('lon');
+      lon = lon.length > 0? lon : 9.947;
+      var lat = getParam('lat');
+      lat = lat.length > 0? lat : 53.518;
 
+  
     // if user is running mozilla then use it's built-in WebSocket
     var WebSocket = window.WebSocket || window.MozWebSocket;
-    //var connection = new WebSocket('ws://127.0.0.1:8090');
-    var connection = new WebSocket('ws://192.168.1.112:8090');
+    var connection = new WebSocket('ws://127.0.0.1:8090');
+    //var connection = new WebSocket('ws://192.168.1.112:8090');
      
     connection.onopen = function () {
         // connection is opened and ready to use
@@ -59,12 +61,12 @@ $(document).ready(function() {
       {
         var timeMessage = new Date().getTime();
         //console.debug("BoundsEvent " +LM.getZoom()+" "+json.vessels.length+" "+(timeMessage -connection.timeQuery));
-        console.debug("boundsEvent "+createDate(timeMessage, true,true));
+         console.debug("boundsEvent "+createDate(timeMessage, true,true) + " " +json.vessels.length);
         processVesselsInBounds(json.vessels, timeMessage);
        }
       else if (json.type == "vesselPosEvent")
       {
-        // console.debug("PosEvent "+json.vessel.userid + " "+json.vessel.utc_sec +" "+ new Date().getTime());
+        //console.debug("PosEvent "+json.vessel.userid + " "+json.vessel.utc_sec +" "+ new Date().getTime());
         processVesselPosition(json.vessel);
       }
        else if (json.type == "safetyMessageEvent")
@@ -93,7 +95,7 @@ $(document).ready(function() {
               LM.paintVessel(vessel);
             });
             vessels[vessel.mmsi] = vessel;
-            // console.debug("Latency Bounds "+ (new Date().getTime() - vessel.time_captured) + " "+createDate(vessel.time_captured, true));
+            //console.debug("Latency Bounds "+ (new Date().getTime() - vessel.time_captured) + " "+createDate(vessel.time_captured, true));
           }
           // else if (zoom > 6)
           // {
@@ -113,13 +115,15 @@ $(document).ready(function() {
        {
          $('#zoomSpeed').css('display', 'none');
        }
-       console.debug("painted " +Object.keys(vessels).length+ "  "+(new Date().getTime() -timeMessage));
+       //console.debug("painted " +Object.keys(vessels).length+ "  "+(new Date().getTime() -timeMessage));
     }
 
    
      
 
       function processVesselPosition(jsonVessel){
+        var now = new Date().getTime();
+        console.debug(createDate(now,true,true) +" LatencyPosRec "+ (now - jsonVessel.time_received)+" LatencyPosCap "+ (now - jsonVessel.time_captured) + " Rec-Cap "+ (jsonVessel.time_received-jsonVessel.time_captured));
         var vessel = vessels[jsonVessel.userid];
         if(vessel != undefined)
         {
@@ -134,9 +138,11 @@ $(document).ready(function() {
         vessel.createMapObjects(LM.getZoom(), function(){
             LM.paintVessel(vessel);
             vessels[vessel.mmsi] = vessel;
-            var now = new Date().getTime();
-            console.debug(createDate(now,true,true) +" LatencyPos "+ (now - vessel.time_captured));
+            
         });
+         var timePainted = new Date().getTime();
+        //console.debug(createDate(timePainted,true,true) +" PaintedPos "+ (timePainted -now));
+
     }
 
     function getParam(name){ 
@@ -176,7 +182,7 @@ $(document).ready(function() {
       if (msec)
       {
         var milliseconds = date.getMilliseconds();
-        returnString += ","+addDigi(milliseconds);
+        returnString += ","+addDigiMilli(milliseconds);
       }
       return returnString;
     }
@@ -188,6 +194,17 @@ $(document).ready(function() {
         curr_min = "0" + curr_min;
       }
       return curr_min;
+    }
+    function addDigiMilli(curr_millisec){
+    curr_millisec = curr_millisec + "";
+      switch(curr_millisec.length)
+      {
+        case 1: curr_millisec = "00" + curr_millisec;
+        break;
+        case 2: curr_millisec = "0" + curr_millisec;
+        break;
+      }
+      return curr_millisec;
     }
 });
 

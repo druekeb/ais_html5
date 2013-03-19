@@ -108,13 +108,13 @@
                     });
                   }
                   var circleOptions = {
-                              radius:4,
+                              radius:5,
                               fill:true,
                               fillColor:shipTypeColors[this.ship_type],
                               fillOpacity:0.8,
                               color:"#000000",
-                              strokeOpacity:1,
-                              strokeWidth:0.5
+                              opacity:0.4,
+                              weight:2.5
                   };
                    this.feature = L.circleMarker(vectorPoints[0], circleOptions);
                 }
@@ -191,7 +191,7 @@ function calcAngle (vessel) {
       if (msec)
       {
         var milliseconds = date.getMilliseconds();
-        returnString += " "+addDigi(milliseconds);
+        returnString += " "+addDigiMilli(milliseconds);
       }
       return returnString;
     }
@@ -203,6 +203,18 @@ function calcAngle (vessel) {
         curr_min = "0" + curr_min;
       }
       return curr_min;
+    }
+
+    function addDigiMilli(curr_millisec){
+    curr_millisec = curr_millisec + "";
+      switch(curr_millisec.length)
+      {
+        case 1: curr_millisec = "00" + curr_millisec;
+        break;
+        case 2: curr_millisec = "0" + curr_millisec;
+        break;
+      }
+      return curr_millisec;
     }
 
 function destinationPoint(lat, lng, cog, dist) {

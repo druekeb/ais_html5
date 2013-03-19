@@ -37,7 +37,7 @@ function init(divName, options){
 
      function changeRegistration()
      {
-        // console.debug("zoomLevel="+map.getZoom());
+        var zoom = map.getZoom();
         var message = {};
         message.function = "register"
         message.zoom = map.getZoom();
@@ -45,9 +45,13 @@ function init(divName, options){
         socket.timeQuery = new Date().getTime();
         socket.send(JSON.stringify(message));
         if (boundsTimeout) clearTimeout(boundsTimeout);
-        boundsTimeout = setTimeout(changeRegistration, 60000);
-
+        boundsTimeout = setTimeout(changeRegistration, 120000);  
      } 
+
+    function zoomout()
+    {
+      map.setZoom(map.getZoom()-1)
+    } 
 
 	   
     function getMap(){
@@ -81,12 +85,12 @@ function init(divName, options){
                 var popupOptions, latlng;
                 if(e.latlng)
                 {
-                 popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(10,-10)};
+                 popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(100,120)};
                  latlng = e.latlng;            
                 }
                 else
                 {
-                  popupOptions = {closeButton:false ,autoPan:false , maxWidth:180, offset:new L.Point(10,-10)};
+                  popupOptions = {closeButton:false ,autoPan:false , maxWidth:180, offset:new L.Point(100,120)};
                   latlng = e.target._latlng;
                 }
                 L.popup(popupOptions).setLatLng(latlng).setContent(vessel.popupContent).openOn(map);
@@ -123,12 +127,12 @@ function init(divName, options){
               var popupOptions, latlng;
               if(e.latlng)
               {
-               popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(10,-10)};
+               popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(100,120)};
                latlng = e.latlng;            
               }
               else
               {
-                popupOptions = {closeButton:false ,autoPan:false , maxWidth:180, offset:new L.Point(10,-10)};
+                popupOptions = {closeButton:false ,autoPan:false , maxWidth:180, offset:new L.Point(100,120)};
                 latlng = e.target._latlng;
               }
               L.popup(popupOptions).setLatLng(latlng).setContent(obj.popupContent).openOn(map);
