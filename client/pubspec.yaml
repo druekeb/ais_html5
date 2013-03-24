@@ -1,0 +1,6 @@
+name: aisDart
+description: A sample application
+dependencies:
+  unittest: any
+  js: any
+  browser: any
