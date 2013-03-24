@@ -225,10 +225,10 @@ function getVesselsInBounds(client, bounds, zoom) {
   });
   vesselCursor.toArray(function(err, vesselData) 
   {
+    var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
     if (!err)
     {
-      var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
-      console.log('(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString +" with sog > "+zoomSpeedArray[zoom]);
+     console.log('(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString +" with sog > "+zoomSpeedArray[zoom]);
       // if(zoom < 6)
       // {
           client.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
@@ -247,6 +247,10 @@ function getVesselsInBounds(client, bounds, zoom) {
       //       client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
       //     });
       //  }
+    }
+    else
+    {
+      console.log(err + ", bounds:"+boundsString);
     }
   });
 }
