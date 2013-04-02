@@ -15,6 +15,10 @@ lib-cov
 *.pid
 *.gz
 *.lock
+*.aux
+*.lof
+*.lot
+*.out
 pids
 logs
 results

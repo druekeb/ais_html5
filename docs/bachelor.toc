@@ -1,0 +1,49 @@
+\select@language {ngerman}
+\select@language {ngerman}
+\contentsline {chapter}{Abbildungsverzeichnis}{IV}{chapter*.2}
+\contentsline {chapter}{Tabellenverzeichnis}{V}{chapter*.3}
+\contentsline {chapter}{\numberline {1}Einleitung}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Motivation f\IeC {\"u}r diese Arbeit}{2}{section.1.1}
+\contentsline {section}{\numberline {1.2}Aufbau der Arbeit}{3}{section.1.2}
+\contentsline {chapter}{\numberline {2}Realtime-Schiffsverfolgung per AIS-Daten-Strom}{4}{chapter.2}
+\contentsline {section}{\numberline {2.1} Anwendungsf\IeC {\"a}lle}{4}{section.2.1}
+\contentsline {section}{\numberline {2.2}Beschreibung der Anforderungen}{5}{section.2.2}
+\contentsline {section}{\numberline {2.3}Grobentwurf der Anwendung}{6}{section.2.3}
+\contentsline {chapter}{\numberline {3}Grundlagen}{7}{chapter.3}
+\contentsline {section}{\numberline {3.1}Automatisches Informationssystem}{7}{section.3.1}
+\contentsline {section}{\numberline {3.2}Bidirektionale Kommunikation \IeC {\"u}ber Websockets}{9}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}HTML5-Websocket API-Spezifikation}{10}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Vorstellung verschiedener Implementierungen von Websockets}{10}{subsection.3.2.2}
+\contentsline {subsubsection}{Nodejs-Websockets}{10}{section*.4}
+\contentsline {subsubsection}{Dart-Websockets mit Dart:IO}{10}{section*.5}
+\contentsline {section}{\numberline {3.3}Google Dart als moderne Programmiersprache f\IeC {\"u}r Webanwendungen}{10}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Motivation f\IeC {\"u}r Dart}{10}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Eigenschaften und Besonderheiten der Programmiersprache Dart}{10}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Dart Tools (DartEditor, dart2js-compiler)}{10}{subsection.3.3.3}
+\contentsline {subsection}{\numberline {3.3.4}Einbindung von Javascript-Bibliotheken in Dart mit js-interop}{10}{subsection.3.3.4}
+\contentsline {chapter}{\numberline {4}Vorstellung der ausgef\IeC {\"u}hrten Implementierungen}{11}{chapter.4}
+\contentsline {section}{\numberline {4.1}Implementierung des Prototypen in Javascript}{11}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}socket.io-Server}{12}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}socket.io-Client}{12}{subsection.4.1.2}
+\contentsline {section}{\numberline {4.2}Vergleichsimplementierung in Google Dart}{12}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}HTML5-Server}{13}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}js-Client}{13}{subsection.4.2.2}
+\contentsline {subsection}{\numberline {4.2.3}dart-Client}{13}{subsection.4.2.3}
+\contentsline {chapter}{\numberline {5}Vergleichende Evaluation}{15}{chapter.5}
+\contentsline {section}{\numberline {5.1}Socket.io-Websocket vs. HTML5-Websocket}{15}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Implementierungsaufwand}{15}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Latenzzeit}{15}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}Performance}{17}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.4}Browserunterst\IeC {\"u}tzung}{17}{subsection.5.1.4}
+\contentsline {section}{\numberline {5.2}Javascript-Client vs. Dart-Client}{17}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Implementierungsaufwand}{17}{subsection.5.2.1}
+\contentsline {subsubsection}{js-Client}{17}{section*.6}
+\contentsline {subsection}{\numberline {5.2.2}Latenzzeit}{17}{subsection.5.2.2}
+\contentsline {subsection}{\numberline {5.2.3}Performance}{17}{subsection.5.2.3}
+\contentsline {subsection}{\numberline {5.2.4}Browserunterst\IeC {\"u}tzung}{18}{subsection.5.2.4}
+\contentsline {subsubsection}{Dartium}{18}{section*.7}
+\contentsline {subsubsection}{Firefox, Chrome, IE, Safari}{18}{section*.8}
+\contentsline {chapter}{\numberline {6}Fazit}{20}{chapter.6}
+\contentsline {section}{\numberline {6.1}Ergebnisse }{20}{section.6.1}
+\contentsline {section}{\numberline {6.2}Ausblick}{20}{section.6.2}
+\contentsline {chapter}{Literaturverzeichnis}{21}{chapter*.9}
