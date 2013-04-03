@@ -50,8 +50,8 @@ logMsg(String msg){
 void initWebSocket(int retrySeconds) {
   
   logMsg("Connecting to Web socket");
-   //socket = new WebSocket('ws://192.168.1.112:8090');
-   socket = new WebSocket('ws://127.0.0.1:8090');
+   socket = new WebSocket('ws://192.168.1.112:8090');
+   //socket = new WebSocket('ws://127.0.0.1:8090');
   
   socket.onOpen.listen((e){
     logMsg("Connected to Websocket-Server"); 
@@ -76,7 +76,7 @@ void initWebSocket(int retrySeconds) {
     Map json = parse(evt.data);
     if (json['type'] == "vesselsInBoundsEvent")
     {
-      logMsg("BoundsEvent: ${leaflet_map.getZoom()} ${json['vessels'].length} ${timeQuery}");
+      //logMsg("BoundsEvent: ${leaflet_map.getZoom()} ${json['vessels'].length} ${timeQuery}");
       processVesselsInBounds(json['vessels'], timeMessage);
     }
     if (json['type'] == "vesselPosEvent")
@@ -209,7 +209,7 @@ processVesselPositionEvent(json){
       }
     }
     var ts_posEvent = new DateTime.now().millisecondsSinceEpoch;
-    //logMsg("painted in totally ${ts_posEvent - timeStart} ms\n");
+    logMsg("painted in totally ${ts_posEvent - timeStart} ms\n");
 
   });
 }
