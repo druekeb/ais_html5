@@ -32,12 +32,13 @@ function init(divName, options){
       socket = options.onMoveend;
       map.on('moveend', changeRegistration);
     }
+    boundsTimeout = options.boundsTimeout;
     changeRegistration();
   }
 
      function changeRegistration()
      {
-        var zoom = map.getZoom();
+        var zoom = map.getZoom()-1;
         var message = {};
         message.function = "register"
         message.zoom = map.getZoom();

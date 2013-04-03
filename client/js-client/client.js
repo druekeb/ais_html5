@@ -7,7 +7,7 @@ $(document).ready(function() {
     var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
   
     var zoom = getParam('zoom');
-      zoom = zoom.length >0? zoom : 16;
+      zoom = zoom.length >0? zoom : 17;
       var lon = getParam('lon');
       lon = lon.length > 0? lon : 9.947;
       var lat = getParam('lat');
@@ -38,6 +38,7 @@ $(document).ready(function() {
         onClick: true,
         onMoveend: this,
         zoom: zoom,
+        boundsTimeout: true,
         center: [lat, lon]
        });
     };
