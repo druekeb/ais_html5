@@ -209,7 +209,7 @@ processVesselPositionEvent(json){
       }
     }
     var ts_posEvent = new DateTime.now().millisecondsSinceEpoch;
-    logMsg("painted in totally ${ts_posEvent - timeStart} ms\n");
+   // logMsg("painted in totally ${ts_posEvent - timeStart} ms\n");
 
   });
 }

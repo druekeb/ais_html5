@@ -13,7 +13,7 @@ abstract class LeafletMap {
   js.Proxy _map;
   js.Proxy _featureLayerGroup;
   js.Proxy _popup;
-  var  _zoom;
+  int  _zoom;
 
   LeafletMap(String elementid, {String width, String height}) {
     _elementid = elementid;
@@ -90,10 +90,11 @@ class OpenStreetMap extends LeafletMap {
   
   changeRegistration()
   {
-    var zoom = getZoom()-1;
+    int zoom = getZoom();
     if(zoom < 3)
     {
-      setZoom(3);
+      zoom = 3;
+      setZoom(zoom);
       return;
     }
     var boundsArray = getBounds().split(",");
@@ -107,8 +108,9 @@ class OpenStreetMap extends LeafletMap {
     message['bounds'] = bounds;
     caller.timeFlex = new DateTime.now().millisecondsSinceEpoch;
     caller.socket.send(stringify(message));
-    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
-  }
+//    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
+    boundsTimeout = new Timer(new Duration(milliseconds:30000), zoomOut);  
+ }
   
   String getBounds(){
     String bBox;
@@ -118,11 +120,16 @@ class OpenStreetMap extends LeafletMap {
     return bBox;
   }
 
-  int  getZoom() {
+  zoomOut(){
+    setZoom(getZoom() -1);
+  }
+
+  int getZoom() {
+    int zoom;
     js.scoped((){
-      _zoom = _map.getZoom();
+      zoom = _map.getZoom();
     });
-    return _zoom;
+    return zoom;
   }
   
   setZoom(zoom){

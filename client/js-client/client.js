@@ -62,7 +62,7 @@ $(document).ready(function() {
       {
         var timeMessage = new Date().getTime();
         //console.debug("BoundsEvent " +LM.getZoom()+" "+json.vessels.length+" "+(timeMessage -connection.timeQuery));
-         console.debug("boundsEvent "+createDate(timeMessage, true,true) + " " +json.vessels.length);
+         //console.debug("boundsEvent "+createDate(timeMessage, true,true) + " " +json.vessels.length);
         processVesselsInBounds(json.vessels, timeMessage);
        }
       else if (json.type == "vesselPosEvent")
@@ -124,7 +124,7 @@ $(document).ready(function() {
 
       function processVesselPosition(jsonVessel){
         var now = new Date().getTime();
-        console.debug(createDate(now,true,true) +" LatencyPosRec "+ (now - jsonVessel.time_received)+" LatencyPosCap "+ (now - jsonVessel.time_captured) + " Rec-Cap "+ (jsonVessel.time_received-jsonVessel.time_captured));
+        //console.debug(createDate(now,true,true) +" LatencyPosRec "+ (now - jsonVessel.time_received)+" LatencyPosCap "+ (now - jsonVessel.time_captured) + " Rec-Cap "+ (jsonVessel.time_received-jsonVessel.time_captured));
         var vessel = vessels[jsonVessel.userid];
         if(vessel != undefined)
         {

@@ -1,6 +1,6 @@
-file:///home/barbara/Bachelor/ais/ais_dart_client/web/aisDart.dart
-file:///home/barbara/Bachelor/ais/ais_dart_client/web/leaflet_maps.dart
-file:///home/barbara/Bachelor/ais/ais_dart_client/web/packages/js/js.dart
+file:///home/barbara/Bachelor/ais/ais_html5/client/dart-client/aisDart.dart
+file:///home/barbara/Bachelor/ais/ais_html5/client/dart-client/leaflet_maps.dart
+file:///home/barbara/Bachelor/ais/ais_html5/client/packages/js/js.dart
 file:///home/barbara/dart/dart-sdk/lib/_collection_dev/arrays.dart
 file:///home/barbara/dart/dart-sdk/lib/_collection_dev/collection_dev.dart
 file:///home/barbara/dart/dart-sdk/lib/_collection_dev/iterable.dart
@@ -17,6 +17,7 @@ file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/iso
 file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/js_array.dart
 file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/js_helper.dart
 file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/js_number.dart
+file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/js_rti.dart
 file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/js_string.dart
 file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/json_patch.dart
 file:///home/barbara/dart/dart-sdk/lib/_internal/compiler/implementation/lib/math_patch.dart
@@ -89,7 +90,6 @@ file:///home/barbara/dart/dart-sdk/lib/indexed_db/dart2js/indexed_db_dart2js.dar
 file:///home/barbara/dart/dart-sdk/lib/isolate/base.dart
 file:///home/barbara/dart/dart-sdk/lib/isolate/isolate.dart
 file:///home/barbara/dart/dart-sdk/lib/isolate/isolate_stream.dart
-file:///home/barbara/dart/dart-sdk/lib/isolate/mangler.dart
 file:///home/barbara/dart/dart-sdk/lib/json/json.dart
 file:///home/barbara/dart/dart-sdk/lib/json/json_base.dart
 file:///home/barbara/dart/dart-sdk/lib/math/base.dart

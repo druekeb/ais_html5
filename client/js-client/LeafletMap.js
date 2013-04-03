@@ -40,12 +40,13 @@ function init(divName, options){
      {
         var message = {};
         message.function = "register"
-        message.zoom = map.getZoom()-1;
+        message.zoom = map.getZoom();
         message.bounds = map.getBounds();
         socket.timeQuery = new Date().getTime();
         socket.send(JSON.stringify(message));
         if (boundsTimeout) clearTimeout(boundsTimeout);
-        boundsTimeout = setTimeout(changeRegistration, 120000);  
+        //boundsTimeout = setTimeout(changeRegistration, 120000); 
+        boundsTimeout = setTimeout(zoomout,30000); 
      } 
 
     function zoomout()
