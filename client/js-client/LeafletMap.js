@@ -32,15 +32,15 @@ function init(divName, options){
       socket = options.onMoveend;
       map.on('moveend', changeRegistration);
     }
+    boundsTimeout = options.boundsTimeout;
     changeRegistration();
   }
 
      function changeRegistration()
      {
-        var zoom = map.getZoom();
         var message = {};
         message.function = "register"
-        message.zoom = map.getZoom();
+        message.zoom = map.getZoom()-1;
         message.bounds = map.getBounds();
         socket.timeQuery = new Date().getTime();
         socket.send(JSON.stringify(message));

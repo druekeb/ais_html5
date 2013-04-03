@@ -37,7 +37,7 @@ initMap(){
   String width = window.innerWidth.toString();
   height = "$height px";
   width =   "$width px";
-  List mapOptions = [new leaflet_maps.Coord(53.54, 9.91),15];
+  List mapOptions = [new leaflet_maps.Coord(53.518, 9.947),17];
   leaflet_map = new leaflet_maps.OpenStreetMap(el_id, mapOptions, width:width, height:height);
   leaflet_map.loadMap();
   //leaflet_map.on.moveend(logMsg("moveend"));

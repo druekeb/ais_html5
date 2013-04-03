@@ -90,7 +90,7 @@ class OpenStreetMap extends LeafletMap {
   
   changeRegistration()
   {
-    var zoom = getZoom();
+    var zoom = getZoom()-1;
     if(zoom < 3)
     {
       setZoom(3);
