@@ -155,19 +155,12 @@ $$.OpenStreetMap = {"": "LeafletMap;initialZoom<,initialLat<,initialLon<,boundsT
     message.$indexSet(message, "bounds", bounds);
     $.timeFlex = $.DateTime$_now().millisecondsSinceEpoch;
     $.send$1$x($.socket, $._JsonStringifier_stringify(message));
-    this.boundsTimeout = $.Timer_Timer($.Duration$(0, 0, 0, 30000, 0, 0), this.get$zoomOut());
   },
   getBounds$0: function() {
     var t1 = {};
     t1.bBox_0 = null;
     $.scoped(new $.OpenStreetMap_getBounds_anon(t1, this));
     return t1.bBox_0;
-  },
-  zoomOut$0: function() {
-    this.setZoom$1($.$sub$n(this.getZoom$0(), 1));
-  },
-  get$zoomOut: function() {
-    return new $.BoundClosure$0(this, "zoomOut$0");
   },
   getZoom$0: function() {
     var t1 = {};
@@ -7191,18 +7184,18 @@ $$.BoundClosure$1 = {"": "Closure;self,target",
   }
 };
 
-$$.BoundClosure$0 = {"": "Closure;self,target",
-  call$0: function() {
-    return this.self[this.target]();
-  }
-};
-
 $$.Bound_contains_JSString = {"": "Closure;self,target,receiver",
   call$2: function(p0, p1) {
     return this.self[this.target](this.receiver, p0, p1);
   },
   call$1: function(other) {
     return this.call$2(other, 0);
+  }
+};
+
+$$.BoundClosure$0 = {"": "Closure;self,target",
+  call$0: function() {
+    return this.self[this.target]();
   }
 };
 
@@ -7226,8 +7219,7 @@ $.initMap = function() {
 
 $.initWebSocket = function(retrySeconds) {
   $.get$console$x(window).log$1("Connecting to Web socket");
-  //$.socket = $.WebSocket_WebSocket("ws://127.0.0.1:8090", $);
-  $.socket = $.WebSocket_WebSocket("ws://192.168.1.112:8090", $);  
+  $.socket = $.WebSocket_WebSocket("ws://192.168.1.112:8090", $);
   $.get$onOpen$x($.socket).listen$1(new $.initWebSocket_anon());
   $.get$onClose$x($.socket).listen$1(new $.initWebSocket_anon0(retrySeconds));
   $.get$onMessage$x($.socket).listen$1(new $.initWebSocket_anon1());

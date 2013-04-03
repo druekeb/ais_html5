@@ -44,9 +44,9 @@ function init(divName, options){
         message.bounds = map.getBounds();
         socket.timeQuery = new Date().getTime();
         socket.send(JSON.stringify(message));
-        if (boundsTimeout) clearTimeout(boundsTimeout);
+        //if (boundsTimeout) clearTimeout(boundsTimeout);
         //boundsTimeout = setTimeout(changeRegistration, 120000); 
-        boundsTimeout = setTimeout(zoomout,30000); 
+        //boundsTimeout = setTimeout(zoomout,30000); 
      } 
 
     function zoomout()

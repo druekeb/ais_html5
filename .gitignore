@@ -19,6 +19,7 @@ lib-cov
 *.lof
 *.lot
 *.out
+*.toc
 pids
 logs
 results

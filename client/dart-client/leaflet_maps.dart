@@ -109,7 +109,7 @@ class OpenStreetMap extends LeafletMap {
     caller.timeFlex = new DateTime.now().millisecondsSinceEpoch;
     caller.socket.send(stringify(message));
 //    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
-    boundsTimeout = new Timer(new Duration(milliseconds:30000), zoomOut);  
+   //boundsTimeout = new Timer(new Duration(milliseconds:30000), zoomOut);  
  }
   
   String getBounds(){
