@@ -110,10 +110,13 @@ class OpenStreetMap extends LeafletMap {
     message['bounds'] = bounds;
     caller.timeFlex = new DateTime.now().millisecondsSinceEpoch;
     caller.socket.send(stringify(message));
-    for(final x in callbackList){
-      x.dispose();
+    if(!callbackList.isEmpty)
+    {
+      for(final x in callbackList){
+        x.dispose();
+        }
+     callbackList.clear();
     }
-    callbackList.clear();
 //    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
    //boundsTimeout = new Timer(new Duration(milliseconds:30000), zoomOut);  
  }
