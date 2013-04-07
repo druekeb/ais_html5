@@ -258,6 +258,7 @@ Als konkrete Pakete für Websockets standen innerhalb von node.js zum Zeitpunkt 
 \subsection{Motivation für Dart}
 Dart ist eine von der Firma Google als OpenSource Projekt seit ca. 2 Jahren explizit für Webanwendungen entwickelte Programmiersprache. Das Ziel ist es, eine Sprache zu entwickeln, die komplexe Webanwendungen besser unterstützt als Javascript mit seinen historisch bedingten Ungereimtheiten und Schwächen.
 Dart arbeitet ereignisbasiert, asynchron und in einem einzigen Thread. Dart läuft nativ in der Dart-Virtual-machine, kann aber auch nach Javascript kompiliert werden.
+ each isolate is a single thread of control with a top level event loop.
 
 Das Entwicklerteam definiert die Design-Ziele folgendermaßen:
 Dart soll
@@ -269,7 +270,7 @@ Dart soll
 \item alle gängigen Browser unterstützen.
 \end{itemize}
  
-\subsection{Eigenschaften und Besonderheiten der Programmiersprache Dart}\label{s.Eigenschaften und Besonderheiten der Programmiersprache Dart}
+\subsection{Spracheigenschaften von Dart}\label{s.Spracheigenschaften von Dart}
 \subsubsection{Klassen}
 Klassen sind ein wohlbekanntes Sprachkonzept dar zur Kapselung und Wiederverwendung von Methoden und Daten. Jede Klassen definiert implizit ein Interface.
 \subsubsection{Optionale Typisierung}
@@ -281,11 +282,9 @@ Entwickler können Bibliotheken bauen und nutzen und sich darauf verlassen, dass
 
 Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code. Instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate.
 \subsubsection{Toolability}
-
+DartEditor
+dart2js-compiler
 Dart is designed to work well with tools. A rich set of execution environments, libraries, and development tools have already been built to support the language. Dart's toolability enables productive and dynamic development, including edit-and-continue debugging and beyond—up to a style where you program an application outline, run it, and fill in the blanks as you run.
-
-\subsection{Dart Tools (DartEditor, dart2js-compiler)}\label{s.Dart Tools (DartEditor, dart2js-compiler)}
-
 
 \subsection{Einbindung von Javascript-Bibliotheken in Dart mit js-interop}\label{s.Einbindung von Javascript-Bibliotheken in Dart mit js-interop}
 js-interop ist eine Dart Bibliothek, die es Dart-Anwendungen ermöglicht, javascript-Bibliotheken zu verwenden und zwar sowohl in nativem Dart code, der in der Dart-Virtual-Machine ausgeführt wird als auch in mit dart2js zu javascript kompilierten Dart-Code.
@@ -295,7 +294,9 @@ Um Dart-Funktionen aus dem javascript-Scope heraus aufzurufen, wird die entsprec
 Um die Lebensdauer dieser Proxies und Callback-Objekte zu verwalten benutzt Dart das Scope-Konzept.
 Per default haben alle proxies nur lokale Gültigkeit. Sollen sie den Ausführungszeitraum des scopes überdauern, können sie ausdrücklich aufbewahrt werden, müssen dann aber zu Vermeidung von memory leaks auch explizit wieder freigegeben werden. Dasselbe gilt für Callback-Objekte, die mehrmals aufrufbar sind.
 
-\subsubsection{Dart-Websockets mit Dart:IO}
+\subsection{Dart-Websockets}
+Für serverseitiges Dart, das auf der serverseitigen Dart-VM läuft existiert das Paket Dart:io. Es ermöglich Zugriff auf das Dateisystem und auf Prozesse.
+   existiert in Dart auch eine Websocket-Implementierung,
 
 %---------------------------------------------------------------------------------------------------------------------------------------------
 \chapter{Vorstellung der ausgeführten Implementierungen}\label{s.Implementierungen}
