@@ -14,6 +14,7 @@ abstract class LeafletMap {
   js.Proxy _featureLayerGroup;
   js.Proxy _popup;
   int  _zoom;
+  
 
   LeafletMap(String elementid, {String width, String height}) {
     _elementid = elementid;
@@ -41,6 +42,7 @@ abstract class LeafletMap {
 }
 
 class OpenStreetMap extends LeafletMap {
+  List<js.Callback> callbackList = new List<js.Callback>();
   int initialZoom;
   num initialLat;
   num initialLon;
@@ -108,6 +110,10 @@ class OpenStreetMap extends LeafletMap {
     message['bounds'] = bounds;
     caller.timeFlex = new DateTime.now().millisecondsSinceEpoch;
     caller.socket.send(stringify(message));
+    for(final x in callbackList){
+      x.dispose();
+    }
+    callbackList.clear();
 //    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
    //boundsTimeout = new Timer(new Duration(milliseconds:30000), zoomOut);  
  }
@@ -194,6 +200,7 @@ class Popup{
 abstract class MapFeature{
 
   js.Proxy _mapFeature;
+  List callbacks = new List();
 
 
   void addListeners(mmsi)
@@ -201,12 +208,17 @@ abstract class MapFeature{
     onClickHandler(e)=> caller.onClickHandler(e, mmsi);
     onMouseoutHandler(e)=>caller.onMouseoutHandler(e);
     onMouseoverHandler(e) =>caller.onMouseoverHandler(e, mmsi);
-    _mapFeature.on('click', new js.Callback.many(onClickHandler));
-    _mapFeature.on('mouseover', new js.Callback.many(onMouseoverHandler));
-    _mapFeature.on('mouseout', new js.Callback.many(onMouseoutHandler));
+    
+    callbacks.add(new js.Callback.many(onClickHandler));
+    callbacks.add(new js.Callback.many(onMouseoverHandler));
+    callbacks.add(new js.Callback.many(onMouseoutHandler));
+    
+    _mapFeature.on('click', callbacks[0]);
+    _mapFeature.on('mouseover', callbacks[1]);
+    _mapFeature.on('mouseout', callbacks[2]);
   }
 
-  void addTo(LeafletMap map, bool featureLayer) {
+  void addTo(OpenStreetMap map, bool featureLayer) {
     js.scoped(() {
       if(featureLayer)
       {
@@ -216,11 +228,13 @@ abstract class MapFeature{
       {
         _mapFeature.addTo(map._map);
       }
+      map.callbackList.addAll(callbacks);
     });
   }
 
   void remove(LeafletMap map, bool featureLayer) {
     js.scoped(() {
+     
       if(featureLayer)
       {
         map._featureLayerGroup.removeLayer(_mapFeature);
