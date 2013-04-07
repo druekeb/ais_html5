@@ -5,8 +5,13 @@
 var path = require('path');
 var fs = require('fs');
 var connect = require('connect');
+//HTTP - Server
 var http = require('http');
+//HTML5 - WebsocketServer
+var WebSocketServer = require('websocket').server;
+//Mongo - Datenbank
 var mongo = require('mongodb');
+//Redis - Datenbank
 var redis = require('redis');
 var net = require('net');
 var httpServer;
@@ -51,11 +56,7 @@ function startHTTPServer(callback){
   callback();
 }
 function startWebSocketServer(callback){
-  /**
-  *HTML5 - WebsocketServer
-  */
-  var WebSocketServer = require('websocket').server;
-
+  
   // create the server
   wsServer = new WebSocketServer({
       httpServer: httpServer
