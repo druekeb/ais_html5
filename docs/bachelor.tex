@@ -89,8 +89,9 @@ Aus mehreren Gründen erscheint es angebracht, die geographischen Schiffspositio
 \section{Aufbau der Arbeit}\label{s.Aufbau der Arbeit}
 Im Kapitel 2 werden mögliche Anwendungs-Szenarien genauer beleuchtet und die funktionalen und nicht funktionalen Anforderungen an die geplante Anwendung herausgestellt. Anschließend wird die Systemarchitektur der geplanten Anwendung grob entworfen.
 Kapitel 3.1 gibt eine kurze Einführung in die Websocket-Technologie, Kapitel 3.2 stellt die Programmiersprache Google Dart vor.
-Kapitel 4 begründet die getroffene Auswahl an Websockets und schildert die Vorgehensweise bei der Implementierung, wobei Teile der Implementierung vorgestellt werden.
-Die ausgearbeiteten Implementierungen werden dann in Kapitel 5 nach verschiedenen Aspekten verglichen und die Ergebnisse in Kapitel 6 zusammengefasst.
+In Kapitel werden zunächst die Gründe für die getroffene Auswahl an Implementierungen dargelegt und anschließend die Vorgehensweise bei der Implementierung erläutert. Die Implementierungen werden auszugsweise vorgestellt.
+Die ausgearbeiteten Implementierungen werden dann in Kapitel 5 getestet und nach verschiedenen Aspekten verglichen.
+Kapitel 6 fasst die Ergebnisse zusammen.
 
 %---------------------------------------------------------------------------------------------------------------------------------------------
 \chapter{Realtime-Schiffsverfolgung per AIS-Daten-Strom}\label{c.Realtime-Schiffsverfolgung per AIS-Daten-Strom}
@@ -142,7 +143,7 @@ Nicht funktionale Anforderungen sind:
   \begin{center}
     \includegraphics[width=0.58\textwidth]{images/Exposee_graphik_Realtimeapp}
   \end{center}
-  \caption{Architektur-Entwurf der Realtime\_Webapplikation}
+  \caption{Architektur-Entwurf der Realtime Webapplikation}
 \end{wrapfigure}
 Die eingehende Schnittstelle der zu erstellenden Anwendung ist die Verbindung zum Rohdatenserver, die als TCP-Verbindung ausgeführt ist und einen JSON-Datenstrom liefert.
 Die ausgehende Schnittstelle ist der HTTP-Client (Browser).
@@ -230,32 +231,40 @@ ID&Nachrichtentyp\\\hline\hline
 Zur landseitigen AIS-Infrastruktur gehören sogenannte AIS-Basisstationen und AIS-Empfänger. Basisstationen dienen einerseits zur Erfassung des Verkehrs in dem von ihnen abgedecken Seegebiet, andererseits können diese Geräte die Übertragung von AIS-Transceivern an Bord gezielt steuern (z.B. Hochsetzen der Melderate). AIS-Empfänger sind reine AIS-Empfangsgeräte, die keine Daten senden.\\
 
 
-\section{Websockets}\label{s.Websockets}
-\subsection{Bidirektionale Kommunikation im Web}
-In der Entwicklung der Kommunikationstechnologien im Internet galt lange Zeit das request/response Paradigma, nach dem Anfragen vom Client vom Server beantwortet werden. Dieses Paradigma wird Stück für Stück aufgebrochen duch kontinuierliche Weiterentwicklungen in Richtung einer bidirektionalen Kommunikation zwischen Server und Client.
-Mit HTTP Long Polling, HTTP Streaming und Ajax on demand ist es, nachdem der Client eine Verbindung hergestellt hat, für den Server möglich, beim Eintreffen neuer Daten scheinbar selbständig einen Datenaustausch zum Client zu initieren. Dabei handelt es sich eigentlich nur um einen aufgeschobenen response auf einen zuvor gestellten client-Request.
-Der Nachteil dieser Technologien liegt darin, dass sie, weil sie http-Nachrichten austauschen, einen großen Überhang an Header-Informationen mitzusenden gezwungen sind, der sich in Summe negativ auf die Latenzzeit auswirkt. Damit sind diese Technologien für zeitkritische (realtime) Anwendungen nicht unbedingt geeignet.
-Das 2011 eingeführte Websocket-Protokoll dagegen beschreibt eine API, die eine echte bidirektionale Socket-Verbindung zwischen Server und Client ermöglicht, in der beide Seiten jederzeit Daten schicken können. Dieser Socket wird im Anschluss an einen intialen HTTP-handshake aufgebaut, indem Server und Client  einen Upgrade der Verbindung auf das Websocket-Protokoll aushandeln. 
-
-
-\subsection{HTML5-Websocket API-Spezifikation}
-%Um über die Einschränkungen des request/response Musters hinwegzukommen, bei dem Anfragen des Client vom Server beantwortet werden, sind kontinuierlich Fortschritte in Richtung einer bidirektionialen Verbindung zwischen Client und Server gemacht worden.
-
+\section{Bidirektionale Kommunikation über HTML5 Websockets}\label{s.Websockets}
+In der Entwicklung der Kommunikationstechnologien im Internet galt lange Zeit das request/response Paradigma, nach dem Anfragen vom Client vom Server beantwortet werden. Dieses Paradigma wird Stück für Stück aufgebrochen durch kontinuierliche Weiterentwicklungen in Richtung einer bidirektionalen Kommunikation zwischen Server und Client.\\
+Schon seit HTTP Long Polling, HTTP Streaming und Ajax on demand ist es für Serveranwendungen möglich nach einem initialen Verbindungsaufbau durch den Client, beim serverseitigen Eintreffen neuer Daten scheinbar selbständig einen Datenaustausch zum Client zu initieren. Dabei handelt es sich eigentlich nur um einen aufgeschobenen response auf einen zuvor gestellten client-Request.\\
+Der Nachteil dieser Technologien liegt darin, dass sie, weil sie Nachrichten über das HTTP-Protokoll austauschen, einen großen Überhang an Header-Informationen mitzusenden gezwungen sind, der sich in Summe negativ auf die Latenzzeit auswirkt. Damit sind diese Technologien für zeitkritische (realtime) Anwendungen nicht unbedingt geeignet.
+\\
+Das 2011 eingeführte Websocket-Protokoll dagegen spezifiziert eine API (HTML5-Websocket API-Spezifikation), die eine echte bidirektionale Socket-Verbindung zwischen Server und Client ermöglicht, in der beide Seiten jederzeit Daten schicken können. Dieser Socket wird im Anschluss an einen intialen HTTP-handshake aufgebaut, indem Server und Client  einen Upgrade der Verbindung auf das Websocket-Protokoll aushandeln. 
 
 \section{Node.js}\label{Node.js}
-Node.js ist eine javascript-Bibliothek für performante, skalierbare und echtzeitfähige Serveranwendungen in Netzwerken. Diese Eigenschaften sind größtenteils dem Konzept des asynchronen, nicht blockierenden I/O von javascript im Allgemeinen und node.js im Besonderen geschuldet.
-Javascript ist per se asynchron konzipiert für die Verwendung im Webbrowser, wo synchrone Verarbeitung wegen der Verzögerung des Seitendarstellung nicht in Frage kommt. Den gleichen Ansatz übernimmt node.js für die Serverseite.
+Node.js ist ein Framework zur Entwicklung serverseitiger Webanwendungen in Javascript. Es wurde 2009 von Ryald Dahl veröffentlich und hat seitdem viel Aufmerksamkeit erregt, weil Anwendungen in node.js
+\begin{itemize}
+ %\itemsep0em
+\item hoch performant
+\item skalierbar
+\item und echtzeitfähig sind.
+\end{itemize}
+Diese Eigenschaften sind größtenteils dem Konzept des asynchronen, nicht blockierenden I/O von javascript im Allgemeinen und node.js im Besonderen geschuldet.
+Javascript ist von Anfang asynchron konzipiert für die Verwendung im Webbrowser, wo synchrone Verarbeitung wegen der Verzögerung des Seitendarstellung nicht in Frage kommt. Den gleichen Ansatz übernimmt node.js für die Serverseite.
+\\
 Node.js arbeitet single-threaded und eventbasiert. Die zentrale Kontrollstruktur, die den Programmablauf steuert, ist der Event-Loop. Er empfängt Events, die von Programm- oder Nutzeraktionen ausgelöst werden und setzt sie in Callback-Funktionen um.
 Kommt es im Programmablauf zur Interaktion mit einer externen Ressource, wird diese Interaktion in einen neuen Prozess ausgelagert und mit einer Callback-Methode versehen. Anschließend kann der Event Loop weitere aufgelaufene Events verarbeiten. Ist die Interaktion abgeschlossen bekommt der Event Loop ein Signal und setzt beizeiten die Verabeitung mit der entsprechenden Callback-Methode  fort.
-Node.js bringt als Laufzeitumgebung die V8-Javascript-Engine mit, die die Ausführung von javascript-code durch Just-In-Time-Kompilierung optimiert. Außerdem bietet node.js eine direkte Unterstützung für das HTTP-Protokoll und das Websocket-Protokoll. Zusammen mit der Unterstützung des JSON-Datenformats sind alle notwendigen Bausteine zusammen für skalierbare, echtzeitfähige Webanwendungen.
-
-\subsection{Nodejs-Websockets}\label{s.Nodejs-Websockets}
-Als konkrete Pakete für Websockets standen innerhalb von node.js zum Zeitpunkt der Implementierung (November 2012) die Bibliotheken websocket (https://github.com/Worlize/WebSocket-Node) und socket.io (http://socket.io) zur Verfügung. Die Bibliothek websocket genügt der HTML5-Websocket-Api-Spezifikation (s.o). Socket.io erweitert die Funktionalität um eine Abstrahierung von verschiedenen Browsern, indem es auf andere Protokolle zurückgreift bei Browsern, die Websockets nicht unterstützen.
-
-
+\\
+Node.js bringt als Laufzeitumgebung die V8-Javascript-Engine mit, die die Ausführung von javascript-code durch Just-In-Time-Kompilierung optimiert. Außerdem bietet node.js eine direkte Unterstützung für das HTTP-Protokoll Websockets. Mit der Unterstützung des JSON-Datenformats sind alle notwendigen Bausteine zusammen für skalierbare, echtzeitfähige Serveranwendungen.
+Außerdem lassen sich mit dem Node Package Manager npm jederzeit weitere Pakete aus dem wachsenden Angebot nachinstallieren und verwalten.\\
+Als konkrete Pakete für Websockets standen innerhalb von node.js zum Zeitpunkt der Implementierung (November 2012) die Bibliotheken websocket (https://github.com/Worlize/WebSocket-Node) und socket.io (http://socket.io) zur Verfügung. Die Bibliothek websocket genügt der HTML5-Websocket-Api-Spezifikation (s.o). Socket.io erweitert die Funktionalität um eine Abstrahierung von verschiedenen Browsern. Bei Browsern, die Websockets noch nicht unterstützen handelt socket.io die bestmögliche Verbindungsalternative aus in der Reihenfolge: 
+-->    WebSocket 
+ -->   Adobe® Flash® Socket
+  -->  AJAX long polling
+   --> AJAX multipart streaming
+ -->   Forever Iframe
+ -->   JSONP Polling
+.
 \section{Google Dart}\label{s.Google Dart }
 
-\subsection{Motivation für Dart}
+\subsubsection{Motivation für Dart}
 Dart ist eine von der Firma Google als OpenSource Projekt seit ca. 2 Jahren explizit für Webanwendungen entwickelte Programmiersprache. Das Ziel ist es, eine Sprache zu entwickeln, die komplexe Webanwendungen besser unterstützt als Javascript mit seinen historisch bedingten Ungereimtheiten und Schwächen.
 Das Entwicklerteam definiert die Design-Ziele folgendermaßen:
 Dart soll
@@ -267,97 +276,55 @@ Dart soll
 \item alle gängigen Browser unterstützen.
 \end{itemize}
 
-Dart arbeitet ereignisbasiert, asynchron und in einem einzigen Thread ganz nach dem Vorbild von node.js. 
+\subsubsection{Spracheigenschaften von Dart}\label{s.Spracheigenschaften von Dart}
+\begin{itemize}
 
-each isolate is a single thread of control with a top level event loop.
-
-
- Dart läuft nativ in der Dart-Virtual-machine, kann aber auch nach Javascript kompiliert werden.
+\item Dart arbeitet {\bf ereignisbasiert} und {\bf asynchron} und in einem einzigen Thread ganz nach dem Vorbild von node.js.
+\item  Dart läuft nativ in der {\bf Dart-Virtual-machine}, kann aber auch nach Javascript kompiliert werden.
  
+\item {\bf Klassen } sind ein wohlbekanntes Sprachkonzept zur Kapselung und Wiederverwendung von Methoden und Daten. Jede Klassen definiert implizit ein Interface.
+\item {\bf Optionale Typisierung:}
+Die Typisierung in Dart ist optional, das heißt sie führt nicht zu Laufzeitfehlern. Sie ist als Werkzeug für den Entwickler gedacht, zur besseren Verständlichkeit des Codes und als Hilfe beim Debuggen.
+\item Die  {\bf Gültigkeitsbereiche}
+von Variablen in Dart gehorchen einfachen, intuitiv nachvollziehbaren Regeln: Variablen sind gültig in dem Block ({...}), in dem sie definiert sind.
+\item
+Zur {\bf Parallelverarbeitung} nutzt Dart das Konzept von Isolates (übernommen von ERLANG), eine Art Leightweigth Processes. Isolates greifen nicht auf einen gemeinsamen Speicherbereich zu teilen nicht denselben Prozessor-Thread. Isolates kommunizieren miteinander ausschließlich über Nachrichten (über SendPort und ReceivePort). Sie werden gesteuert von einem übergeordneten Event Loop.
+\item Der {\bf DartEditor} ist eine Entwicklungsumgebung für die Entwicklung von Dart Web- und Serverapplikationen. Sie beinhaltet das {\bf Dart SDK } und den {\bf Dartium Browser} mit der {\bf Dart VM}.
+\item Der {\bf dart2js Compiler} ist ebenfalls im DartEditor enthalten und kompiliert Dart-Code zu Javascript-Code, der für die Chrome V8 Javascript engine optimiert ist.
+\item Mit {\bf Pub} verfügt Dart über einen Package Manager vergleichbar dem Node Package Manager npm.
+\end{itemize}
 
- 
-\subsection{Spracheigenschaften von Dart}\label{s.Spracheigenschaften von Dart}
-\subsubsection{Klassen}
-Klassen sind ein wohlbekanntes Sprachkonzept dar zur Kapselung und Wiederverwendung von Methoden und Daten. Jede Klassen definiert implizit ein Interface.
-\subsubsection{Optionale Typisierung}
-Die Typisierung in Dart ist optional, das heißt, sie führt nicht zu Laufzeitfehlern, sondern ist lediglich als Werkzeug für den Entwickler gedacht zur besseren Verständlichkeit und als Hilfe beim Debuggen.\subsubsection{Gültigkeitsbereiche}
-Die Gültigkeitsbereiche von Variablen in Dart gehorchen einfachen intuitiv nachvollziehbaren Regeln: Variablen sind gültig in dem Block ({...}), in dem sie definiert sind.
-\subsubsection{Bibliotheken}
-Entwickler können Bibliotheken bauen und nutzen und sich darauf verlassen, dass diese nicht zur Laufzeit geändert werden -> shared libraries.
-\subsubsection{Isolates}
+\subsubsection{Einbindung von Javascript-Bibliotheken in Dart mit js-interop}\label{s.Einbindung von Javascript-Bibliotheken in Dart mit js-interop}
+Für die Verwendung von Javascript-Bibliotheken in Dart-Code existiert die Dart-Bibliothek {\bf js-interop}. Damit können Dart-Anwendungen Javascript-Bibliotheken verwenden und zwar sowohl in nativem Dart code, der in der Dart-Virtual-Machine ausgeführt wird als auch in mit dart2js zu Javascript kompilierten Dart-Code.\\
 
-Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code. Instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate.
-\subsubsection{Toolability}
-DartEditor
-dart2js-compiler
+Nachdem die Bibliothek in eine Dart-Anwendung eingebunden worden ist, kann ein sogenannter {\bf Proxy} zum javascript-Kontext der Seite erstellt werden. Referenzen an diesen Proxy werden automatisch zu Javascript umgeleitet. Auf oberster Ebene lassen sich damit Javascript-Arrays und -Maps generieren, die mit den entsprechenden Objekten in Dart korrespondieren. Über diesen Proxy können aber auch Proxies zu beliebigen Javascript-Objekten erstellt werden, deren Eigenschaften und Methoden im Javascript-Scope zur Verfügung stehen.\\
 
- Also written in Dart, dart2js is the current Dart-to-JavaScript compiler and is intended to implement the full Dart language spec and semantics. On March 28 2013 the Dart team posted an update on their blog[5] addressing Dart code compiled to JavaScript with the dart2js compiler, stating that it now runs faster than handwritten JavaScript on Chrome's V8 JavaScript engine.[6]
- 
-Dart is designed to work well with tools. A rich set of execution environments, libraries, and development tools have already been built to support the language. Dart's toolability enables productive and dynamic development, including edit-and-continue debugging and beyond—up to a style where you program an application outline, run it, and fill in the blanks as you run.
+Um Dart-Funktionen aus dem javascript-Scope heraus aufzurufen, wird die entsprechende Funktion in ein {\bf Callback-Objekt} umgewandelt, das entweder ein einziges Mal oder mehrmals aufrufbar ist. Um die Lebensdauer dieser Proxies und Callback-Objekte zu verwalten benutzt Dart das Scope-Konzept: Per default haben alle proxies nur lokale Gültigkeit. Sollen sie den Ausführungszeitraum des Scopes überdauern, können sie ausdrücklich aufbewahrt werden, müssen dann aber zu Vermeidung von memory leaks auch explizit wieder freigegeben werden. Dasselbe gilt für Callback-Objekte, die mehrmals aufrufbar sind.
 
-\subsection{Einbindung von Javascript-Bibliotheken in Dart mit js-interop}\label{s.Einbindung von Javascript-Bibliotheken in Dart mit js-interop}
-js-interop ist eine Dart Bibliothek, die es Dart-Anwendungen ermöglicht, javascript-Bibliotheken zu verwenden und zwar sowohl in nativem Dart code, der in der Dart-Virtual-Machine ausgeführt wird als auch in mit dart2js zu javascript kompilierten Dart-Code.
-Nachdem die Bibliothek in die Anwendung worden ist, kann ein sogenannter Proxy zum javascript-kontext der Seite erstellt werden. Referenzen an diesen Proxy werden automatisch zu javascript umgeleitet. Auf oberster Ebene lassen sich damit javascript-maps und -arrays generieren, die mit den entsprechenden Objekten in Dart korrespondieren.
-Über diesen Proxy können auch Proxies zu beliebigen javascript-Objekten generiert werden, deren Eigenschaften und Methoden im javascript-Scope zur Verfügung stehen.
-Um Dart-Funktionen aus dem javascript-Scope heraus aufzurufen, wird die entsprechende Funktion in ein Callback-Objekt umgewandelt, das entweder ein einziges Mal oder mehrmals aufrufbar ist.
-Um die Lebensdauer dieser Proxies und Callback-Objekte zu verwalten benutzt Dart das Scope-Konzept.
-Per default haben alle proxies nur lokale Gültigkeit. Sollen sie den Ausführungszeitraum des scopes überdauern, können sie ausdrücklich aufbewahrt werden, müssen dann aber zu Vermeidung von memory leaks auch explizit wieder freigegeben werden. Dasselbe gilt für Callback-Objekte, die mehrmals aufrufbar sind.
-
-\subsection{Dart-Websockets}
-Für serverseitiges Dart, das auf der serverseitigen Dart-VM läuft existiert das Paket Dart:io. Es ermöglich Zugriff auf das Dateisystem und auf Prozesse.
-   existiert in Dart auch eine Websocket-Implementierung,
+\subsubsection{Dart-Websockets}
+Für serverseitiges Dart, das auf der serverseitigen Dart-VM läuft existiert das Paket Dart:io. Es ermöglicht Zugriff auf das Dateisystem und auf Prozesse. In Dart:io existiert auch eine Websocket-Implementierung, mit der bereits einfache Websocket-Server geschrieben werden können.
 
 %---------------------------------------------------------------------------------------------------------------------------------------------
-\chapter{Vorstellung der ausgeführten Implementierungen}\label{s.Implementierungen}
 
-Aus den betrachteten Programmiersprachen (Javascript, Google Dart) und Modulen (node.js, socket.io, dart:io, dart:html) gilt es nun, sinnvolle und vergleichbare Lösungen zu implementieren für die Serveranwendung und die korrespondierenden Clients.
 
-\section{Implementierung des Prototypen in Javascript}
-Um der Anforderung nachzukommen, schnell einen funktionierenden Prototypen zu liefern, wird für die erste Implementierung Javascript als Programmiersprache gewählt. Damit ist eine Unterstützung der gängigen Browserclients gewährleistet und eine große Anzahl an Modulen steht zur Verfügung.
 
-Node.js wird als Framework eingebunden, weil node.js 
-\begin{itemize}
-\item ereignisgesteuerte Verarbeitung unterstützt, was für die Umsetzung der geforderten Funktionalität hilfreich ist,
-\item Asynchronizität von I/O-Operationen bietet, womit die Verarbeitungszeit minimal gehalten werden kann,
-\item mehrere Websocket-Implementierungen anbietet (socket.io, websocket, ws).
-\end{itemize}
-Für den Websocket wird das socket.io - package genutzt, weil socket.io neben zahlreichen Konfigurationsmöglichkeiten eine breite Browserunterstützung bietet, indem es mit Browsern, die Websockets nicht unterstützen, eine Verbindung auf Basis  älterer Technologien wie http-Polling aufbaut. Dadurch erhöht sich für diese Clients zwar die Latenzzeit, die Funktionalität ist aber gewährleistet.
+\chapter{Implementierungen}\label{s.Implementierungen}
 
-Im Folgenden wird die hier beschriebene Implementierung socket.io-Server genannt. Der zugehörige Client (socket.io-Client) wird ebenfalls in Javascript implementiert und bindet die socket.io-Bibliotheken ein.
+\section{Implementierungsplan}
 
-\subsection{socket.io-Server}
-Die Serveranwendung hat im Grunde zwei Aufgaben: erstens eine JSON-over-TCP-Verbindung zum Empfang der Daten vom Rohdatenserver und zweitens einen Websocket-Server zur Verteilung der Daten an die Clients.
-Weil Node.js singlethreaded ist (\ref{s.Nodejs-Websockets}) würden beide Aufgaben in einem einzigen Prozess bearbeitet. Um das Potential an Parallelverabeitung eines Dualcore oder Multicore-Servers zu nutzen, ist des daher sinnvoll, mindestens zwei Prozesse zu generieren. Dazu wurde das node.js-Modul child\_process genutzt. Die ausführbare Datei master.js generiert damit zuerst einen Prozess, der den AIS-Client (ais\_client.js) startet und anschließend einen Prozess (worker.js), der einen Websocket -Server zur Verfügung stellt.
+Zunächst wird eine Implementierung gewählt, die die besten Chancen hat, alle Anforderungen zu erfüllen. Diese steht im Zeitplan ganz vorne, damit auch der Anforderung von Unternehmensseite nach einer zeitnahen Umsetzung und Auslieferung entsprochen werden kann.
+Dies ist eine Lösung in Javascript mit dem node.js-Framework und socket.io. 
 
-Der Datenaustausch zwischen beiden Prozessen funktioniert über zwei nosql-Datenbanken. In einer mongo-Datenbank werden alle vom ais\_client-Prozess empfangen Positions- und Reisedaten  unter der mmsi eines Schiffes gespeichert. Dabei wird die upsert-Option von Mongo genutzt, so dass nicht vorhandene Schiffe eingefügt und vorhande aktualisiert werden.
+In einem zweiten Schritt wird eine vergleichbare Implementierung in Google Dart ausgeführt. Die Entwicklung von Dart befindet sich noch in der Beta-Phase. Der zweite Beta-Release fand im Dezember 2012 statt. Ein dritter Beta-Release ist angekündigt. 
+\subsubsection{Auftauchende Probleme}
+Der ursprüngliche Plan, sowohl Server als auch Client in Dart zu schreiben, musste korrigiert werden, weil der mit Dart-Websocket-Server einige der grundlegenden Anforderungen nicht umzusetzen waren. Zum einen unterstützt Dart keine JSON-over-TCP -Kommunikation, wie sie für die Abfrage der Daten vom Rohdatenserver erforderlich ist. Und zum anderen gab es noch keinen Redis-Client für Dart. Der publish/subscribe Mechanismus der Redis-Datenbank wird aber für die Verteilung der Positionsupdates benötigt.
+\subsubsection{Notwendige Plankorrekturen}
+Also wird nur der Client in Dart implementiert. Websocketverbindungen werden in Dart clientseitig mit dem Paket dart:html unterstützt. Dabei handelt es sich um HTML5-Websockets, eine Kommunikation mit socket.io-Websockets existiert in Dart noch nicht.
+Folglich muss neben dem socket.io-Server ein zweiter Server (in Javascript) implementiert werden, der eine Websocket-Verbindung nach der HTML5-Websocket-API-Spezifikation aufbaut. Dies ist relativ einfach  möglich: in node.js kann hierfür das Modul websocket eingebunden werden.
+\subsubsection{Erreichen der Vergleichbarkeit}
+Wegen des Ziels, vergleichbare Implementierungen gegeneinander zu testen, wird noch eine zusätzliche Server-Client-Lösung umgesetzt. Und zwar wird der Javascript-Client noch einmal mit dem HTML5-Websocket implementiert, der dann auf denselben HTML5-Websocket-Server zugreift wie im nächsten Schritt der Dart-Client. Durch diese Zwischenlösung lässt sich der socket.io-Websocket gegen den HTML5-Websocket testen (alles in Javascript).
+Anschließend läßt sich der Dart-Client gegen den Javascript-Client testen, weil beide den HTML5-Websocket nutzen. Zur besseren Übersicht habe ich die Implementierungen in einer Tabelle zusammengefasst.
 
-Der worker-Prozess greift auf die Mongo-Datenbank zu, um für einen vom Client angefragten Kartenausschnitt die entsprechenden Schiffe abzufragen. Dabei wird der in Mongo zur Verfügung stehende Geo-Index auf der Schiffsposition verwendet.
-
-Zur Verteilung der Positionsmeldungen (msgid 1,2 und3)  wird außerdem eine Redis-Datenbank verwendet, die über einen publish/subscribe-Mechanismus verfügt. Über einen Kanal "vesselpos" publiziert der AIS-Client-Prozess die Positionsmeldungen und der worker-Prozess meldet sich am selben Kanal an und wird über jede Positionsmeldung benachrichtigt, die er an seine verbunden Websocket-Clients weiterreichen kann.
-
-\subsection{socket.io-Client}
-Das socket.io Paket bietet Features wie die interne Clientverwaltung durch den Websocket.
-
-\section{Vergleichsimplementierung in Google Dart}
-
-Nachdem die Anwendung als Prototyp in Javascript fertiggestellt ist, soll eine vergleichbare Implementierung in Google Dart realisiert werden. Das paket dart:io bietet die entsprechende Unterstützung für HTML5-Websocket-Server und dart:html für HTML5-Websocket-Clients.
-Allerdings ergeben sich auf der Serverseite einige schwerwiegende Probleme:
-- zum Zeitpunkt der Umsetzung (Dezember 2012) fehlt noch ein Redis-Client in Dart, so dass für die publish/subscribe-Lösung mit Redis [siehe] eine Alternative entwickelt werden müsste, die wiederum die Vergleichbarkeit beider Implementierungen herabsetzt.
-- der socket.io-Server nutzt 'JSON over TCP', um die Daten vom Rohdatenserver abzufragen. 'JSON over TCP' ist in Dart (noch) nicht implementiert. Ohne die Schnittstelle zum Rohdatenserver zu verändern ist also keine vergleichbare Lösung in Dart umsetzbar.
-
-Der Vergleich zwischen der Javascript- und der Google Dart-Anwendung ist also zu diesem Zeitpunkt lediglich auf der Clientseite möglich beziehungsweise sinnvoll. 
-Websocketverbindungen werden in Dart clientseitig mit dem Paket dart:html unterstützt. Dabei handelt es sich allerdings um HTML5-Websockets [siehe Grundlagen]. Eine Unterstützung für socket.io-Websockets existiert in Dart noch nicht.
-Folglich muss neben dem socket.io-Server ein zweiter Server (in Javascript) implementiert werden, der eine Webocket-Verbindung nach der HTML5-Websocket-API-Spezifikation aufbaut. Dies ist relativ einfach  möglich: in node.js kann hierfür das Modul websocket eingebunden werden. Im Folgenden wird dieser Server HTML5-Server genannt.
-
-\subsection{HTML5-Server}
-
-Für den HTML5-Server ist es nun möglich, zwei vergleichbare HTML5-Websocket-Clientanwendungen jeweils in Javascript (js-client) und Dart (dart-client) zu bauen, die beide eine Websocketverbindung nach der HTML5-Spezifikation zum HTML5-Server aufbauen.
-
-\subsection{js-Client}
-Die Funktionalität entspricht exakt der des socket.io-Clients. 
-
-\subsection{dart-Client}nicht unterstützt
-Zum Schluß wird der Client für den HTML5-Server in Dart geschrieben. 
 
 \renewcommand{\arraystretch}{1.2}
 
@@ -380,6 +347,55 @@ Zum Schluß wird der Client für den HTML5-Server in Dart geschrieben.
 Übersicht über Server-und Clientimplementierungen\\}
 \vspace{2ex}
 \end{table}
+
+
+
+
+
+
+
+
+
+
+
+\section{Implementierung des Prototypen in Javascript}
+
+Im Folgenden wird die hier beschriebene Implementierung socket.io-Server genannt. Der zugehörige Client (socket.io-Client) wird ebenfalls in Javascript implementiert und bindet die socket.io-Bibliotheken ein.
+
+\subsection{socket.io-Server und -Client}
+Die Serveranwendung hat im Grunde zwei Aufgaben: erstens eine JSON-over-TCP-Verbindung zum Empfang der Daten vom Rohdatenserver und zweitens einen Websocket-Server zur Verteilung der Daten an die Clients.
+Weil Node.js singlethreaded ist (\ref{s.Nodejs-Websockets}) würden beide Aufgaben in einem einzigen Prozess bearbeitet. Um das Potential an Parallelverabeitung eines Dualcore oder Multicore-Servers zu nutzen, ist des daher sinnvoll, mindestens zwei Prozesse zu generieren. Dazu wurde das node.js-Modul child\_process genutzt. Die ausführbare Datei master.js generiert damit zuerst einen Prozess, der den AIS-Client (ais\_client.js) startet und anschließend einen Prozess (worker.js), der einen Websocket -Server zur Verfügung stellt.
+
+Der Datenaustausch zwischen beiden Prozessen funktioniert über zwei nosql-Datenbanken. In einer mongo-Datenbank werden alle vom ais\_client-Prozess empfangen Positions- und Reisedaten  unter der mmsi eines Schiffes gespeichert. Dabei wird die upsert-Option von Mongo genutzt, so dass nicht vorhandene Schiffe eingefügt und vorhande aktualisiert werden.
+
+Der worker-Prozess greift auf die Mongo-Datenbank zu, um für einen vom Client angefragten Kartenausschnitt die entsprechenden Schiffe abzufragen. Dabei wird der in Mongo zur Verfügung stehende Geo-Index auf der Schiffsposition verwendet.
+
+Zur Verteilung der Positionsmeldungen (msgid 1,2 und3)  wird außerdem eine Redis-Datenbank verwendet, die über einen publish/subscribe-Mechanismus verfügt. Über einen Kanal "vesselpos" publiziert der AIS-Client-Prozess die Positionsmeldungen und der worker-Prozess meldet sich am selben Kanal an und wird über jede Positionsmeldung benachrichtigt, die er an seine verbunden Websocket-Clients weiterreichen kann.
+
+\subsection{socket.io-Client}
+Das socket.io Paket bietet Features wie die interne Clientverwaltung durch den Websocket.
+
+\section{Vergleichsimplementierung in Google Dart}
+
+Nachdem die Anwendung als Prototyp in Javascript fertiggestellt ist, soll eine vergleichbare Implementierung in Google Dart realisiert werden. Das paket dart:io bietet die entsprechende Unterstützung für HTML5-Websocket-Server und dart:html für HTML5-Websocket-Clients.
+Allerdings ergeben sich auf der Serverseite einige schwerwiegende Probleme:
+- zum Zeitpunkt der Umsetzung (Dezember 2012) fehlt noch ein Redis-Client in Dart, so dass für die publish/subscribe-Lösung mit Redis [siehe] eine Alternative entwickelt werden müsste, die wiederum die Vergleichbarkeit beider Implementierungen herabsetzt.
+- der socket.io-Server nutzt 'JSON over TCP', um die Daten vom Rohdatenserver abzufragen. 'JSON over TCP' ist in Dart (noch) nicht implementiert. Ohne die Schnittstelle zum Rohdatenserver zu verändern ist also keine vergleichbare Lösung in Dart umsetzbar.
+
+Der Vergleich zwischen der Javascript- und der Google Dart-Anwendung ist also zu diesem Zeitpunkt lediglich auf der Clientseite möglich beziehungsweise sinnvoll. 
+
+
+\subsection{HTML5-Server}
+
+Für den HTML5-Server ist es nun möglich, zwei vergleichbare HTML5-Websocket-Clientanwendungen jeweils in Javascript (js-client) und Dart (dart-client) zu bauen, die beide eine Websocketverbindung nach der HTML5-Spezifikation zum HTML5-Server aufbauen.
+
+\subsection{js-Client}
+Die Funktionalität entspricht exakt der des socket.io-Clients. 
+
+\subsection{dart-Client}nicht unterstützt
+Zum Schluß wird der Client für den HTML5-Server in Dart geschrieben. 
+
+
 
 
 \chapter{Vergleichende Evaluation}
@@ -432,19 +448,29 @@ queryTime
 
 \subsection{Performance}
 paintToMap
-
+\newpage
 
 \begin {figure}[H]
 \begin{center}
-  \includegraphics[width=8in]{images/rendering_all_5_April.png}
+  \includegraphics[height=2.3in]{images/Dartium.png}
 \end{center}
+ \caption{Dauer des Renders in Dartium}
 \end {figure}
 
 
 \begin {figure}[H]
 \begin{center}
-  \includegraphics[width=5in]{images/dart.png}
+  \includegraphics[height=2.3in]{images/Chrome.png}
 \end{center}
+ \caption{Dauer des Renders in Chrome}
+\end {figure}
+
+
+\begin {figure}[H]
+\begin{center}
+  \includegraphics[height=2.3in]{images/Firefox.png}
+\end{center}
+ \caption{Dauer des Renders in Firefox}
 \end {figure}
 
 
