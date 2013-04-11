@@ -5,13 +5,15 @@
     <title>AisDart</title>
     <link rel="stylesheet" href="stylesheets/aisDart.css"/>
     <link rel="stylesheet" href="stylesheets/leaflet.css"/>
-    <link rel="stylesheet" href="stylesheets/leaflet.ie.css"/>
+    <!--[if IE]><link rel="stylesheet" type="text/css" href="stylesheets/layout.ie.css"/><![endif]-->
+
     <script type="text/javascript" src="lib/leaflet-src.js"></script>
+    <script type="text/javascript" src="lib/L.Control.MousePosition.js"></script>
+
     <script type="application/dart" src="dart-client/aisDart.dart"></script>
-    <script type="text/javascript" src="dart-client/animatedMarker.js"></script>
-    <script type="text/javascript" src="dart-client/animatedPolygon.js"></script>
-    <script type="text/javascript" src="dart-client/L.Control.MousePosition.js"></script>
-    <script src="packages/browser/dart.js"></script>
+    <script type="text/javascript" src="lib/L.AnimatedPolygon.js"></script>
+    
+    <script src="dart-client/packages/browser/dart.js"></script>
   </head>
   <body>
    <div id = "map"></div>

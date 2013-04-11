@@ -50,8 +50,8 @@ logMsg(String msg){
 void initWebSocket(int retrySeconds) {
   
   logMsg("Connecting to Web socket");
-   socket = new WebSocket('ws://192.168.1.112:8090');
-   //socket = new WebSocket('ws://127.0.0.1:8090');
+   //socket = new WebSocket('ws://192.168.1.112:8090');
+   socket = new WebSocket('ws://127.0.0.1:8090');
   
   socket.onOpen.listen((e){
     logMsg("Connected to Websocket-Server"); 

@@ -2,7 +2,7 @@ library leaflet_maps;
 
 import "dart:html";
 import "dart:async";
-import '../packages/js/js.dart' as js;
+import 'packages/js/js.dart' as js;
 import 'aisDart.dart' as caller;
 import 'dart:json';
 

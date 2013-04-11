@@ -16,8 +16,8 @@ $(document).ready(function() {
   
     // if user is running mozilla then use it's built-in WebSocket
     var WebSocket = window.WebSocket || window.MozWebSocket;
-    //var connection = new WebSocket('ws://127.0.0.1:8090');
-    var connection = new WebSocket('ws://192.168.1.112:8090');
+    var connection = new WebSocket('ws://127.0.0.1:8090');
+    //var connection = new WebSocket('ws://192.168.1.112:8090');
      
     connection.onopen = function () {
         // connection is opened and ready to use
@@ -124,7 +124,7 @@ $(document).ready(function() {
 
       function processVesselPosition(jsonVessel){
         var now = new Date().getTime();
-        //console.debug(createDate(now,true,true) +" LatencyPosRec "+ (now - jsonVessel.time_received)+" LatencyPosCap "+ (now - jsonVessel.time_captured) + " Rec-Cap "+ (jsonVessel.time_received-jsonVessel.time_captured));
+        console.debug(createDate(now,true,true) +" LatencyPosRec "+ (now - jsonVessel.time_received)+" LatencyPosCap "+ (now - jsonVessel.time_captured) + " Rec-Cap "+ (jsonVessel.time_received-jsonVessel.time_captured));
         var vessel = vessels[jsonVessel.userid];
         if(vessel != undefined)
         {
