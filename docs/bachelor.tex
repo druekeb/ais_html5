@@ -250,8 +250,7 @@ Diese Eigenschaften sind größtenteils dem Konzept des asynchronen, nicht block
 Javascript ist von Anfang asynchron konzipiert für die Verwendung im Webbrowser, wo synchrone Verarbeitung wegen der Verzögerung des Seitendarstellung nicht in Frage kommt. Den gleichen Ansatz übernimmt node.js für die Serverseite.
 \\
 Node.js arbeitet single-threaded und eventbasiert. Die zentrale Kontrollstruktur, die den Programmablauf steuert, ist der Event-Loop. Er empfängt Events, die von Programm- oder Nutzeraktionen ausgelöst werden und setzt sie in Callback-Funktionen um.
-Kommt es im Programmablauf zur Interaktion mit einer externen Ressource, wird diese Interaktion in einen neuen Prozess ausgelagert und mit einer Callback-Methode versehen. Anschließend kann der Event Loop weitere aufgelaufene Events verarbeiten. Ist die Interaktion abgeschlossen bekommt der Event Loop ein Signal und setzt beizeiten die Verabeitung mit der entsprechenden Callback-Methode  fort.
-\\
+Kommt es im Programmablauf zur Interaktion mit einer externen Ressource, wird diese Interaktion in einen neuen Prozess ausgelagert und mit einer Callback-Methode versehen. Anschließend kann der Event Loop weitere aufgelaufene Events verarbeiten. Ist die Interaktion abgeschlossen bekommt der Event Loop ein Signal und setzt beizeiten die Verabeitung mit der entsprechenden Callback-Methode  fort.\\
 Node.js bringt als Laufzeitumgebung die V8-Javascript-Engine mit, die die Ausführung von javascript-code durch Just-In-Time-Kompilierung optimiert. Außerdem bietet node.js eine direkte Unterstützung für das HTTP-Protokoll Websockets. Mit der Unterstützung des JSON-Datenformats sind alle notwendigen Bausteine zusammen für skalierbare, echtzeitfähige Serveranwendungen.
 Außerdem lassen sich mit dem Node Package Manager npm jederzeit weitere Pakete aus dem wachsenden Angebot nachinstallieren und verwalten.\\
 Als konkrete Pakete für Websockets standen innerhalb von node.js zum Zeitpunkt der Implementierung (November 2012) die Bibliotheken websocket (https://github.com/Worlize/WebSocket-Node) und socket.io (http://socket.io) zur Verfügung. Die Bibliothek websocket genügt der HTML5-Websocket-Api-Spezifikation (s.o). Socket.io erweitert die Funktionalität um eine Abstrahierung von verschiedenen Browsern. Bei Browsern, die Websockets noch nicht unterstützen handelt socket.io die bestmögliche Verbindungsalternative aus in der Reihenfolge: 
@@ -262,6 +261,7 @@ Als konkrete Pakete für Websockets standen innerhalb von node.js zum Zeitpunkt 
  -->   Forever Iframe
  -->   JSONP Polling
 .
+
 \section{Google Dart}\label{s.Google Dart }
 
 \subsubsection{Motivation für Dart}
@@ -293,6 +293,7 @@ Zur {\bf Parallelverarbeitung} nutzt Dart das Konzept von Isolates (übernommen 
 \item Der {\bf dart2js Compiler} ist ebenfalls im DartEditor enthalten und kompiliert Dart-Code zu Javascript-Code, der für die Chrome V8 Javascript engine optimiert ist.
 \item Mit {\bf Pub} verfügt Dart über einen Package Manager vergleichbar dem Node Package Manager npm.
 \end{itemize}
+
 
 \subsubsection{Einbindung von Javascript-Bibliotheken in Dart mit js-interop}\label{s.Einbindung von Javascript-Bibliotheken in Dart mit js-interop}
 Für die Verwendung von Javascript-Bibliotheken in Dart-Code existiert die Dart-Bibliothek {\bf js-interop}. Damit können Dart-Anwendungen Javascript-Bibliotheken verwenden und zwar sowohl in nativem Dart code, der in der Dart-Virtual-Machine ausgeführt wird als auch in mit dart2js zu Javascript kompilierten Dart-Code.\\
