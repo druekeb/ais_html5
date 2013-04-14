@@ -13,28 +13,7 @@ function log(message) {
   console.log(message);
 }
 
-/*
-one worker only
-*/
-function forkWorker(){
-  var errors;
-  try
-  {
-    child.fork(path.join(__dirname, 'worker.js'));
-  }
-  catch (err) {
-    errors = true;
-    log('Error forking worker process: ' + err);
-    log('Exiting ...');
-    process.exit(1);
-  }
-  if (errors == null) log('Forked worker process');
-}
-
-/**
- * AIS Client
- */
-
+/* AIS-Client - Process*/
 function forkAISClient() {
   var errors;
   try {
@@ -50,3 +29,20 @@ function forkAISClient() {
 
   forkWorker();
 }
+
+/*worker- Process*/
+function forkWorker(){
+  var errors;
+  try
+  {
+    child.fork(path.join(__dirname, 'worker.js'));
+  }
+  catch (err) {
+    errors = true;
+    log('Error forking worker process: ' + err);
+    log('Exiting ...');
+    process.exit(1);
+  }
+  if (errors == null) log('Forked worker process');
+}
+
