@@ -93,12 +93,6 @@ class OpenStreetMap extends LeafletMap {
   changeRegistration()
   {
     int zoom = getZoom();
-    if(zoom < 3)
-    {
-      zoom = 3;
-      setZoom(zoom);
-      return;
-    }
     var boundsArray = getBounds().split(",");
     var _southWest = {"lng":double.parse(boundsArray[0]),"lat":double.parse(boundsArray[1])};
     var _northEast= {"lng":double.parse(boundsArray[2]),"lat":double.parse(boundsArray[3])};
@@ -117,8 +111,7 @@ class OpenStreetMap extends LeafletMap {
         }
      callbackList.clear();
     }
-//    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
-   //boundsTimeout = new Timer(new Duration(milliseconds:30000), zoomOut);  
+    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
  }
   
   String getBounds(){
@@ -312,12 +305,8 @@ class CircleMarker extends MapFeature{
       js.retain(_mapFeature);
     });
   }
-  clearLayers(){
-    js.scoped((){
-     // _animatedPolygon.clearLayers();
-    });
-  }
 }
+
 class Marker extends MapFeature{
 
   Marker(num latitude, num longitude, [String tooltip, bool draggable]) {
