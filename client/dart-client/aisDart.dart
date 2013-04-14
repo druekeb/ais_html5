@@ -7,6 +7,13 @@ import 'dart:async';
 
 import 'leaflet_maps.dart' as leaflet_maps;
 
+const MINIMUM_SPEED = 0.4;
+List ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
+const WEBSOCKET_SERVER_LOCATION = 
+//'192.168.1.112';
+'127.0.0.1';
+const WEBSOCKET_SERVER_PORT = 8090;
+const ANIMATION_MINIMAL_ZOOMLEVEL =13;
 
 var leaflet_map;
 Map<String, Object> vessels = new Map<String, Object>();
@@ -15,43 +22,38 @@ Map<int, String> shipTypes = new Map<int, String>();
 Map<int,String> shipTypeColors = new Map<int,String>();
 Map<int,String> nav_stati = new Map<int,String>();
 Map<int,String> aton_types = new Map<int,String>();
-              // Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
-var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-
 
 bool  encounteredError = false;
 int retrySeconds = 2;
 int timeFlex;
 
 
-
+/*Startpoint for Dart-Client-Application*/
 void main() {
-
   initWebSocket(2);
   initTypeArrays();
 }
-
+/* load Leaflet-Map into mapDiv*/
 initMap(){
-  String el_id = 'map';
+  String mapDiv_id = 'map';
   String height = window.innerHeight.toString();
   String width = window.innerWidth.toString();
   height = "$height px";
-  width =   "$width px";
+  width =  "$width px";
   List mapOptions = [new leaflet_maps.Coord(53.518, 9.947),17];
-  leaflet_map = new leaflet_maps.OpenStreetMap(el_id, mapOptions, width:width, height:height);
+  leaflet_map = new leaflet_maps.OpenStreetMap(mapDiv_id, mapOptions, width:width, height:height);
   leaflet_map.loadMap();
-  //leaflet_map.on.moveend(logMsg("moveend"));
 }
 
+/*Logger for console output in Browser*/
 logMsg(String msg){
     window.console.log(msg);
 }
 
+/*initialize websocket-Connection*/
 void initWebSocket(int retrySeconds) {
-  
   logMsg("Connecting to Web socket");
-   //socket = new WebSocket('ws://192.168.1.112:8090');
-   socket = new WebSocket('ws://127.0.0.1:8090');
+  socket = new WebSocket('ws://${WEBSOCKET_SERVER_LOCATION}:${WEBSOCKET_SERVER_PORT}');
   
   socket.onOpen.listen((e){
     logMsg("Connected to Websocket-Server"); 
@@ -63,25 +65,25 @@ void initWebSocket(int retrySeconds) {
     logMsg('web socket closed, retrying in $retrySeconds seconds');
     if (!encounteredError) 
     {
-      new Timer(new Duration(seconds:1), () => initWebSocket(retrySeconds/**2*/));
+      new Timer(new Duration(seconds:1), () => initWebSocket(retrySeconds));
     }
     encounteredError = true;
   });
-  
+
+  /*process messages from websocketServer*/
   socket.onMessage.listen((evt)
   {
     var timeMessage = new DateTime.now().millisecondsSinceEpoch;
     var timeQuery = timeMessage - timeFlex;
-
     Map json = parse(evt.data);
     if (json['type'] == "vesselsInBoundsEvent")
     {
-      //logMsg("BoundsEvent: ${leaflet_map.getZoom()} ${json['vessels'].length} ${timeQuery}");
+      logMsg("BoundsEvent: ${leaflet_map.getZoom()} ${json['vessels'].length} ${timeQuery}");
       processVesselsInBounds(json['vessels'], timeMessage);
     }
     if (json['type'] == "vesselPosEvent")
     {
-      //logMsg("vesselsPositionEvent: ${json['vessel']}");
+      logMsg("vesselsPositionEvent: ${json['vessel']['userid']}");
       processVesselPositionEvent(json['vessel']);
     }
   });
@@ -91,39 +93,37 @@ void initWebSocket(int retrySeconds) {
     logMsg("Error connecting to ws ${evt.toString()}");
     if (!encounteredError) 
     {
-      new Timer(new Duration(seconds:1), () => initWebSocket(retrySeconds/**2*/));
+      new Timer(new Duration(seconds:1), () => initWebSocket(retrySeconds));
     }
     encounteredError = true;
   });
 }
 
+/*process a websocketServerResponse with all Vessels in queried bounds*/
 processVesselsInBounds(jsonArray, timeMessage){
   var currentZoom = leaflet_map.getZoom();
+  //stop all animations, remove all vessels from vessels-Array and then remove all features from map
   vessels.forEach((k,v){
     if(v['polygon']!=null)
     {
-//      leaflet_maps.AnimatedPolygon ap = v['polygon'];
-//      ap.stopAnimation();
       v['polygon'].stopAnimation();
     }
     if (v['triangle']!= null)
     {
-//      leaflet_maps.AnimatedPolygon ap = v['triangle'];
-//      ap.stopAnimation();
       v['triangle'].stopAnimation();
     }
   });
   vessels.clear();
   leaflet_map.clearFeatureLayer();
 
-  // male vessel-Marker, Polygone und speedVectoren in die karte
-  // anschließend starte die Animation für Polygone und Schiffsdreiecke
+  // paint vessel-Marker, vessel-Polygons and speed vectors to map
+  // afterwards (callback) startAnimation of moving vessels-Polygons 
   for (var x in jsonArray)
   {
     paintToMap(x, currentZoom, (vesselWithMapObjects){
       var timeStart = new DateTime.now().millisecondsSinceEpoch;
       vessels["${x['mmsi']}"] = vesselWithMapObjects;
-      if (currentZoom > 12)
+      if (currentZoom >= ANIMATION_MINIMAL_ZOOMLEVEL)
       {
         if(vesselWithMapObjects['triangle']!=null)
         {
@@ -136,14 +136,12 @@ processVesselsInBounds(jsonArray, timeMessage){
           ap.startAnimation();
         }
       }
-      var ts_posEvent = new DateTime.now().millisecondsSinceEpoch;
-      //logMsg("painted in totally ${ts_posEvent - timeStart} ms\n");
     });
   }
-//   zeige eine Infobox über die aktuelle minimal-Geschwindigkeit angezeigter Schiffe
-  if (currentZoom < 13)
+  //display an Infobox with the current minimal speed of displayed vessels
+  if (currentZoom < (getFirstNegative(ZOOM_SPEED_ARRAY)))
   {
-    query('#zoomSpeed').text ="vessels reporting > ${ zoomSpeedArray[currentZoom]} knots";
+    query('#zoomSpeed').text ="vessels reporting > ${ ZOOM_SPEED_ARRAY[currentZoom]} knots";
     query('#zoomSpeed').style.display =  'block';
   }
   else
@@ -154,12 +152,12 @@ processVesselsInBounds(jsonArray, timeMessage){
   logMsg("painted ${vessels.length}  ${timePainted - timeMessage} msec");
 }
 
+/*process a Position update, initialized by the Websocket-Server*/
 processVesselPositionEvent(json){
-  //update or create vessel
-
   var timeStart = new DateTime.now().millisecondsSinceEpoch;
   var ts_vector, ts_polygon, ts_triangle;
   var vessel =vessels[json['userid'].toString()];
+  //create a new Vessel, if it's not yet in vessels-Array
   if (vessel == null)
   {
     vessel = {};
@@ -176,24 +174,18 @@ processVesselPositionEvent(json){
   {
     vessel['vector'].remove(leaflet_map, true);
     vessel.remove('vector');
-    //ts_vector= new Date.now().millisecondsSinceEpoch;
-    //logMsg("vector removed ${ts_vector - timeStart}");
   }
   if (vessel['polygon'] != null)
   {
     vessel['polygon'].stopAnimation();
     vessel['polygon'].remove(leaflet_map, true);
     vessel.remove('polygon');
-    //ts_polygon = new Date.now().millisecondsSinceEpoch;
-    //logMsg("remove Polygon ${ts_polygon - timeStart}");
   }
   if (vessel['triangle'] != null)
   {
     vessel['triangle'].stopAnimation();
     vessel['triangle'].remove(leaflet_map, true);
     vessel.remove('triangle');
-//    ts_triangle = new Date.now().millisecondsSinceEpoch;
-//    logMsg("pos Event processed ${ts_triangle - timeStart}");
   }
     paintToMap(vessel, leaflet_map.getZoom(), (vesselWithMapObjects){
     vessels[json['userid'].toString()] = vesselWithMapObjects;
@@ -208,21 +200,15 @@ processVesselPositionEvent(json){
         vesselWithMapObjects['polygon'].startAnimation();
       }
     }
-    var ts_posEvent = new DateTime.now().millisecondsSinceEpoch;
-   // logMsg("painted in totally ${ts_posEvent - timeStart} ms\n");
-
   });
 }
-
+/*MouseEvent-Handlers*/
 onClickHandler( e, mmsi){
-  print("clickEvent on ${e.type} for ship ${mmsi}");
 }
 onMouseoutHandler(e){
-//  print("mouseoutEvent on ${e.type}");
   leaflet_map.closePopup();
 }
 onMouseoverHandler(e, mmsi){
-//  logMsg("mouseOverEvent on ${e} for ship ${mmsi}");
   var vessel = vessels["${mmsi}"];
   var pos = vessel['pos'];
   var latlong = new leaflet_maps.Coord(pos[1], pos[0]);
@@ -241,10 +227,10 @@ paintToMap(v,zoom, callback){
     var ts_flex = new DateTime.now().millisecondsSinceEpoch;
 
     leaflet_maps.Icon icon;
-   // für Schiffe zeichne...
+   // for vessels paint...
     if (v['msgid'] < 4 ||v['msgid'] == 5)
     {
-      var moving = (v['sog'] !=null && v['sog'] > 0.4 && v['sog']!=102.3) ; //nur Schiffe, die sich mit mind. 0,3 Knoten bewegen
+      var moving = (v['sog'] !=null && v['sog'] >= MINIMUM_SPEED && v['sog']!=102.3) ; 
       var shipStatics = (leaflet_map.getZoom() > 11) &&  (v['cog'] !=null ||(v['true_heading']!=null && v['true_heading']!=0.0 && v['true_heading'] !=511)) && (v['dim_port'] !=null && v['dim_stern']!=null) ;
 
       v['brng'] = calcAngle(v);
@@ -254,7 +240,7 @@ paintToMap(v,zoom, callback){
       leaflet_maps.Coord shipPoint = new leaflet_maps.Coord(v['pos'][1],v['pos'][0]);
       vectorPoints.add(shipPoint);
 
-      if (moving) //nur Schiffe, die sich mit mind. 1 Knoten bewegen
+      if (moving) //only vessel, that move with a minimum speed of MINIMUM_SPEED
       {
         var meterProSekunde = v['sog'] *0.51444;
         var vectorLength = meterProSekunde * 30; //meter, die in 30 sec zurückgelegt werden
@@ -507,6 +493,14 @@ leaflet_maps.Coord destinationPoint(lat, lng, cog, dist) {
    lat2 = lat2 *(180/PI);
    lon2 = lon2 *(180/PI);
    return new leaflet_maps.Coord(lat2, lon2);
+}
+
+int getFirstNegative(List sZA){
+  for (var x = 0; x < sZA.length;x++)
+  { 
+    if (sZA[x].isNegative)
+      return x;
+  }
 }
 
 initTypeArrays(){
