@@ -162,7 +162,7 @@ Für die Nutzung von AIS ist ein aktives, technisch funktionsfähiges Gerät an 
 Die dynamischen Schiffsdaten (LAT, LON, COG, SOG, UTC) erhält der AIS-Transceiver vom integrierten GPS-Empfänger, bei Klasse A auch von der Navigationsanlage des Schiffes. Die Kursrichtung (Heading =  HDG) kann über eine NMEA-183-Schnittstelle vom Kompass eingespeist werden.
 
 Die AIS-Einheit sendet schiffsspezifische Daten, die von jedem AIS-Empfangsgerät in Reichweite empfangen und ausgewertet werden können:
-Statische Schiffsdaten: 
+\subsubsection{Statische Schiffsdaten} \label{Statische Schiffsdaten}
 \begin{itemize}
 \item IMO-Nummer
 \item Schiffsname
@@ -172,7 +172,7 @@ Statische Schiffsdaten:
 \item Abmessungen des Schiffes (Abstand der GPS-Antenne von Bug, Heck, Backbord- und Steuerbordseite)
 \end{itemize}
 
-Dynamische Schiffsdaten
+\subsubsection{Dynamische Schiffsdaten} \label{Dynamische Schiffsdaten}
 \begin{itemize}
 \item Navigationsstatus (unter Maschine, unter Segeln, vor Anker, festgemacht, manövrierunfähig u. a.)
 \item Schiffsposition (LAT, LON, in WGS 84)
@@ -183,7 +183,7 @@ Dynamische Schiffsdaten
 \item Kursänderungsrate (ROT)
 \end{itemize}
 
-Reisedaten
+\subsubsection{Reisedaten} \label{Reisedaten}
 \begin{itemize}
 \item aktueller maximaler statischer Tiefgang in dm
 \item Gefahrgutklasse der Ladung (IMO)
@@ -210,26 +210,7 @@ Class B&&>2 kn&30 sec\\\hline
 \caption[Intervalle, in denen ein Schiff seine Daten aussendet] {Intervalle, in denen ein Schiff seine Daten aussendet}
 \end{table}
 
-Für AIS-Daten sind 22 standardisierte Nachrichtentypen bzw. Telegramme festgelegt:
-In dieser Arbeit werden nur Class A Positionsmeldungen betrachtet (Typ 1-3) un.
-\begin{table}[!hbt]
-\centering
-\begin{tabular}{|l|l|}\hline
-ID&Nachrichtentyp\\\hline\hline
-1& reguläre Positionsmeldung eines Klasse-A-Transceivers\\
-4 & Meldung einer Basisstation\\
-5& reguläre Meldung von Schiffs- und Reisedaten eines Klasse-A-Transceivers\\
-9 & Positionsmeldung eines SAR-Luftfahrzeuges\\
-12& sicherheitsbezogene Nachricht - adressiert\\
-14& sicherheitsbezogene Nachricht - an alle\\
-18& reguläre Positionsmeldung eines Klasse-B-Transceivers\\
-21& Positions- und Statusmeldung eines AtoN-Transceivers\\\hline
-\end{tabular}
-\caption[Die wichtigsten AIS-Telegrammtypen] {Die wichtigsten AIS-Telegrammtypen}
-\end{table}
-
-Zur landseitigen AIS-Infrastruktur gehören sogenannte AIS-Basisstationen und AIS-Empfänger. Basisstationen dienen einerseits zur Erfassung des Verkehrs in dem von ihnen abgedecken Seegebiet, andererseits können diese Geräte die Übertragung von AIS-Transceivern an Bord gezielt steuern (z.B. Hochsetzen der Melderate). AIS-Empfänger sind reine AIS-Empfangsgeräte, die keine Daten senden.\\
-
+Für AIS-Daten sind 22 standardisierte Nachrichtentypen bzw. Telegramme festgelegt. In dieser Arbeit werden nur Nachrichten vom Type 1 -3 (reguläre Positionsmeldung eines Klasse-A-Transceivers) und vom Typ 5 ( reguläre Meldung von Schiffs- und Reisedaten eines Klasse-A-Transceivers) benötigt. 
 
 \section{Bidirektionale Kommunikation über HTML5 Websockets}\label{s.Websockets}
 In der Entwicklung der Kommunikationstechnologien im Internet galt lange Zeit das request/response Paradigma, nach dem Anfragen vom Client vom Server beantwortet werden. Dieses Paradigma wird Stück für Stück aufgebrochen durch kontinuierliche Weiterentwicklungen in Richtung einer bidirektionalen Kommunikation zwischen Server und Client.\\
@@ -319,168 +300,125 @@ Für serverseitiges Dart, das auf der serverseitigen Dart-VM läuft existiert da
 \section{Implementierungsplan}
 \subsection{Lösung in Javascript}
 Zunächst wird eine Implementierung gewählt, die die besten Chancen hat, alle Anforderungen zu erfüllen. Diese steht im Zeitplan ganz vorne, um der Anforderung von Unternehmensseite nach einer zeitnahen Umsetzung und Auslieferung zu entsprechen.
-Dies ist eine Lösung in Javascript mit dem node.js-Framework und dem socket.io-Websocket. Node.js-Serveranwendungen werden schon länger mit guten Ergebnissen in Netzwerken eingesetzt, besonders für Realtime-Anwendungen und vielen gleichzeitig verbunden Clients. Das socket.io-Paket wird genutzt, weil durch die Kapselung der verschiedenen Transportmechanismen die Bedienung einer maximalen Anzahl an Browser-Clients möglich ist, ohne den Implementierungsaufwand unverhältmismäßig zu erhöhen.
+Dies ist eine Lösung in Javascript mit dem node.js-Framework und dem socket.io-Websocket (Abschnitt \ref{socket.io-Server} und \ref{socket.io-Client}). Node.js-Serveranwendungen werden schon länger mit guten Ergebnissen in Netzwerken eingesetzt, besonders für Realtime-Anwendungen und vielen gleichzeitig verbunden Clients. Das socket.io-Paket wird genutzt, weil durch die Kapselung der verschiedenen Transportmechanismen die Bedienung einer maximalen Anzahl an Browser-Clients möglich ist, ohne den Implementierungsaufwand unverhältmismäßig zu erhöhen.
 \subsection{Lösung in Google Dart}
-In einem zweiten Schritt wird eine vergleichbare Implementierung in Google Dart ausgeführt. Die Entwicklung von Dart befindet sich noch in der Beta-Phase. Der zweite Beta-Release fand im Dezember 2012 statt. Ein dritter Beta-Release ist angekündigt. Ein zeitnaher ausschließlicher Einsatz von Dart im Produktivsystem ist somit ausgeschlossen und diese Lösung ist als Investition in die Zukunft zu sehen. 
+In einem zweiten Schritt wird eine vergleichbare Implementierung in Google Dart ausgeführt (Abschnitt \ref{Socket.io-Server} und \ref{Socket.io-Client}). Die Entwicklung von Dart befindet sich noch in der Beta-Phase. Der zweite Beta-Release fand im Dezember 2012 statt. Ein dritter Beta-Release ist angekündigt. Ein zeitnaher ausschließlicher Einsatz von Dart im Produktivsystem ist somit ausgeschlossen und diese Lösung ist als Investition in die Zukunft zu sehen. 
 Der Vergleich beider Implementierungen (Javascript vs. Dart) ist deshalb nicht weniger interessant.   
 \subsubsection{Schwerwiegende Probleme bei der Implementierung in Dart}
 Der ursprüngliche Plan, sowohl Server als auch Client in Dart zu schreiben, musste korrigiert werden, weil mit dem Dart-Websocket-Server einige der grundlegenden Anforderungen nicht umzusetzen waren. Zum einen unterstützt Dart keine JSON-over-TCP -Kommunikation, wie sie für die Abfrage der Daten vom Rohdatenserver erforderlich ist. Und zum anderen gab es noch keinen Redis-Client für Dart. Der publish/subscribe Mechanismus der Redis-Datenbank wird für die Verteilung der Positionsupdates benötigt.
-Deshalb wird nur der Client in Dart implementiert. Damit taucht auch schon das nächste Problem auf: der socket.io-Websocket-Server entspricht nicht der HTML5-Websocket-API-Spezifikation und benötigt deshalb auf Clientseite zusätzliche Bibliotheken. Diese Bibliotheken stehen in Dart nicht zur Verfügung. Dart unterstützt Websocketverbindungen clientseitig mit dem Paket dart:html unterstützt. Darin wird ein HTML5-Websocket erwartet.
-Folglich muss neben dem socket.io-Server ein zweiter Server (in Javascript) implementiert werden, der eine Websocket-Verbindung nach der HTML5-Websocket-API-Spezifikation aufbaut. Dies ist relativ einfach  möglich: in node.js kann hierfür das Modul websocket eingebunden werden.
+Deshalb wird nur der Client in Dart implementiert (\ref{HTML5-Client in Dart}). Dabei taucht ein weiteres Problem auf: der socket.io-Websocket-Server entspricht nicht der HTML5-Websocket-API-Spezifikation und benötigt deshalb auf Clientseite zusätzliche Bibliotheken. Diese Bibliotheken stehen in Dart nicht zur Verfügung. Dart unterstützt Websocketverbindungen clientseitig mit dem Paket dart:html. Darin wird ein HTML5-Websocket erwartet.
+Folglich muss neben dem socket.io-Server ein zweiter Server (in Javascript) implementiert werden, der eine Websocket-Verbindung nach der HTML5-Websocket-API-Spezifikation aufbaut (\ref{HTML5-Server}). Dies ist relativ einfach  möglich: in node.js kann hierfür das Modul websocket eingebunden werden.
 \subsubsection{Vergleichbarkeit}
-An dieser Stelle stellt sich die Frage, ob beide Lösungen direkt vergleichbar sind. Mögliche Unterschiede zwischen den node.js-Servern (socket.io vs. HTML5) würden in das Ergebnis des Vergleichs zwischen den Clients (Dart vs Javascript) einfliessen. Deshalb wird der Javascript-Client noch einmal mit dem HTML5-Websocket implementiert, der dann auf denselben HTML5-Websocket-Server zugreift wie der Dart-Client (siehe Tabelle). 
+An dieser Stelle stellt sich die Frage, ob beide Lösungen direkt vergleichbar sind. Mögliche Unterschiede zwischen den node.js-Servern (socket.io vs. HTML5) würden in das Ergebnis des Vergleichs zwischen den Clients (Dart vs Javascript) einfliessen. Deshalb wird der Javascript-Client noch einmal mit dem HTML5-Websocket implementiert, der dann auf denselben HTML5-Websocket-Server zugreift wie der Dart-Client. 
 Es werden also zwei Vergleiche durchgeführt: 
 \begin{itemize}
 \item In Javascript wird der socket.io-Websocket gegen den HTML5-Websocket getestet.
 \item Unter Verwendung des HTML5-Websockets wird der Javascript-Client gegen den Dart-Client getestet
 \end{itemize}
-Zur besseren Übersicht habe ich die Implementierungen in einer Tabelle zusammengefasst.
-Auf diese Weise wird die präferierte Lösung in node.js mit socket.io (S1) nicht unmittelbar sondern mittelbar über die Javascript-Lösung mit HTML5-Websocket (H1) gegen die mögliche Implementierung mit einem Google Dart Client (H2) getestet.
+Tabelle\ref{tab:uebersicht} zeigt eine Übersicht über die Implementierungen.
+Auf diese Weise wird die präferierte Lösung in node.js mit socket.io (S1) nicht unmittelbar sondern mittelbar über die Javascript-Lösung mit HTML5-Websocket (H1) gegen die Implementierung mit einem Google Dart Client (H2) getestet.
 \renewcommand{\arraystretch}{1.2}
 
 \begin{table}[!hbt]\vspace{1ex}\centering
-\begin{tabular}{| l| m{2.3cm}||c|c|}\cline{3-4}
+\begin{tabular}{| l| m{3.5cm}||c|c|}\cline{3-4}
 
 \multicolumn{2}{c||}{}&\multicolumn{2}{c|}{HTTP-Client}\\\cline{3-4}
 \multicolumn{2}{c||}{}& Javascript& Google Dart\\\hline\hline
-\multirow{2}*{\rotatebox{90}{HTTP-Server}}& socket.io websocket-Server&  socket.io (S1) & \includegraphics[width=0.2in]{images/x_red.jpeg}\\\cline{2-4}
-&HTML-5 websocket-Server & HTML5 (H1) & HTML5(H2)\\\hline
+\multirow{2}*{\rotatebox{90}{HTTP-Server}}& socket.io-Websocket-Server  (\ref{socket.io-Server}) &  socket.io-Client  (\ref{socket.io-Client})& \includegraphics[width=0.2in]{images/x_red.jpeg}\\\cline{2-4}
+&HTML5-Websocket-Server (\ref{HTML5-Server}) & HTML5-Client (\ref{HTML5-Client in Javascript}) & HTML5-Client  (\ref{HTML5-Client in Dart})\\\hline
 \multicolumn{4}{c}{}\\
 \end{tabular}
 \caption[Übersicht über Server-und Clientimplementierungen]
 {Übersicht über Server-und Clientimplementierungen\\}
 \vspace{2ex}
+\label{tab:uebersicht}
 \end{table}
 \newpage
 
-\section{Implementierung des Prototypen in Javascript}
+\section{Beschreibung der ausgeführten Implementierungen}
 In dieser ersten Implementierung werden Lösungen entwickelt für die in den Anforderungen beschriebenen Aufgaben. In der Vergleichsimplementierung werden diese Lösungen übernommen und wo das nicht möglich ist, wird eine Alternative entwickelt und dies an der jeweiligen Stelle angemerkt.
 
-\subsection{socket.io-Server}
+\subsection{socket.io-Server}\label{socket.io-Server}
 Die zu entwickelnde Serveranwendung hat die Aufgabe, eine JSON-over-TCP-Verbindung zum Rohdatenserver aufzubauen und die Daten über Websocket-Verbindungen an die Clients weiterzugeben.
-Weil Node.js singlethreaded ist (\ref{s.Nodejs-Websockets}) würden beide Aufgaben in einem einzigen Prozess bearbeitet. Um das Potential an Parallelverabeitung eines Dualcore oder Multicore-Servers zu nutzen, ist des daher sinnvoll, mindestens zwei Prozesse zu generieren. Dazu wurde das node.js-Modul child\_process genutzt. Die ausführbare Datei master.js generiert damit zuerst einen Prozess, der den AIS-Client (ais\_client.js) startet, um Daten vom Rohdaten-Server abzufragen und anschließend einen Prozess (worker.js), um einen Websocket -Server für Client-Verbindungen zur Verfügung zu stellen (\ref{s.master.js}).
-\begin{lstlisting}[caption=Generierung von Kindprozessen in master.js, firstnumber=16, label=s.master.js]
+Weil Node.js singlethreaded ist (vgl. \cite{teixeira}) würden beide Aufgaben in einem einzigen Prozess bearbeitet. Um das Potential an Parallelverabeitung eines Dualcore oder Multicore-Servers zu nutzen, ist des daher sinnvoll, mindestens zwei Prozesse zu generieren. Dazu wurde das node.js-Modul child\_process genutzt. Die Start-Datei master.js generiert damit zuerst einen Prozess, der den AIS-Client (ais\_client.js) abzweigt, um Daten vom Rohdaten-Server abzufragen und anschließend einen Prozess (worker.js), um einen Websocket -Server für Client-Verbindungen zur Verfügung zu stellen (siehe \ref{lst:master.js}).
+\begin{lstlisting}[caption=Generierung von Kindprozessen in master.js, firstnumber=16, label=lst:master.js]
 /* AIS-Client - Process*/
-function forkAISClient() {
-  var errors;
-  try {
-    child.fork(path.join(__dirname, 'ais_client.js'));
-  }
-  catch (err) {
-    errors = true;
-    log('Error forking AIS client process: ' + err);
-    log('Exiting ...');
-    process.exit(1);
-  }
-  if (errors == null) log('Forked AIS client process');
-
-  forkWorker();
-}
+  child.fork(path.join(__dirname, 'ais_client.js'));
 
 /*worker- Process*/
-function forkWorker(){
-  var errors;
-  try
-  {
-    child.fork(path.join(__dirname, 'worker.js'));
-  }
-  catch (err) {
-    errors = true;
-    log('Error forking worker process: ' + err);
-    log('Exiting ...');
-    process.exit(1);
-  }
-  if (errors == null) log('Forked worker process');
-}
+  child.fork(path.join(__dirname, 'worker.js'));
 \end{lstlisting}
 Bei der Weitergabe der Daten durch den worker-Prozess sind zwei Fälle zu unterscheiden:
 \begin{itemize}
 \item ein Client verbindet sich neu oder ändert den Kartenausschnitt \\
 in diesem Fall sind alle im Bereich befindlichen Positionsdaten zu senden (vessel-in-Bounds Request)
-\item ein Schiff, das sich im beobachteten Kartenausschnitt eines oder mehrerer Clients befindet sendet ein Positions-Update (vessel-Position-Event)\\
+\item ein Schiff, das sich im beobachteten Kartenausschnitt eines oder mehrerer Clients befindet, sendet ein Positions-Update (vessel-Position-Event)\\
 in diesem Fall sind alle Clients, deren Kartenausschnitt die betreffende Schiffsposition enthält, zu informieren.
 \end{itemize}
-Der erste Fall macht eine Zwischenspeicherung der Daten unumgänglich. Wegen der großen Anzahl gleichzeitig empfangener Schiffe (weltweit ca. 60.000) und der Notwendigkeit, einen geographischen Index zu verwenden wird einer persistenten gegenüber einer transienten Speicherung der Vorzug gegeben. 
-\\Für die Persistierung wird hier MongoDB verwendet, weil MongoDB als NoSQL-.Datenbank einen geringen Overhead, schnelle Antwortzeiten und einen geographischen Index bietet. Der Serverprozess in ais\_client.js schreibt die Daten. Dabei ist die MMSI eines Schiffes eindeutig und wird als unique key verwendet (s.o.). Über die Option upsert:true wird der Mongo Datenbank mitgeteilt, dass entweder ein insert oder, falls mmsi bereits vorhanden das set upgedated werden soll (). 
-\begin{lstlisting}[caption=Schreiben in die Datenbank in ais\_client.js, firstnumber=321]
+Der erste Fall macht eine Zwischenspeicherung der Daten unumgänglich. Wegen der großen Anzahl gleichzeitig empfangener Schiffe (weltweit ca. 60.000) und der Notwendigkeit, einen geographischen Index zu verwenden, wird einer persistenten gegenüber einer transienten Speicherung der Vorzug gegeben. 
+\\Für die Persistierung wird hier MongoDB verwendet, weil MongoDB als NoSQL-.Datenbank einen geringen Overhead und damit schnelle Antwortzeiten und außerdem einen geographischen Index bietet. Der Serverprozess in ais\_client.js schreibt die Daten (siehe listing \ref{lst:write in Mongo}). Die MMSI eines Schiffes ist eindeutig und wird als unique key verwendet (siehe Abschnitt \ref{Statische Schiffsdaten}). Über die Option upsert:true wird der Mongo Datenbank mitgeteilt, dass entweder ein insert-Befehl oder, falls die mmsi bereits in der MongoDB-Collection vorhanden ist, ein update-Befehl auf das entsprechende set ausgeführt werden soll. 
+\begin{lstlisting}[caption=Schreiben in die Datenbank in ais\_client.js, firstnumber=321, label=lst:write in Mongo]
 vesselsCollection.update(
   { mmsi: obj.mmsi },
   { $set: obj },
   { safe: false, upsert: true }
   );
 \end{lstlisting}
-Derselbe Prozess unterhält den Geo-Index ().
-\begin{lstlisting}[caption=Aufbau des Geo-Indexes in ais\_client.js, firstnumber=218]
-function ensureIndexes() {
-  log('(MongoDB) Ensuring indexes ... ')
-  vesselsCollection.ensureIndex({ pos: "2d", sog: 1, time_received: 1 }, function(err, result) {
-    if (err) {
-      log(err);
-    }
-    else {
-      log('(MongoDB) Ensuring index ' + result);
-    }
-  });
-  ...}
+Der Geo-Index ist zwingend erforderlich, damit nicht jede Anfrage des Servers an die Datenbank sämtliche Datensätze durchlaufen muss, um die Schiffe in einem bestimmten geographischen Ausschnitt zu finden. Den Aufbau und Unterhalt des Geo-Indexes übernimmt ebenfalls der ais\_client-Prozess.
+\begin{lstlisting}[caption=Aufbau des Geo-Indexes in ais\_client.js]
+  vesselsCollection.ensureIndex({ pos: "2d", sog: 1, time_received: 1 }, function(err, result) {... });
   \end{lstlisting}
-Der Serverprozess worker.js liest die Daten für die vom Client übermittelten Geo-Daten aus().
-  \begin{lstlisting} [caption=query in worker.js, firstnumber=220]
- function getVesselsInBounds(client, bounds, zoom) {
-   var timeFlex = new Date().getTime();
-   var vesselCursor = vesselsCollection.find({
+Dabei handelt es sich um einen zusammengesetzten Index, weil neben der Geo-Position auch die Geschwindigkeit und der Zeitpunkt des Empfangs der Nachricht Filterkriterien sind. 
+In Listing \ref{lst:query Mongo} ist zu sehen, wie der Server-Child-Prozess worker.js Daten für die vom Client übermittelten Geo-Daten aus der MongoDb anfragt.
+  \begin{lstlisting} [caption=query in worker.js, label=lst:query Mongo]
+  var vesselCursor = vesselsCollection.find({
     pos: { $within: { $box: [ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat] ] } },
     time_received: { $gt: (new Date() - 10 * 60 * 1000) },
-    $or:[{sog: { $exists:true },sog: { $gt: zoomSpeedArray[zoom]},sog: {$ne: 102.3}},/*{msgid:4},*/{ $gt:{msgid: 5}}]
+    sog: { $exists:true },
+    sog: { $gt: zoomSpeedArray[zoom]},
+    sog: {$ne: 102.3}
   });
-  vesselCursor.toArray(function(err, vesselData) 
-  {
-    var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
-    if (!err)
-    {
-     console.log('(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString +" with sog > "+zoomSpeedArray[zoom]);
-          client.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
-    }
-   ...
-  });
-}
+  vesselCursor.toArray(function(err, vesselData)  {
+   client.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
+});
 \end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Also speichert der Server alle als JSON empfangenen Datensätze in einer MongoDatenbank und liest sie aus, sobald ein vessel-in-Bounds Request vom Client gestellt wird. 
 
-
-
-Der zweite Fall macht eine Speicherung der Clients auf Serverseite unumgänglich. Die Serveranwendung muss bei jeder Positionsmeldung wissen, welche Clients benachrichtigt werden müssen. 
-
-
-Der Datenaustausch zwischen beiden Prozessen funktioniert über zwei nosql-Datenbanken. In einer mongo-Datenbank werden alle vom ais\_client-Prozess empfangen Positions- und Reisedaten  unter der mmsi eines Schiffes gespeichert. Dabei wird die upsert-Option von Mongo genutzt, so dass nicht vorhandene Schiffe eingefügt und vorhande aktualisiert werden.
+Der zweite Fall macht eine Verwaltung der Clients auf Serverseite notwendig. Die Serveranwendung muss bei jeder Positionsmeldung wissen, welche Clients benachrichtigt werden müssen. 
 
 Der worker-Prozess greift auf die Mongo-Datenbank zu, um für einen vom Client angefragten Kartenausschnitt die entsprechenden Schiffe abzufragen. Dabei wird der in Mongo zur Verfügung stehende Geo-Index auf der Schiffsposition verwendet.
 
 Zur Verteilung der Positionsmeldungen (msgid 1,2 und3)  wird außerdem eine Redis-Datenbank verwendet, die über einen publish/subscribe-Mechanismus verfügt. Über einen Kanal "vesselpos" publiziert der AIS-Client-Prozess die Positionsmeldungen und der worker-Prozess meldet sich am selben Kanal an und wird über jede Positionsmeldung benachrichtigt, die er an seine verbunden Websocket-Clients weiterreichen kann.
 
-\subsection{socket.io-Client}
+\subsection{socket.io-Client}\label{socket.io-Client}
 Der zugehörige Client (socket.io-Client) wird ebenfalls in Javascript implementiert und bindet die socket.io-Bibliotheken ein. Das socket.io Paket bietet Features wie die interne Clientverwaltung durch den Websocket.
 
-\section{Vergleichsimplementierung in Google Dart}
-
-Nachdem die Anwendung als Prototyp in Javascript fertiggestellt ist, soll eine vergleichbare Implementierung in Google Dart realisiert werden. Das paket dart:io bietet die entsprechende Unterstützung für HTML5-Websocket-Server und dart:html für HTML5-Websocket-Clients.
-Allerdings ergeben sich auf der Serverseite einige schwerwiegende Probleme:
-- zum Zeitpunkt der Umsetzung (Dezember 2012) fehlt noch ein Redis-Client in Dart, so dass für die publish/subscribe-Lösung mit Redis [siehe] eine Alternative entwickelt werden müsste, die wiederum die Vergleichbarkeit beider Implementierungen herabsetzt.
-- der socket.io-Server nutzt 'JSON over TCP', um die Daten vom Rohdatenserver abzufragen. 'JSON over TCP' ist in Dart (noch) nicht implementiert. Ohne die Schnittstelle zum Rohdatenserver zu verändern ist also keine vergleichbare Lösung in Dart umsetzbar.
-
-Der Vergleich zwischen der Javascript- und der Google Dart-Anwendung ist also zu diesem Zeitpunkt lediglich auf der Clientseite möglich beziehungsweise sinnvoll. 
-
-
-\subsection{HTML5-Server}
+\subsection{HTML5-Server}\label{HTML5-Server}
 
 Für den HTML5-Server ist es nun möglich, zwei vergleichbare HTML5-Websocket-Clientanwendungen jeweils in Javascript (js-client) und Dart (dart-client) zu bauen, die beide eine Websocketverbindung nach der HTML5-Spezifikation zum HTML5-Server aufbauen.
 
-\subsection{js-Client}
+\subsection{HTML5-Client in Javascript}\label{HTML5-Client in Javascript}
 Die Funktionalität entspricht exakt der des socket.io-Clients. 
 
-\subsection{dart-Client}nicht unterstützt
+\subsection{HTML5-Client in Dart}\label{HTML5-Client in Dart}
 Zum Schluß wird der Client für den HTML5-Server in Dart geschrieben. 
-
-
 
 
 \chapter{Vergleichende Evaluation}
@@ -606,14 +544,32 @@ String getBounds(){
 -Satellitendaten in die Anwendung einbinden
 
 \bibliographystyle{alphadin_martin}
-%\bibliography{bibliographie}
-\begin{thebibliography}{999}
-	\bibitem{Ladd12} Seth Ladd, "Sorry, at the time of this writing, I'm not aware of a socket.io port for Dart. socket.io is nice because it has a bunch of implementation options for browsers that don't support Web sockets. Sounds like a good idea for a hackathon project!",2012 Oct 15,  http://stackoverflow.com/questions/12882112/is-there-a-socket-io-port-to-dart.
-\bibitem{}
-\bibitem{}http://nbn-resolving.de/urn:nbn:de:swb:14-1114955960020-08344
-
-
-\end{thebibliography}
+\bibliography{literatur}
+%\begin{thebibliography}{999}
+%\bibitem{weranders}
+%        "Hans Weranders",
+%       "Der Titel ist seine Allegorie seiner selbst",
+%        “Bücher über dies und das",
+%       "1999",
+%        "Februar",
+%         "257-286"
+%\bibitem {sethladd} Seth Ladd, 
+%        {Sorry, at the time of this writing, I'm not aware of a socket.io port for Dart. socket.io is nice because it has a bunch of implementation options for browsers that don't support Web sockets.
+%Sounds like a good idea for a hackathon project!},
+%       {2012}, {October},{15}
+%\bibitem{teixeira}{Pedro Teixeira},
+%Professional Node.js,
+%{Wrox},
+%{2012},
+%408 p
+%
+%\bibitem{demtroeder02}{Wolfgang Demtröder}
+%{Experimentalphysik III},
+%{Springer Verlag},
+%{2002},
+%{234-256}
+%
+%\end{thebibliography}
 
 %---------------------------------------------------------------------------------------------------------------------------------------------
 \chapter*{Erklärung}

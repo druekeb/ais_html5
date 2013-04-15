@@ -1,6 +1,8 @@
 \documentclass[fontsize=12pt,
 % headinclude,
- twoside=false, parskip=half+, numbers=noenddot, plainheadsepline, toc=listof, toc=bibliography]{scrreprt}
+ twoside=false, parskip=half+, numbers=noenddot, plainheadsepline, toc=listof
+ %, toc=bibliography
+ ]{scrreprt}
 % PDF-Kompression
 \pdfminorversion=5
 \pdfobjcompresslevel=1
@@ -12,7 +14,6 @@
 
 \usepackage{geometry}
 \geometry{a4paper,left=50mm,right=30mm, top=1cm, bottom=2cm}
-
 % Schriften
 \usepackage{mathpazo} % Palatino für Mathemodus
 %\usepackage{mathpazo,tgpagella} % auch sehr schöne Schriften
@@ -41,7 +42,7 @@
 \usepackage{longtable} % Tabellen über mehrere Seiten
 \usepackage{array}
 %  Bibliographie
-\usepackage{bibgerm} % Umlaute in BibTeX
+%\usepackage{bibgerm} % Umlaute in BibTeX
 % Tabellen
 \usepackage{float}
 \usepackage{wrapfig}
@@ -90,7 +91,7 @@
    basicstyle=\scriptsize\ttfamily,
    showstringspaces=false,
    showspaces=false,
-   numbers=left,
+   %numbers=right,
    numberstyle=\scriptsize\ttfamily,
    numbersep=9pt,
    tabsize=2,
