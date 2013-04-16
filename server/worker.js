@@ -1,92 +1,68 @@
-/**
- * Dependencies
- */
-
+/* Dependencies */
 var path = require('path');
 var fs = require('fs');
+/* connect package for static file server support and logging*/
 var connect = require('connect');
-//HTTP - Server
+/* HTTP - Server */
 var http = require('http');
-//HTML5 - WebsocketServer
-var WebSocketServer = require('websocket').server;
-//Mongo - Datenbank
+/* Mongo - Datenbank*/
 var mongo = require('mongodb');
-//Redis - Datenbank
+/* Redis - Datenbank*/
 var redis = require('redis');
-var net = require('net');
+/* HTML5 - WebsocketServer */
+var WebSocketServer = require('websocket').server;
+
+/* HTTP Server, that the Websocketserver uses */
 var httpServer;
-// list of currently connected clients (users)
+
+/* list of currently connected websocket-Clients*/
 var clients = [ ];
 
-
-
-// Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
-//    var zoomSpeedArray = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
+//               Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
 var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
 
-/**
- * Logging
- */
+const HTTP_SERVER_PORT = 8090;
+
+/* Logging */
 function log(message) {
   var message = '['+new Date().toUTCString()+'] ' + '[Worker '+process.pid+'] ' + message;
   fs.appendFile(__dirname + '/log/worker.log', message + '\n', function(err) {});
   console.log(message);
 }
 
-function logPosEvent(message) {
-  var message = message +" "+new Date().getTime();
-  fs.appendFile(__dirname + '/log/PosEvent.log', message + '\n', function(err) {
-    if (err != null) console.log("couldn't write PosEvent :"+message+", Error: "+err);
-  });
-}
-
-function logBoundsEvent(message) {
-  fs.appendFile(__dirname + '/log/BoundsEvent.log', message + '\n', function(err) {
-    if (err != null) console.log("couldn't write BoundsEvent :"+message+", Error: "+err);
-  });
-}
-
+/* start the initial HTTPServer ...*/ 
 function startHTTPServer(callback){
-  /**
-   * HTTP server (use the connect package that gives static file server support)
-   */
-  var app = connect().use(connect.static('client'));
-  httpServer = http.createServer(app).listen(8090);
-  console.log("server listens on 8090");
+  var httpLogFile = fs.createWriteStream(__dirname + '/log/http_server.log', {flags: 'a'});
+  var app = connect()
+    .use(connect.logger({stream: httpLogFile}))
+    .use(connect.static('client'));
+  httpServer = http.createServer(app).listen(HTTP_SERVER_PORT);
+  log('HTTP Server started, listens on Port ' + HTTP_SERVER_PORT);
   callback();
 }
+
+/* upgrade HTTP-Connection to Websocket-Connection */
 function startWebSocketServer(callback){
-  
-  // create the server
   wsServer = new WebSocketServer({
       httpServer: httpServer
   });
-  console.log("HTML5-WebSocket-Server created");
+  log("HTML5-WebSocket-Server created");
 
-  // This callback function is called every time someone
-  // tries to connect to the WebSocket server
+  /* This callback function is called every time a client tries to connect to the WebSocket server*/
   wsServer.on('request', function(request) {
-    console.log((new Date()) + ' Connection from origin ' + request.origin + '.');
-
-    // accept connection - you should check 'request.origin' to make sure that
-    // client is connecting from your website
-    // (http://en.wikipedia.org/wiki/Same_origin_policy)
+    /* accept connection - check 'request.origin' to make sure that client connecting from correct website*/
     var connection = request.accept(null, request.origin);
-    console.log("connected");
+    log(' Connection from origin ' + request.origin + 'accepted.');
 
-    // we need to know client index to remove them on 'close' event
+    /* client index necessary to remove client on 'close' event*/
     var index = clients.push(connection) - 1;
-    console.log((new Date()) + ' Connection accepted.');
 
-    // This is the most important callback for us, we'll handle
-    // all messages from users here.
+    /* most important callback: handles all messages from clients*/
     connection.on('message', function(message) {
        if (message.type === 'utf8') 
        {
         var rquest = JSON.parse(message.utf8Data);
-        // process WebSocket message        
-        // console.log(message);
-
+        /* process WebSocket message*/        
         if (rquest.function == 'register')
         {
            connection.zoom = rquest.zoom;
@@ -94,23 +70,20 @@ function startWebSocketServer(callback){
            getVesselsInBounds(connection, rquest.bounds, rquest.zoom);
          }
       }
-     });
+    });
 
     connection.on('close', function(connection) {
-      console.log((new Date()) + " Peer "+ request.origin + " disconnected.");
-      // remove user from the list of connected clients
+      log((new Date()) + " Peer "+ request.origin + " disconnected.");
+      /* remove user from the list of connected clients */
       clients.splice(index, 1);
-      // close user connection
+      /* close user connection */
       });
   });
-callback();
+  callback();
 }
 
 
-/**
- * Redis
- */
-
+/* open Redis - Database -Connection */
 function connectToRedis() {
   redisClient = redis.createClient();
 
@@ -121,26 +94,14 @@ function connectToRedis() {
     log('(Redis) ' + err);
   });
   redisClient.on('message', function(channel, message) {
-    if (channel == 'safetyMessage')
+    if (channel == 'vesselPos') 
     {
-      try
+      try 
       {
         var json = JSON.parse(message);
       }
-      catch(err)
+      catch (err) 
       {
-        log('Error parsing received JSON - safetyMessage: ' + err );
-        return;
-      }
-      clients.forEach(function(client) {
-         client.sendUTF(JSON.stringify( { type: 'safetyMessageEvent', text: message} ));
-      });
-    }
-    if (channel == 'vesselPos') {
-      try {
-        var json = JSON.parse(message);
-      }
-      catch (err) {
         log('Error parsing received JSON - vesselpos: ' + err );
         return;
       }
@@ -151,11 +112,11 @@ function connectToRedis() {
       clients.forEach(function(client) {
         if (client.bounds != null && lon != null && lat != null) 
         {
+          /* check, if Client-Connection is affected by Vessel-Position-Update */
           if (positionInBounds(lon, lat, client.bounds)) 
           {
             if(json.sog !=null && json.sog > (zoomSpeedArray[client.zoom]) && json.sog != 102.3)
             {
-              // logPosEvent(json.userid +" "+json.utc_sec);
               client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
             }
           }
@@ -163,15 +124,10 @@ function connectToRedis() {
       });
     }
   });
-
   redisClient.subscribe('vesselPos');
-  redisClient.subscribe('safetyMessage');
 }
 
-/**
- * MongoDB
- */
-
+/* MongoDB -Connection */
 var mongoHost = 'localhost';
 var mongoPort = 27017;
 var mongoServer = new mongo.Server(mongoHost, mongoPort, {auto_reconnect: true});
@@ -179,12 +135,14 @@ var mongoDB = new mongo.Db('ais', mongoServer, {safe: true});
 
 function connectToMongoDB() {
   mongoDB.open(function(err, db) {
-    if (err) {
+    if (err) 
+    {
       log('(MongoDB) ' + err);
       log('Exiting ...')
       process.exit(1);
     }
-    else {
+    else 
+    {
       log('(MongoDB) Connection established');
       db.collection('vessels', function(err, collection) {
         if (err) {
@@ -195,21 +153,10 @@ function connectToMongoDB() {
         else 
         {
           vesselsCollection = collection;
-          db.collection('navigationalAid', function(err,coll){
-            if(err){
-              log('(MongoDB) ' + err);
-              log('Exiting ...')
-              process.exit(1);
-            }
-            else
-            {
-              navigationalAidCollection = coll;
-              startHTTPServer(function(){
-                startWebSocketServer(function(){
-                  connectToRedis();
-                });
+          startHTTPServer(function(){
+              startWebSocketServer(function(){
+                connectToRedis();
               });
-            }
           });
         }
       });
@@ -217,50 +164,38 @@ function connectToMongoDB() {
   });
 }
 
+/* get all Vessels in Bounds of a Client-Request */
 function getVesselsInBounds(client, bounds, zoom) {
    var timeFlex = new Date().getTime();
    var vesselCursor = vesselsCollection.find({
     pos: { $within: { $box: [ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat] ] } },
-    time_received: { $gt: (new Date() - 10 * 60 * 1000) },
+    time_received: { $gt: (new Date() - 10 * 60 * 1000) }, /* only messages younger than 10 minutes */
     sog: { $exists:true },
     sog: { $gt: zoomSpeedArray[zoom]},
     sog: {$ne: 102.3}
   });
   vesselCursor.toArray(function(err, vesselData) 
   {
-    var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
     if (!err)
     {
-     console.log('(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString +" with sog > "+zoomSpeedArray[zoom]);
-      // if(zoom < 6)
-      // {
-          client.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
-      // }
-      // else
-      // {
-      //   var navigationalAidCursor = navigationalAidCollection.find({
-      //     pos: { $within: { $box:[ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat]]} },
-      //     time_received: { $gt: (new Date() - 10 * 60 * 1000) }
-      //    });
-      //    navigationalAidCursor.toArray(function(err, navigationalAids){
-      //      console.log('(Debug) Found ' + (navigationalAids !=null?navigationalAids.length:0) + ' navigational aids in bounds ' + boundsString);
-      //      var vesNavArr = vesselData.concat(navigationalAids);
-      //       // console.log ("vesNavArr: "+typeof vesNavArr +vesNavArr.length);
-      //       // logBoundsEvent(zoom+ " "+ vesNavArr.length + " "+(new Date().getTime()-timeFlex ));
-      //       client.sendUTF(JSON.stringify( { type: 'vesselsInBoundsEvent', vessels: vesNavArr} ));
-      //     });
-      //  }
+      var boundsString = '['+bounds._southWest.lng+','+bounds._southWest.lat+']['+bounds._northEast.lng+','+bounds._northEast.lat+']';
+      var logMessage = '(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString;
+      logMessage += zoomSpeedArray[zoom] > 0? 'with sog > '+zoomSpeedArray[zoom]:'';
+      log(logMessage);
+      client.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
     }
     else
     {
-      console.log(err + ", bounds:"+boundsString);
+      log(err + ", bounds:"+boundsString);
     }
   });
 }
 
+/*Help-function to check, if a vessels Position (lon, lat) is in a clients viewed bounds */
 function positionInBounds(lon, lat, bounds) {
   return (lon > bounds._southWest.lng && lon < bounds._northEast.lng && lat > bounds._southWest.lat && lat < bounds._northEast.lat);
 }
 
+/* this is the starting point of the worker.js - Process */
 connectToMongoDB();
 

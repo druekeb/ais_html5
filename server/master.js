@@ -2,11 +2,10 @@ var path = require('path');
 var fs = require('fs');
 var child = require('child_process');
 
+/* this is the starting point of the application */
 forkAISClient();
- /**
- * Logging
- */
-
+ 
+ /* Logging */
 function log(message) {
   var message = '['+new Date().toUTCString()+'] ' + '[Master] ' + message;
   fs.appendFile(__dirname + '/log/master.log', message + '\n', function(err) {});
@@ -30,7 +29,7 @@ function forkAISClient() {
   forkWorker();
 }
 
-/*worker- Process*/
+/*worker.js- Process*/
 function forkWorker(){
   var errors;
   try
