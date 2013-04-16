@@ -117,6 +117,7 @@ function connectToRedis() {
           {
             if(json.sog !=null && json.sog > (zoomSpeedArray[client.zoom]) && json.sog != 102.3)
             {
+              /* transfer message as stringified object */
               client.sendUTF(JSON.stringify( { type: 'vesselPosEvent', vessel:json } ));
             }
           }

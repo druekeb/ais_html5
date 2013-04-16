@@ -2,7 +2,7 @@ var LM = function(){
 
 	var map, featureLayer, tileLayer, zoom, socket, boundsTimeout;
 	
-function init(divName, options){
+  function init(divName, options){
     map =  L.map(divName,options.mapOptions);
     zoom = options.zoom?options.zoom:14;
     center = options.center?options.center: [52.410,4.790];
@@ -44,25 +44,17 @@ function init(divName, options){
         message.bounds = map.getBounds();
         socket.timeQuery = new Date().getTime();
         socket.send(JSON.stringify(message));
-        //if (boundsTimeout) clearTimeout(boundsTimeout);
-        //boundsTimeout = setTimeout(changeRegistration, 120000); 
-        //boundsTimeout = setTimeout(zoomout,30000); 
+        if (boundsTimeout) clearTimeout(boundsTimeout);
+        boundsTimeout = setTimeout(changeRegistration,30000); 
      } 
-
-    function zoomout()
-    {
-      map.setZoom(map.getZoom()-1)
-    } 
-
 	   
     function getMap(){
         return map;
     }
 
-
-	function getZoom(){
-		return map.getZoom();
-	}
+    function getZoom(){
+      return map.getZoom();
+    }
 
     function paintVessel(vessel)
     {
@@ -91,7 +83,7 @@ function init(divName, options){
                 }
                 else
                 {
-                  popupOptions = {closeButton:false ,autoPan:false , maxWidth:180, offset:new L.Point(100,120)};
+                  popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(100,120)};
                   latlng = e.target._latlng;
                 }
                 L.popup(popupOptions).setLatLng(latlng).setContent(vessel.popupContent).openOn(map);
@@ -117,36 +109,7 @@ function init(divName, options){
         $('.clickPopup').parentsUntil(".leaflet-popup-pane").remove();
         $('.clickPopup').remove();
     }
-    
-
-    function paintMarker(obj)
-    {
-      if (obj.marker != undefined)
-      {
-          //gemeinsame eventHandler für mouseEvents auf Features (circle oder triangle)
-            function onMouseover(e) {
-              var popupOptions, latlng;
-              if(e.latlng)
-              {
-               popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(100,120)};
-               latlng = e.latlng;            
-              }
-              else
-              {
-                popupOptions = {closeButton:false ,autoPan:false , maxWidth:180, offset:new L.Point(100,120)};
-                latlng = e.target._latlng;
-              }
-              L.popup(popupOptions).setLatLng(latlng).setContent(obj.popupContent).openOn(map);
-            } 
-
-            function onMouseout(e) {
-              map.closePopup();
-            }
-            obj.marker.on('mouseover',onMouseover);
-            obj.marker.on('mouseout', onMouseout);
-            featureLayer.addLayer(obj.marker);
-      }
-    }
+       
 
      function clearFeature(vessel){
          if (typeof vessel.vector !="undefined")
@@ -175,10 +138,9 @@ function init(divName, options){
 	return {
 		init: init,
 		getMap: getMap,
-        getZoom: getZoom,
-        paintVessel: paintVessel,
-        paintMarker: paintMarker,
-        clearFeature: clearFeature
+    getZoom: getZoom,
+    paintVessel: paintVessel,
+    clearFeature: clearFeature
 	}
 
 }();
