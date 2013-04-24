@@ -44,7 +44,7 @@ var LM = function(){
         socket.timeQuery = new Date().getTime();
         socket.send(JSON.stringify(message));
         if (boundsTimeout) clearTimeout(boundsTimeout);
-        boundsTimeout = setTimeout(changeRegistration,30000); 
+        boundsTimeout = setTimeout(changeRegistration,300000); 
      } 
 	   
     function getMap(){

@@ -111,7 +111,7 @@ class OpenStreetMap extends LeafletMap {
         }
      callbackList.clear();
     }
-    boundsTimeout = new Timer(new Duration(milliseconds:120000),changeRegistration);  
+    boundsTimeout = new Timer(new Duration(milliseconds:300000),changeRegistration);  
  }
   
   String getBounds(){

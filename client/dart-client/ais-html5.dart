@@ -12,7 +12,7 @@ import 'Vessel.dart';
 /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
                Zoomlevel 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18 */
 List ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-const WEBSOCKET_SERVER_LOCATION = '127.0.0.1';
+const WEBSOCKET_SERVER_LOCATION = '192.168.1.112';
 const WEBSOCKET_SERVER_PORT = 8090;
 const ANIMATION_MINIMAL_ZOOMLEVEL =13;
 
