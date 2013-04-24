@@ -12,9 +12,6 @@ var redis = require('redis');
 /* HTML5 - WebsocketServer */
 var WebSocketServer = require('websocket').server;
 
-/* HTTP Server, that the Websocketserver uses */
-var httpServer;
-
 /* list of currently connected websocket-Clients*/
 var clients = [ ];
 
@@ -38,16 +35,15 @@ function startHTTPServer(callback){
     .use(connect.static('client'));
   httpServer = http.createServer(app).listen(HTTP_SERVER_PORT);
   log('HTTP Server started, listens on Port ' + HTTP_SERVER_PORT);
-  callback();
+  callback(httpServer);
 }
 
 /* upgrade HTTP-Connection to Websocket-Connection */
-function startWebSocketServer(callback){
+function startWebSocketServer(httpServer, callback){
   wsServer = new WebSocketServer({
       httpServer: httpServer
   });
   log("HTML5-WebSocket-Server created");
-
   /* This callback function is called every time a client tries to connect to the WebSocket server*/
   wsServer.on('request', function(request) {
     /* accept connection - check 'request.origin' to make sure that client connecting from correct website*/
@@ -67,8 +63,10 @@ function startWebSocketServer(callback){
         {
            connection.zoom = rquest.zoom;
            connection.bounds = rquest.bounds;
-           getVesselsInBounds(connection, rquest.bounds, rquest.zoom);
-         }
+           getVesselsInBounds( rquest.bounds, rquest.zoom,function(vesselData){
+            connection.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
+           });
+        }
       }
     });
 
@@ -76,15 +74,13 @@ function startWebSocketServer(callback){
       log((new Date()) + " Peer "+ request.origin + " disconnected.");
       /* remove user from the list of connected clients */
       clients.splice(index, 1);
-      /* close user connection */
       });
   });
-  callback();
 }
 
 
 /* open Redis - Database -Connection */
-function connectToRedis() {
+function connectToRedis(callback) {
   redisClient = redis.createClient();
 
   redisClient.on('connect', function() {
@@ -134,7 +130,7 @@ var mongoPort = 27017;
 var mongoServer = new mongo.Server(mongoHost, mongoPort, {auto_reconnect: true});
 var mongoDB = new mongo.Db('ais', mongoServer, {safe: true});
 
-function connectToMongoDB() {
+function connectToMongoDB(callback) {
   mongoDB.open(function(err, db) {
     if (err) 
     {
@@ -154,11 +150,7 @@ function connectToMongoDB() {
         else 
         {
           vesselsCollection = collection;
-          startHTTPServer(function(){
-              startWebSocketServer(function(){
-                connectToRedis();
-              });
-          });
+          callback();
         }
       });
     }
@@ -166,7 +158,7 @@ function connectToMongoDB() {
 }
 
 /* get all Vessels in Bounds of a Client-Request */
-function getVesselsInBounds(client, bounds, zoom) {
+function getVesselsInBounds(bounds, zoom,callback) {
    var timeFlex = new Date().getTime();
    var vesselCursor = vesselsCollection.find({
     pos: { $within: { $box: [ [bounds._southWest.lng,bounds._southWest.lat], [bounds._northEast.lng,bounds._northEast.lat] ] } },
@@ -183,7 +175,7 @@ function getVesselsInBounds(client, bounds, zoom) {
       var logMessage = '(Debug) Found ' + vesselData.length + ' vessels in bounds ' + boundsString;
       logMessage += zoomSpeedArray[zoom] > 0? 'with sog > '+zoomSpeedArray[zoom]:'';
       log(logMessage);
-      client.sendUTF(JSON.stringify({ type: 'vesselsInBoundsEvent', vessels: vesselData}));
+      callback(vesselData);
     }
     else
     {
@@ -198,5 +190,10 @@ function positionInBounds(lon, lat, bounds) {
 }
 
 /* this is the starting point of the worker.js - Process */
-connectToMongoDB();
-
+// connectToMongoDB();
+connectToMongoDB(function(){
+  startHTTPServer(function(httpServer){
+    startWebSocketServer(httpServer);
+  });
+});
+connectToRedis();

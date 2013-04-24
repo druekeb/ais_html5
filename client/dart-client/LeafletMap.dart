@@ -1,9 +1,9 @@
-library leaflet_maps;
+library leaflet_map;
 
 import "dart:html";
 import "dart:async";
 import 'packages/js/js.dart' as js;
-import 'aisDart.dart' as caller;
+import 'ais-html5.dart' as caller;
 import 'dart:json';
 
 abstract class LeafletMap {
@@ -43,7 +43,7 @@ abstract class LeafletMap {
 
 class OpenStreetMap extends LeafletMap {
   List<js.Callback> callbackList = new List<js.Callback>();
-  int initialZoom;
+  num initialZoom;
   num initialLat;
   num initialLon;
   var boundsTimeout;
@@ -102,7 +102,7 @@ class OpenStreetMap extends LeafletMap {
     message['function'] = 'register';
     message['zoom'] =  zoom;
     message['bounds'] = bounds;
-    caller.timeFlex = new DateTime.now().millisecondsSinceEpoch;
+//    caller.timeFlex = new DateTime.now().millisecondsSinceEpoch;
     caller.socket.send(stringify(message));
     if(!callbackList.isEmpty)
     {

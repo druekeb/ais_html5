@@ -32,7 +32,6 @@ var LM = function(){
       socket = options.onMoveend;
       map.on('moveend', changeRegistration);
     }
-    boundsTimeout = options.boundsTimeout;
     changeRegistration();
   }
 

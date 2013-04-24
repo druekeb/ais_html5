@@ -46,18 +46,18 @@ function connectToAISStream() {
     aisClient.on('error', function(err) {
       log(err);
     });
-
+    /*extract correct messages from the submitted chunks of data*/
     aisClient.on('data', function(chunk) {
       data += chunk;
-      var messageSeperator = '\r\n';
-      var messageSeperatorIndex = data.indexOf(messageSeperator);
-      while (messageSeperatorIndex != -1) {
-        var message = data.slice(0, messageSeperatorIndex);
+      var messageSeparator = '\r\n';
+      var messageSeparatorIndex = data.indexOf(messageSeparator);
+      while (messageSeparatorIndex != -1) {
+        var message = data.slice(0, messageSeparatorIndex);
         parseStreamMessage(message);
-        data = data.slice(messageSeperatorIndex + 1);
-        messageSeperatorIndex = data.indexOf(messageSeperator);
+        data = data.slice(messageSeparatorIndex + 1);
+        messageSeparatorIndex = data.indexOf(messageSeparator);
       }
-      data = data.slice(messageSeperatorIndex + 1);
+      data = data.slice(messageSeparatorIndex + 1);
     });
   });
 }
@@ -115,23 +115,23 @@ function parseStreamMessage(message) {
 var mongoHost = 'localhost';
 var mongoPort = 27017;
 var mongoServer = new mongo.Server(mongoHost, mongoPort, { auto_reconnect: true });
-var mongoDB = new mongo.Db('ais', mongoServer, { safe: true, native_parser: false });
+var mongoClient = new mongo.Db('ais', mongoServer, { safe: true, native_parser: false });
 var vesselsCollection;
 var baseStationsCollection;
 
-mongoDB.open(function(err, db) {
+mongoClient.open(function(err, db) {
   if (err) {
-    log('(MongoDB) ' + err);
+    log('(mongoClient) ' + err);
     log('Exiting ...')
     process.exit(1);
   }
   else
   {
-    log('(MongoDB) Connection established');
+    log('(mongoClient) Connection established');
     db.collection('vessels', function(err, collection) {
       if (err) 
       {
-        log('(MongoDB) ' + err);
+        log('(mongoClient) ' + err);
         log('Exiting ...')
         process.exit(1);
       }

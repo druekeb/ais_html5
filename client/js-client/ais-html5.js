@@ -1,17 +1,17 @@
 $(document).ready(function() {
-   
-   var vessels = {};
     
-                  // Zoom 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18
-    var zoomSpeedArray = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-  
+     /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
+                  Zoomlevel 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18 */
+      var ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
+     
+      var vessels = {};
+      
       var zoom = getParam('zoom');
       zoom = zoom.length >0? zoom : 17;
       var lon = getParam('lon');
       lon = lon.length > 0? lon : 9.947;
       var lat = getParam('lat');
       lat = lat.length > 0? lat : 53.518;
-
   
     // if user is running mozilla then use it's built-in WebSocket
     var WebSocket = window.WebSocket || window.MozWebSocket;
@@ -47,6 +47,7 @@ $(document).ready(function() {
     };
 
     connection.onmessage = function (message) {
+       console.debug(message);
        /* try to decode json */
         try
         {
@@ -89,16 +90,16 @@ $(document).ready(function() {
           }
         }
       // zeige eine Infobox über die aktuelle minimal-Geschwindigkeit angezeigter Schiffe
-       if (LM.getZoom() < 13)
+       if (LM.getZoom() < getFirstNegative(ZOOM_SPEED_ARRAY))
        {
-          $('#zoomSpeed').html("vessels reporting > "+(zoomSpeedArray[LM.getZoom()])+" knots");
+          $('#zoomSpeed').html("vessels reporting > "+(ZOOM_SPEED_ARRAY[LM.getZoom()])+" knots");
          $('#zoomSpeed').css('display', 'block');
        }
        else 
        {
          $('#zoomSpeed').css('display', 'none');
        }
-       console.debug("painted " +Object.keys(vessels).length+ "  "+(new Date().getTime() -timeMessage)+" msec");
+       // console.debug("painted " +Object.keys(vessels).length+ "  "+(new Date().getTime() -timeMessage)+" msec");
     }
 
       function processVesselPosition(jsonVessel){
@@ -180,6 +181,14 @@ $(document).ready(function() {
         break;
       }
       return curr_millisec;
+    }
+
+    function getFirstNegative(sZA){
+      for (var x = 0; x < sZA.length;x++)
+      { 
+        if (sZA[x] < 0)
+        return x;
+      }
     }
 });
 

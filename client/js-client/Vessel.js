@@ -42,16 +42,17 @@
                 var vectorPoints = [];
                 var shipPoint = new L.LatLng(this.lat,this.lon);
                 vectorPoints.push(shipPoint);
-                if (moving) // zeichne für fahrende Schiffe einen Speedvector, ein Richtungsdreieck und möglichst ein Polygon
+                /* for moving vessel paint a speedvector, a triangle and a ship-Polygon */
+                if (moving) 
                 {
                   var meterProSekunde = this.sog *0.51444;
-                  var vectorLength = meterProSekunde * 30; //meter, die in 30 sec zurückgelegt werden
+                  var vectorLength = meterProSekunde * 60; ///meters, which are covered in 60 sec
                   var targetPoint = destinationPoint(this.lat, this.lon, this.cog, vectorLength);
                   vectorPoints.push(targetPoint);
                   var vectorWidth = (this.sog > 30?5:2); 
                   this.vector = L.polyline(vectorPoints, {color: 'red', weight: vectorWidth });
-                  var animationPartsSize = vectorLength/zoom ; //in wieviele Teilstücke wird der vector zerlegt
-                  var animationInterval = 2000; //wie lang ist die Zeitspanne zwischen zwei Animationsschritten
+                  var animationPartsSize = vectorLength/(zoom*20) ; ////how long are the chunks of the vector
+                  var animationInterval = 500; //how long is the interval between two animation steps
                   if (shipStatics)
                   {
                     this.polygon = new L.animatedPolygon(vectorPoints,{
@@ -85,7 +86,7 @@
                                                           fillColor:shipTypeColors[this.ship_type],
                                                           fillOpacity:0.8,
                                                           clickable:true,
-                                                          animation:shipStatics
+                                                          animation:true
                   })
                 }
                 else //zeichne für nicht fahrende Schiffe einen Circlemarker und möglichst ein Polygon
@@ -168,8 +169,6 @@ function calcAngle (vessel) {
        }
        return (-direction *(Math.PI / 180.0));
    }
-
-   
 
     function createDate(ts, sec, msec){
       var returnString;
