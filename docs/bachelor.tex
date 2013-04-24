@@ -211,6 +211,11 @@ Class B&&>2 kn&30 sec\\\hline
 \end{table}
 
 Für AIS-Daten sind 22 standardisierte Nachrichtentypen bzw. Telegramme festgelegt. In dieser Arbeit werden nur Nachrichten vom Type 1 -3 (reguläre Positionsmeldung eines Klasse-A-Transceivers) und vom Typ 5 ( reguläre Meldung von Schiffs- und Reisedaten eines Klasse-A-Transceivers) benötigt. 
+\section{OpenStreetMap}\label{OpenStreetMap}
+OpenStreetMap ist eine freie, editierbare Karte der gesamten Welt auf der Basis von Daten, die von einer breiten Nutzergemeinde zusammengetragen werden. Inzwischen kann die Qualität der Karten mit denen proprietärer Angebote mithalten und übertrifft sie sogar in manchen Bereichen. Die Daten können gemäß der entsprechenden Freien Lizenz frei heruntergeladen und genutzt werden unter der Bedingung, dass sie nur unter der “Creative Commons Attribution-Share-Alike” (CC-BY-SA) -Lizenz weitergegeben werden.
+
+\section{Leaflet}\label{Leaflet}
+Leaflet ist eine open-source JavaScript-Bibliothek für interaktive Karten, das von einer Gruppe um Vladimir Agafonkin geschrieben wurde. Die Bibliothek zeichnet sich im Vergleich zu OpenLayers durch ein schlankes und einfaches Design aus und überzeugt durch gute Performance. Es unterstützt alle verbreiteten Plattformen auch im mobilen Bereich mithilfe von HTML5 und CSS3. Es ist hinreichend dokumentiert und verfügt über gut lesbaren source code.
 
 \section{Bidirektionale Kommunikation über HTML5 Websockets}\label{s.Websockets}
 In der Entwicklung der Kommunikationstechnologien im Internet galt lange Zeit das request/response Paradigma, nach dem Anfragen vom Client vom Server beantwortet werden. Dieses Paradigma wird Stück für Stück aufgebrochen durch kontinuierliche Weiterentwicklungen in Richtung einer bidirektionalen Kommunikation zwischen Server und Client.\\
@@ -338,10 +343,10 @@ In dieser ersten Implementierung werden Lösungen entwickelt für die in den Anf
 
 \subsection{socket.io-Server}\label{socket.io-Server}
 Die zu entwickelnde Serveranwendung hat die Aufgabe, eine JSON-over-TCP-Verbindung zum Rohdatenserver aufzubauen und die Daten über Websocket-Verbindungen an die Clients weiterzugeben.
-Weil Node.js singlethreaded ist (vgl. \cite{teixeira}) würden beide Aufgaben in einem einzigen Prozess bearbeitet. Um das Potential an Parallelverabeitung eines Dualcore oder Multicore-Servers zu nutzen, ist des daher sinnvoll, mindestens zwei Prozesse zu generieren. Dazu wurde das node.js-Modul child\_process genutzt. Die Start-Datei master.js generiert damit zuerst einen Prozess, der den AIS-Client (ais\_client.js) abzweigt, um Daten vom Rohdaten-Server abzufragen und anschließend einen Prozess (worker.js), um einen Websocket -Server für Client-Verbindungen zur Verfügung zu stellen (siehe \ref{lst:master.js}).
-\begin{lstlisting}[caption=Generierung von Kindprozessen in master.js, firstnumber=16, label=lst:master.js]
+Weil Node.js singlethreaded ist (vgl. \cite{teixeira}) würden beide Aufgaben in einem einzigen Prozess bearbeitet. Um das Potential an Parallelverabeitung eines Dualcore oder Multicore-Servers zu nutzen, ist des daher sinnvoll, mindestens zwei Prozesse zu generieren. Dazu wurde das node.js-Modul child\_process genutzt. Die Start-Datei master.js generiert damit zuerst einen Prozess, der den AIS-Daten-Client (aisData-client.js) abzweigt, um Daten vom Rohdaten-Server abzufragen und anschließend einen Prozess (worker.js), um einen Websocket -Server für Client-Verbindungen zur Verfügung zu stellen (siehe \ref{lst:master.js}).
+\begin{lstlisting}[caption=Generierung von Kindprozessen in master.js, firstnumber=16, label=master.js]
 /* AIS-Client - Process*/
-  child.fork(path.join(__dirname, 'ais_client.js'));
+  child.fork(path.join(__dirname, 'aisData-client.js'));
 
 /*worker- Process*/
   child.fork(path.join(__dirname, 'worker.js'));
@@ -353,16 +358,16 @@ Bei der Weitergabe der Daten durch den worker-Prozess sind zwei Fälle zu unters
 \end{itemize}
 \subsubsection{Vessels-in-Bounds-Request}\label{Vessels-in-Bounds-Request}
 Der Vessels-in-Bounds-Request macht eine Zwischenspeicherung der Daten unumgänglich. Wegen der großen Anzahl gleichzeitig empfangener Schiffe (weltweit ca. 60.000) und der Notwendigkeit, einen geographischen Index zu verwenden, wird einer persistenten gegenüber einer transienten Speicherung der Vorzug gegeben. 
-\\Für die Persistierung wird hier MongoDB verwendet, weil MongoDB als NoSQL-.Datenbank einen geringen Overhead und damit schnelle Antwortzeiten und außerdem einen geographischen Index bietet. Der Serverprozess in ais\_client.js schreibt die Daten (siehe listing \ref{lst:write in Mongo}). Die MMSI eines Schiffes ist eindeutig und wird als unique key verwendet (siehe Abschnitt \ref{Statische Schiffsdaten}). Über die Option upsert:true wird der Mongo Datenbank mitgeteilt, dass entweder ein insert-Befehl oder, falls die mmsi bereits in der MongoDB-Collection vorhanden ist, ein update-Befehl auf das entsprechende set ausgeführt werden soll. 
-\begin{lstlisting}[caption=Schreiben in die Datenbank in ais\_client.js, firstnumber=321, label=lst:write in Mongo]
+\\Für die Persistierung wird hier MongoDB verwendet, weil MongoDB als NoSQL-.Datenbank einen geringen Overhead und damit schnelle Antwortzeiten und außerdem einen geographischen Index bietet. Der Serverprozess in aisData-client.js schreibt die Daten (siehe listing \ref{write in Mongo}). Die MMSI eines Schiffes ist eindeutig und wird als unique key verwendet (siehe Abschnitt \ref{Statische Schiffsdaten}). Über die Option upsert:true wird der Mongo Datenbank mitgeteilt, dass entweder ein insert-Befehl oder, falls die mmsi bereits in der MongoDB-Collection vorhanden ist, ein update-Befehl auf das entsprechende set ausgeführt werden soll. 
+\begin{lstlisting}[caption=Schreiben in die Datenbank in aisData-client.js, firstnumber=321, label=write in Mongo]
 vesselsCollection.update(
   { mmsi: obj.mmsi },
   { $set: obj },
   { safe: false, upsert: true }
   );
 \end{lstlisting}
-Der Geo-Index ist zwingend erforderlich, damit nicht jede Anfrage des Servers an die Datenbank sämtliche Datensätze durchlaufen muss, um die Schiffe in einem bestimmten geographischen Ausschnitt zu finden. Aufbau und Unterhalt des Geo-Indexes liegt findet im ais\_client-Prozess statt, der schreibend auf die Datenbank zugreift.
-\begin{lstlisting}[caption=Aufbau des Geo-Indexes in ais\_client.js]
+Der Geo-Index ist zwingend erforderlich, damit nicht jede Anfrage des Servers an die Datenbank sämtliche Datensätze durchlaufen muss, um die Schiffe in einem bestimmten geographischen Ausschnitt zu finden. Aufbau und Unterhalt des Geo-Indexes liegt findet im aisData-client-Prozess statt, der schreibend auf die Datenbank zugreift.
+\begin{lstlisting}[caption=Aufbau des Geo-Indexes in aisData-client.js]
   vesselsCollection.ensureIndex({ pos: "2d", sog: 1, time_received: 1 }, function(err, result) {... });
   \end{lstlisting}
 Dabei handelt es sich um einen zusammengesetzten Index, weil neben der Geo-Position auch die Geschwindigkeit und der Zeitpunkt des Empfangs der Nachricht Filterkriterien sind, wenn der zweite Prozess (worker.js) lesend auf die Datenbank zugreift. In Listing \ref{lst:query Mongo} ist zu sehen, wie der Prozess worker.js mit den vom Client in einem Vessels-in-Bounds-Request übermittelten Geo-Daten die MongoDb anfragt.
@@ -380,7 +385,7 @@ Dabei handelt es sich um einen zusammengesetzten Index, weil neben der Geo-Posit
 \end{lstlisting}
 
 \subsubsection{Vessel-Position-Update}\label{Vessel-Position-Update}
-Für die Kommunikation eines Vessel-Position-Updates (AIS-Nachrichtentyp 1-3) zwischen dem ais\_client.js-Prozess und dem worker.js-Prozess wird der publish/subscribe-Mechnismus einer Redis-Datenbank genutzt. Der ais\_client.js-Prozess publiziert jedes Positions-Update auf dem Kanal ‘vessel-Pos’ der Redis-Datenbank. Der worker.js-Prozess meldet sich als subscriber am Kanal ‘vessel-Pos’ der Redis-Datenbank an und wird so bei jedem Positions-Update benachrichtigt.
+Für die Kommunikation eines Vessel-Position-Updates (AIS-Nachrichtentyp 1-3) zwischen dem aisData-client.js-Prozess und dem worker.js-Prozess wird der publish/subscribe-Mechnismus einer Redis-Datenbank genutzt. Der aisData-client.js-Prozess publiziert jedes Positions-Update auf dem Kanal ‘vessel-Pos’ der Redis-Datenbank. Der worker.js-Prozess meldet sich als subscriber am Kanal ‘vessel-Pos’ der Redis-Datenbank an und wird so bei jedem Positions-Update benachrichtigt.
 Um diese Nachricht an die betroffenen Websocket-Clients weiterzuleiten, ist eine serverseitige Verwaltung der Clients notwendig. Die Serveranwendung muss bei jeder Positionsmeldung wissen, welche Clients benachrichtigt werden müssen. Die Client-Verwaltung ist ein Feature des socket.io-Paketes. Für jeden Client wird bei der Registrierung zusätzlich das Zoomlevel der Karte und die Koordinaten gespeichert.
 \begin{lstlisting}[caption= Speichern der übermittelten Client-Daten in worker.js, label=Speichern der übermittelten Client-Daten in worker.js]
 io.sockets.on('connection', function(client) {
@@ -426,19 +431,99 @@ io.sockets.on('connection', function(client) {
   });
 \end{lstlisting}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=6in]{images/ais-socketio.png}
+  \caption[Übersicht Javascript-Files]{Übersicht Javascript-Files}
+\end{figure}
 \subsection{socket.io-Client}\label{socket.io-Client}
-Der zugehörige Client (socket.io-Client) wird ebenfalls in Javascript implementiert und bindet die socket.io-Bibliotheken ein. Das socket.io Paket bietet Features wie die interne Clientverwaltung durch den Websocket.
+Der socket.io-Client hat folgende Aufgaben.
+\begin{enumerate}
+\item Es ist eine html-Seite mit den benötigten Bereichen für die Karte zu erstellen.
+\item URL-Parameter sollen optional übergeben werden könnenn.
+\item Eine Karte mit Navigations- und Infobereichen ist in den Kartenbereich zu rendern.
+\item Zum Socket.io-Websocket-Server soll eine Verbindung aufgebaut werden
+\begin{itemize}
+\item bei Positionsänderungen auf der Karte wird eine register-Nachricht gesendet
+\item Vessel-In-Bounds- und Vessel-Position-Events können empfangen werden
+\end{itemize}
+\item Aus den gesendeten Daten sind geeignete Objekte zu erstellen und zu speichern.
+\item Die Objekte sind als Features auf die Karte zu rendern
+\item Objekte, die den Status ‘Moving’ haben, sind entsprechend ihrer Geschwindigkeit zu animieren.
+\end{enumerate}
+Punkt 1 geschieht in der Datei ais-socket.io.html. Dort werden auch die benötigten javascript- und css-Dateien eingebunden. Falls Parameter übergeben werden für Zoomlevel und Bereich werden sie in der javascript-Datei ais-socket.io.js mit der Funktion getParam(name) aufgegriffen.
+Als Kartenwerk werden OpenStreetMap-Karten benutzt (siehe Kapitel \ref{OpenStreetMap}). Als Javascript-Bibliothek zur Darstellung der Schiffe auf der Karte fiel die Wahl auf die Leaflet-Bibliotheken. Zwar stützt sich die Cockpit-Anwendug der Vesseltracker-GmbH auf die älteren OpenLayers-Bibliotheken, diese sind jedoch im Vergleich sehr viel sperriger in der Nutzung und werden inzwischen weniger aktiv von der Community weiterentwickelt und verbessert.
+Die Karte wird als Javascript-Objekt in der Datei LeafletMap.js realisiert mithilfe des ‘Revealing Module Pattern’. Damit läßt sich die API von der internen Implementierung der Karte trennen. Nur die zurückgegebenen Funktionen bilden die öffentliche Schnittstelle.
+
+\begin{lstlisting}[caption= ‘Revealing Module Pattern’ in LeafletMap.js, label=LeafletMap.js]
+var LM = function(){
+    var map, featureLayer, tileLayer, zoom, socket, boundsTimeout;
+	
+    function init(divName, options){...}
+    function addOSMLayerToMap(){...}
+    function changeRegistration(){...}
+    function getMap(){...}
+    function getZoom(){...}
+    function paintVessel(vessel){...}
+    function removePopups(){...}
+    function clearFeature(vessel){...}
+    
+    return {
+        init: init,
+        getMap: getMap,
+        getZoom: getZoom,
+        paintVessel: paintVessel,
+        clearFeature: clearFeature
+    }
+}();
+\end{lstlisting}
+
+Mit den folgenden Befehlszeilen wird die Websocket-Verbindung hergestellt. Zum Empfang der Nachrichten des Websocket-Servers (siehe Kapitel \ref{socket.io-Server}) genügen zwei Listener: 
+\begin{lstlisting}[caption=Client-Seite der socket.io-Websocket-Verbindung in ais-socket.io.js,  label=ais-socket.io.js]
+var socket = io.connect('http://127.0.0.1:8090');
+
+socket.on('vesselsInBoundsEvent', function (data) {...}
+socket.on('vesselPosEvent', function (data) {...}
+\end{lstlisting}
+
+Bezüglich der an den Websocket-Server zu sendenden register-Nachricht ergab sich durch die Kapselung der LeafletMap als revealing Module eine Besonderheit: der moveEnd-Event, der die neue Registrierung triggern soll, befindet sich im LeafletMap-Objekt. Als Lösung wird diese Aufgabe dem LeafletMap-Objekt übertragen, weswegen bei der init-Funktion der socket mit übergeben wird. Diese Lösung ist unproblematisch, weil beim Verlust der socket-Verbindung ohnehin ein Reload der Seite stattfinden muss.
+Um geeignete Objekte aus den Ais-Messages zu erstellen (Punkt 5), wird in der Datei Vessel.js eine Konstruktor-Funktion zur Verfügung gestellt, mit der Instanzen von Vessel-Objekten generiert werden können. Diese Instanzen werden in einem assoziativen Array, also einem Objekt, namens ‘vessels’ gespeichert. Beim Empfang eines Vessel-Position-Events kann mit vessels[mmsi] nach dem passenden vessel-Objekt zum Update gesucht werden.
+Schließlich sind die Vessel-Objekte auf die Karte zu rendern. Dazu wird in Vessel.js eine asynchrone Funktion genutzt (siehe Listing \ref{vessel.createMapObjects}), mit der zuerst je nach Status (moving / not moving) und zoomlevel unterschiedliche Features für ein Schiff erstellt werden (Polygon, Triangle, Speedvector, Circle). Anschließend wird das vessel-Objekt auf die Karte gerendert und das Objekt mit den Features gespeichert. Das ist notwendig, um die Features bei Vessel-Position-Updates von der Karte zu entfernen, bevor sie an der neuen Position dargestellt werden.
+\begin{lstlisting}[caption=Aufruf der public function createMapObjects des Vessel-Objekts in ais-socket.io.js, label=vessel.createMapObjects]
+vessel.createMapObjects(LM.getZoom(), function(){
+              LM.paintVessel(vessel);
+              vessels[vessel.mmsi] = vessel;
+            });
+\end{lstlisting}
+
+Für díe letzte Aufgabe, die Animation, wird das Polygon-Objekt des Leaflet-Frameworks erweitert zur Klasse L.AnimatedPolygon. Ein Polygon in Leaflet ist eine Polyline, die mehrere Punkte auf der Karte verbindet. Die Animation eines Punktes entlang einer Linie mit einer bestimmten Geschwindigkeit wurde aus dem Leaflet-Plugin L.AnimatedMarker \footnote{\label{foot:2}https://github.com/openplans/Leaflet.AnimatedMarker} übernommen. Die dort präferierte css3-Transition zur Animation konnte aber nicht verwendet werden, weil dazu ein Objekt im DOM-Baum verwendet werden muss. Das von Leaflet für ein Polygon erstellte DOM-Objekt (svn-Graphik) ist aber durch die Leaflet-Bibliothek gekapselt, so dass ein Zugriff von außen nicht vorgesehen ist.  \\
+
+Ein Schiffspolygon wird berechnet aus der Schiffsposition (Positionsangabe in der AIS-Nachricht) und aus der relativen Position des AIS-Transceivers an Bord (Abstand zum Bug, zum Heck, nach Backbord und nach Steuerbord). Um zu wissen, in welche Richtung der Bug eines Schiffes zeigt, wird die AIS-Angabe zur Fahrtrichtung (cog = Course over Ground) verwendet. Aus dieser Richtungsangabe und der übermittelten Geschwindigkeit (sog = Speed over Ground) wird ein Speedvector berechnet, der als Linie auf die Karte gezeichnet wird. Bei der Erstellung des AnimatedPolygon-Objektes wird dieser Speedvector mit übergeben, um bei der Animation des Polygons die Position des Schiffes entlang des Speedvektors zu verschieben. Nach jedem Animationsschritt wird das Polygon neu berechnet und gezeichnet.
+
 
 \subsection{HTML5-Server}\label{HTML5-Server}
-Dazu wird im Prozess worker.js ein Array mit Client-Connections verwaltet, wobei für jeden Client die aktuellen Bounds gespeichert werden.
-Für den HTML5-Server ist es nun möglich, zwei vergleichbare HTML5-Websocket-Clientanwendungen jeweils in Javascript (js-client) und Dart (dart-client) zu bauen, die beide eine Websocketverbindung nach der HTML5-Spezifikation zum HTML5-Server aufbauen.
+Diese Server-Implementierung soll genau dieselbe Funktionalität besitzen wie die socket.io-Server-Implementierung (\ref{socket.io-Server}). Lediglich der Websocket socket.io wird durch einen node.js-Websocket nach der HTML5-Websocket-Spezifikation ausgetauscht \footnote{\label{foot:2}https://github.com/Worlize/WebSocket-Node} . Dazu wird in der Datei worker.js das entsprechende Paket (‘websocket’) eingebunden.
+Einige Features des socket.io-Paketes müssen jetzt selbst organisiert werden: 
+\begin{itemize}
+\item die Clientverwaltung erfolgt in einem Array ‘clients’, in dem zu jeder Zeit alle verbundenen Clients mit ihren Attributen stehen. 
+\item in der Websocket können keine eigenen Events definiert werden (siehe API-Dokumentation \footnote{\label{foot:2}https://github.com/Worlize/WebSocket-Node/wiki/Documentation}. Deshalb wird der message-Event genutzt und die aufzurufende Funktion wird in der message übermittelt.
+\end{itemize}
+\begin{lstlisting}[caption= vom Websocket-Server gesendete message, label=websocket-message]
+message origin=ws://127.0.0.1:8090, data={"type":"vesselsInBoundsEvent","vessels":[{"_id":"50d9fdb4bcc2e678a9278c18","aisclient_id":57,"callsign":"OVYC2 ","cog":285,"dest":"HAMBURG ","dim_bow":70,"dim_port":10,"dim_starboard":4,"dim_stern":30,"draught":54,"imo":"9363170","mmsi":220515000,"msgid":1,"name":"RIKKE THERESA ","nav_status":0,"pos":[9.85185,53.54643333333333],"rot":0,"ship_type":80,"sog":10.3,"time_captured":1366733896000,"time_received":1366733855248,"true_heading":286}]}
+
+\end{lstlisting}
+\begin{lstlisting}[caption= vom socket.io-Server gesendete message, label=socket.io-message]
+[{"_id":"50d9fdb4bcc2e678a9278c18","aisclient_id":57,"callsign":"OVYC2  ","cog":286,"dest":"HAMBURG             ","dim_bow":70,"dim_port":10,"dim_starboard":4,"dim_stern":30,"draught":54,"imo":"9363170","mmsi":220515000,"msgid":1,"name":"RIKKE THERESA       ","nav_status":0,"pos":[9.8375,53.54885],"rot":0,"ship_type":80,"sog":12.4,"time_captured":1366734056000,"time_received":1366734014715,"true_heading":288}]
+\end{lstlisting}
 
 \subsection{HTML5-Client in Javascript}\label{HTML5-Client in Javascript}
-Die Funktionalität entspricht exakt der des socket.io-Clients. 
+Die socket.io-Client-Implementierung und die HTML5-Client bieten die gleiche Funktionalität und arbeiten nur geringfügig unterschiedlich.
+ \begin{itemize}
+ \item wie inListing \ref{socket.io-message} und \ref{websocket-message} zu sehen, muss der HTML5-Client zuerst den message-type abfragen, um die Daten korrekt zuzuordnen.
+ \item weil dem Leaflet-Map-Objekt die Websocket-Connection als Parameter übergeben wird, muss dafür der Aufbau der Websocket-Connection abgewartet werden. 
 
 \subsection{HTML5-Client in Dart}\label{HTML5-Client in Dart}
-Zum Schluß wird der Client für den HTML5-Server in Dart geschrieben. 
-
+Die Implementierung des HTML5-Client in Dart orientiert sich an der vorangegangenen Implementierung.
 
 \chapter{Vergleichende Evaluation}
 Die realisierten Implementierungen lassen zwei Vergleiche zu: 
@@ -564,31 +649,7 @@ String getBounds(){
 
 \bibliographystyle{alphadin_martin}
 \bibliography{literatur}
-%\begin{thebibliography}{999}
-%\bibitem{weranders}
-%        "Hans Weranders",
-%       "Der Titel ist seine Allegorie seiner selbst",
-%        “Bücher über dies und das",
-%       "1999",
-%        "Februar",
-%         "257-286"
-%\bibitem {sethladd} Seth Ladd, 
-%        {Sorry, at the time of this writing, I'm not aware of a socket.io port for Dart. socket.io is nice because it has a bunch of implementation options for browsers that don't support Web sockets.
-%Sounds like a good idea for a hackathon project!},
-%       {2012}, {October},{15}
-%\bibitem{teixeira}{Pedro Teixeira},
-%Professional Node.js,
-%{Wrox},
-%{2012},
-%408 p
-%
-%\bibitem{demtroeder02}{Wolfgang Demtröder}
-%{Experimentalphysik III},
-%{Springer Verlag},
-%{2002},
-%{234-256}
-%
-%\end{thebibliography}
+
 
 %---------------------------------------------------------------------------------------------------------------------------------------------
 \chapter*{Erklärung}
