@@ -69,8 +69,8 @@ class Vessel{
           var vectorWidth = (sog > 30?5:2); 
           vector = new LM.Polyline(vectorPoints, {'color': 'red', 'weight': vectorWidth });
           vector.addTo(leaflet_map, true);
-          var animationPartsSize = vectorLength/(zoom); //how long are the chunks of the vector
-          var animationInterval = 800; //how long is the interval between two animation steps
+          var animationPartsSize = vectorLength/(zoom*10); //how long are the chunks of the vector
+          var animationInterval = 400; //how long is the interval between two animation steps
           if (shipStatics)
           {
             polygon = new LM.AnimatedPolygon(vectorPoints,{
