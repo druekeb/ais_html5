@@ -22,7 +22,7 @@ WebSocket  socket;
 
 bool  encounteredError = false;
 int retrySeconds = 2;
-
+int boundsTimeout = 300;
 
 /*Startpoint for Dart-Client-Application*/
 void main() {
@@ -59,7 +59,7 @@ initMap(double zoom, double lon, double lat){
   String width = window.innerWidth.toString();
   height = "$height px";
   width =  "$width px";
-  List mapOptions = [new LM.Coord(lat, lon),zoom];
+  List mapOptions = [new LM.Coord(lat, lon),zoom, boundsTimeout];
   leaflet_map = new LM.OpenStreetMap(mapDiv_id, mapOptions, width:width, height:height);
   leaflet_map.loadMap();
 }
@@ -92,8 +92,6 @@ void initWebSocket(int retrySeconds, callback) {
   /*process messages from websocketServer*/
   socket.onMessage.listen((evt)
   {
-//    var timeMessage = new DateTime.now().millisecondsSinceEpoch;
-//    var timeQuery = timeMessage - timeFlex;
     Map json = parse(evt.data);
     if (json['type'] == "vesselsInBoundsEvent")
     {
@@ -132,9 +130,8 @@ processVesselsInBounds(jsonArray){
   });
   vessels.clear();
   leaflet_map.clearFeatureLayer();
-
-  // paint vessel-Marker, vessel-Polygons and speed vectors to map
-  // afterwards (callback) startAnimation of moving vessels-Polygons 
+  
+  /* create new Vessel with Objects (Polygons, Circles) and paint to Map */
   for (var x in jsonArray)
   {
     var vessel = new Vessel(x);

@@ -47,11 +47,13 @@ class OpenStreetMap extends LeafletMap {
   num initialLat;
   num initialLon;
   var boundsTimeout;
+  var boundsTimeoutTimer;
 
   OpenStreetMap(String elementid, List mapOptions, {String width, String height}) : super(elementid, width: width, height: height){ //critical to call super constructor
     initialZoom = mapOptions[1];
     initialLat = mapOptions[0].latitude;
     initialLon = mapOptions[0].longitude;
+    boundsTimeout = mapOptions.boundsTimeout * 1000;
   }
   void loadMap() {
     var tileURL = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
@@ -111,7 +113,7 @@ class OpenStreetMap extends LeafletMap {
         }
      callbackList.clear();
     }
-    boundsTimeout = new Timer(new Duration(milliseconds:300000),changeRegistration);  
+    boundsTimeoutTimer = new Timer(new Duration(milliseconds:boundsTimeout),changeRegistration);  
  }
   
   String getBounds(){

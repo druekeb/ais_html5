@@ -36,8 +36,8 @@ $(document).ready(function() {
         onClick: true,
         onMoveend: this,
         zoom: zoom,
-        boundsTimeout: true,
-        center: [lat, lon]
+        center: [lat, lon],
+        boundsTimeout: 300
        });
     };
 
@@ -74,12 +74,10 @@ $(document).ready(function() {
         }
         vessels = {};
 
-       // male vessel-Marker, Polygone und speedVectoren in die karte
-       
+       /* create new Vessel with Objects (Polygons, Circles) and paint to Map */
        for (var x in jsonArray)
         {
           var jsonObject = jsonArray[x];
-          // var timeFlex  = new Date().getTime();
           if (jsonObject.msgid < 4 || jsonObject.msgid == 5)
           {
             var vessel = new Vessel(jsonArray[x]);
@@ -99,7 +97,6 @@ $(document).ready(function() {
        {
          $('#zoomSpeed').css('display', 'none');
        }
-       // console.debug("painted " +Object.keys(vessels).length+ "  "+(new Date().getTime() -timeMessage)+" msec");
     }
 
       function processVesselPosition(jsonVessel){
@@ -122,13 +119,6 @@ $(document).ready(function() {
     }
 
     function getParam(name){ 
-
-        if (name == 'auth')
-        {
-           var authString =  [getHash(137454), 137454]; // Zeile entfernen, sobald die Authentifizierung in der jeweiligen Anwendung (Vesseltracker, Wateropt, ..) erfolgt
-          console.debug("authstring "+authString);
-          return authString;
-        }  
         name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
         var regexS = "[\\?&]"+name+"=([^&#]*)";
         var regex = new RegExp( regexS );

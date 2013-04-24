@@ -22,8 +22,6 @@ class Vessel{
     cog = jsonObject['cog'];
     sog = jsonObject['sog'];
     pos = jsonObject['pos'];
-//    lat = jsonObject['pos[1]'];            
-//    lon = jsonObject['pos[0]'];
     imo = jsonObject['imo'];
     true_heading = jsonObject['true_heading'];
     dim_port = jsonObject['dim_port'];
@@ -67,12 +65,11 @@ class Vessel{
           var meterProSekunde = sog *0.51444;
           var vectorLength = meterProSekunde * 30; //meter, die in 30 sec zurückgelegt werden
           var targetPoint = destinationPoint(pos[1], pos[0], cog, vectorLength);
-          //var targetPoint = calcVector(pos[0],pos[1], vectorLength, sin_angle, cos_angle);//destinationPoint(this.lat, this.lon, this.cog, vectorLength);
           vectorPoints.add(targetPoint);
           var vectorWidth = (sog > 30?5:2); 
           vector = new LM.Polyline(vectorPoints, {'color': 'red', 'weight': vectorWidth });
           vector.addTo(leaflet_map, true);
-          var animationPartsSize = vectorLength/(zoom*20); //in wieviele Teilstücke wird der vector zerlegt
+          var animationPartsSize = vectorLength/(zoom*10); //in wieviele Teilstücke wird der vector zerlegt
           var animationInterval = 500; //wie lang ist die Zeitspanne zwischen zwei Animationsschritten
           if (shipStatics)
           {

@@ -1,19 +1,14 @@
 var LM = function(){
 
-	var map, featureLayer, tileLayer, zoom, socket, boundsTimeout;
+	var map, featureLayer, tileLayer, zoom, socket, boundsTimeout, boundsTimeoutTimer;
 	
   function init(divName, options){
     map =  L.map(divName,options.mapOptions);
-    zoom = options.zoom?options.zoom:14;
-    center = options.center?options.center: [52.410,4.790];
-    map.setView(center, zoom);
+    map.setView(options.center, options.zoom);
 
     if (options.tileLayer )
     {
-      var osmAttribution = 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors';
-      var osmUrl = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
-      var osmLayer =  new L.tileLayer(osmUrl, {attribution: osmAttribution});
-      osmLayer.addTo(map);
+      addOSMLayerToMap();
     }
     if (options.featureLayer)
     {
@@ -32,7 +27,19 @@ var LM = function(){
       socket = options.onMoveend;
       map.on('moveend', changeRegistration);
     }
+    if (options.boundsTimeout)
+    {
+      boundsTimeout = options.boundsTimeout *1000;
+    }
     changeRegistration();
+  }
+
+   function addOSMLayerToMap()
+  {
+      var osmAttribution = 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors';
+      var osmUrl = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
+      var osmLayer =  new L.tileLayer(osmUrl, {attribution: osmAttribution});
+      osmLayer.addTo(map);
   }
 
      function changeRegistration()
@@ -43,8 +50,8 @@ var LM = function(){
         message.bounds = map.getBounds();
         socket.timeQuery = new Date().getTime();
         socket.send(JSON.stringify(message));
-        if (boundsTimeout) clearTimeout(boundsTimeout);
-        boundsTimeout = setTimeout(changeRegistration,300000); 
+        if (boundsTimeoutTimer) clearTimeout(boundsTimeoutTimer);
+        boundsTimeoutTimer = setTimeout(changeRegistration,boundsTimeout); 
      } 
 	   
     function getMap(){
