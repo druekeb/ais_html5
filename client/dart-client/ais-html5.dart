@@ -101,7 +101,6 @@ void initWebSocket(int retrySeconds, callback) {
     }
     if (json['type'] == "vesselPosEvent")
     {
-      logMsg("vesselsPositionEvent: ${json['vessel']['userid']}");
       processVesselPositionEvent(json['vessel']);
     }
   });
