@@ -47,7 +47,7 @@ $(document).ready(function() {
     };
 
     connection.onmessage = function (message) {
-       console.debug(message);
+       // console.debug(message);
        /* try to decode json */
         try
         {
