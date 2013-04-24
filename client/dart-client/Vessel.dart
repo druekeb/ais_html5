@@ -39,8 +39,8 @@ class Vessel{
   updatePosition(json){
     msgid =  json['msgid'];
     time_received = json['time_received'];
-    cog = json['cog']/10;
-    sog = json['sog']/10;
+    cog = json['cog'];
+    sog = json['sog'];
     pos = json['pos'];
     true_heading = json['true_heading'];
   }
