@@ -18,7 +18,7 @@ function Vessel(jsonObject){
   this.dest = jsonObject.dest;
   this.draught = jsonObject.draught;
   this.time_captured = jsonObject.time_captured;
-  if (this.mmsi == 211855000)\\Cap San Diego
+  if (this.mmsi == 211855000) //Cap San Diego
   {
     this.true_heading = 299;
    }
