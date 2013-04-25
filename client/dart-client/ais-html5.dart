@@ -2,7 +2,6 @@ library caller;
 
 import 'dart:html';
 import 'dart:json';
-
 import 'dart:async';
 
 import 'LeafletMap.dart' as LM;
@@ -15,14 +14,14 @@ List ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
 const WEBSOCKET_SERVER_LOCATION = '192.168.1.112';
 const WEBSOCKET_SERVER_PORT = 8090;
 const ANIMATION_MINIMAL_ZOOMLEVEL =13;
+const RETRY_SECONDS = 2; 
+const BOUNDS_TIMEOUT = 300; //Reload of page every 5 min to get Vessels in Bounds
 
 var leaflet_map;
 Map<String, Vessel> vessels = new Map<String, Vessel>();
 WebSocket  socket;
 
 bool  encounteredError = false;
-int retrySeconds = 2;
-int boundsTimeout = 300;
 
 /*Startpoint for Dart-Client-Application*/
 void main() {
@@ -42,14 +41,13 @@ void main() {
     lat = getParam('lat');
   }
 
-  initWebSocket(2,(){
+  initWebSocket(RETRY_SECONDS,(){
     if(leaflet_map==null)  
     {
       initMap( zoom,lon, lat);
     }
   });
   initTypeArrays();
-  
 }
 
 /* load Leaflet-Map into mapDiv*/
@@ -59,7 +57,7 @@ initMap(double zoom, double lon, double lat){
   String width = window.innerWidth.toString();
   height = "$height px";
   width =  "$width px";
-  List mapOptions = [new LM.Coord(lat, lon),zoom, boundsTimeout];
+  List mapOptions = [new LM.Coord(lat, lon),zoom, BOUNDS_TIMEOUT];
   leaflet_map = new LM.OpenStreetMap(mapDiv_id, mapOptions, width:width, height:height);
   leaflet_map.loadMap();
 }

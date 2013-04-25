@@ -53,7 +53,7 @@ class OpenStreetMap extends LeafletMap {
     initialZoom = mapOptions[1];
     initialLat = mapOptions[0].latitude;
     initialLon = mapOptions[0].longitude;
-    boundsTimeout = mapOptions.boundsTimeout * 1000;
+    boundsTimeout = mapOptions[2]* 1000;
   }
   void loadMap() {
     var tileURL = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';

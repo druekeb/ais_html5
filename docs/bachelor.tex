@@ -435,6 +435,7 @@ io.sockets.on('connection', function(client) {
   \centering
   \includegraphics[width=6in]{images/ais-socketio.png}
   \caption[Übersicht Javascript-Files]{Übersicht Javascript-Files}
+  \label{fig:Übersicht Javascript-Files}
 \end{figure}
 \subsection{socket.io-Client}\label{socket.io-Client}
 Der socket.io-Client hat folgende Aufgaben.
@@ -521,9 +522,11 @@ Die socket.io-Client-Implementierung und die HTML5-Client bieten die gleiche Fun
  \begin{itemize}
  \item wie inListing \ref{socket.io-message} und \ref{websocket-message} zu sehen, muss der HTML5-Client zuerst den message-type abfragen, um die Daten korrekt zuzuordnen.
  \item weil dem Leaflet-Map-Objekt die Websocket-Connection als Parameter übergeben wird, muss dafür der Aufbau der Websocket-Connection abgewartet werden. 
+\end{itemize}
 
 \subsection{HTML5-Client in Dart}\label{HTML5-Client in Dart}
-Die Implementierung des HTML5-Client in Dart orientiert sich an der vorangegangenen Implementierung.
+Die Implementierung des HTML5-Client in Dart orientiert sich an der Implementierung des HTML5-Websocket-Clients in Javascript. Oberstes Ziel dabei ist es, dieselbe Funktionalität zu implementieren wie in \ref{HTML5-Client in Javascript}. Die Vorteile der Sprache Dart gegenüber Javascript sollen soweit wie möglich zum Tragen kommen. \\
+Die Modularisierung, also die Verteilung der Objekte und Funktionalitäten auf Programmdateien, wird in Dart ähnlich gestaltet wie in Javascript (siehe Abb. \ref{fig:Übersicht Javascript-Files}).
 
 \chapter{Vergleichende Evaluation}
 Die realisierten Implementierungen lassen zwei Vergleiche zu: 

@@ -33,6 +33,10 @@ class Vessel{
     dest = jsonObject['dest'];
     draught = jsonObject['draught'];
     time_captured = jsonObject['time_captured'];
+    if (mmsi == 211855000) //Cap San Diego
+    {
+      true_heading = 299;
+    }
   }
   updatePosition(json){
     msgid =  json['msgid'];
@@ -44,16 +48,12 @@ class Vessel{
   }
   
   paintToMap(zoom, callback){
-
     if(pos != null)
     {
-      // for vessels paint...
-      if (msgid < 4 ||msgid == 5)
-      {
         var moving = (sog !=null && sog >= MINIMUM_SPEED && sog!=102.3) ; 
         var shipStatics = (leaflet_map.getZoom() > 11) &&  (cog !=null ||(true_heading!=null && true_heading!=0.0 && true_heading !=511)) && (dim_port !=null && dim_stern!=null) ;
 
-        brng = calcAngle();
+        brng = calcAngle(sog, cog, true_heading);
         var cos_angle = cos(brng);
         var sin_angle = sin(brng);
         List<LM.Coord> vectorPoints = new List();
@@ -63,7 +63,7 @@ class Vessel{
         if (moving) //only vessel, that move with a minimum speed of MINIMUM_SPEED
         {
           var meterProSekunde = sog *0.51444;
-          var vectorLength = meterProSekunde * 30; //meter, die in 30 sec zurückgelegt werden
+          var vectorLength = meterProSekunde * 30; //meters, which are covered in 30 sec
           var targetPoint = destinationPoint(pos[1], pos[0], cog, vectorLength);
           vectorPoints.add(targetPoint);
           var vectorWidth = (sog > 30?5:2); 
@@ -142,10 +142,10 @@ class Vessel{
           marker = new LM.CircleMarker(vectorPoints[0], circleOptions, mmsi);
           marker.addTo(leaflet_map, true);
         }
-      }
     }
   callback();
 }
+  
   String createMouseOverPopup(){
     String mouseOverPopup ="<div class='mouseOverPopup'><table>";
     if(name != null) {
@@ -186,13 +186,12 @@ class Vessel{
     mouseOverPopup = "${mouseOverPopup}</table></div>";
     return mouseOverPopup;
   }
-  
-  num calcAngle() {
+}
+
+const EARTH_RADIUS = 6371000; 
+
+num calcAngle(sog, cog, true_heading) {
     var direction = 0;
-    if (mmsi == 211855000) //Cap San Diego
-    {
-      direction = 299;
-    }
     if (sog!=null && sog > 0.4 && cog < 360)
     {
       direction = cog;
@@ -204,14 +203,8 @@ class Vessel{
     return (-direction *(PI / 180.0));
   }
 
-//  LM.Coord calcVector(lon, lat, sog, sinus, cosinus){
-//    var dy_deg = -(sog * cosinus)/10000;
-//    var dx_deg = -(- sog * sinus)/cos((lat)*(PI/180.0))/10000;
-//    return new LM.Coord(lat - dy_deg, lon - dx_deg);
-//  }
-
   LM.Coord destinationPoint(lat, lng, cog, dist) {
-    dist = dist / 6371000;  
+    dist = dist / EARTH_RADIUS;  
     var brng = cog * (PI / 180);  
     var lat1 = lat * (PI / 180);
     var lon1 = lng * (PI / 180);
@@ -222,8 +215,6 @@ class Vessel{
     lon2 = lon2 *(180/PI);
     return new LM.Coord(lat2, lon2);
   }
-}
-
 
 Map<int, String> shipTypes = new Map<int, String>();
 Map<int,String> shipTypeColors = new Map<int,String>();
