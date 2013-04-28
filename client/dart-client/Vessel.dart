@@ -9,7 +9,7 @@ class Vessel{
   String name, imo, dest;
   num cog, sog, true_heading, dim_port, dim_stern, dim_bow, dim_starboard, draught, brng;
   int time_received, time_captured;
-  MapFeature vector, polygon, triangle, marker;
+  MapFeature vector, polygon, feature, marker;
   const MINIMUM_SPEED = 0.4;
   
   Vessel(jsonObject){
@@ -91,7 +91,7 @@ class Vessel{
             polygon.addToMap(true);
           }
 
-          triangle = new AnimatedPolygon(vectorPoints,{
+          feature = new AnimatedPolygon(vectorPoints,{
             'autoStart': false,
             'animation':true,
             'distance': animationPartsSize,
@@ -105,7 +105,7 @@ class Vessel{
             'fillOpacity':0.8,
             'clickable':true
              }, mmsi);
-        triangle.addToMap( true);
+        feature.addToMap( true);
         }/* paint for non moving vessels a Polygon and a circlemarker*/
         else 
         {

@@ -130,12 +130,9 @@ function Vessel(jsonObject){
         LM.addToMap(this.feature);
       }
     }
-    // this.feature.on('mouseover',onMouseover);
-    // this.feature.on('mouseout', onMouseout);
-    // this.popupContent = createPopupContent(this);
     callback();
-    };
-  }
+  };
+}
 
 const EARTH_RADIUS = 6371000;
 

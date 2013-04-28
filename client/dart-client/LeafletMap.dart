@@ -138,6 +138,31 @@ class OpenStreetMap extends LeafletMap {
     });
   }
 
+  clearFeatures(vessel){
+    js.scoped((){
+      if (typeof vessel.vector != 'undefined')
+      {
+       _featureLayerGroup.removeLayer(vessel.vector);
+      }
+      if (typeof vessel.polygon != 'undefined')
+      {
+        if (typeof vessel.polygon.stop ==='function')
+        {
+          vessel.polygon.stop();
+        }
+        _featureLayerGroup.removeLayer(vessel.polygon);
+      }
+      if (typeof vessel.feature !="undefined")
+      {
+        if (typeof vessel.feature.stop ==='function')
+        {
+          vessel.feature.stop();
+        }
+        _featureLayerGroup.removeLayer(vessel.feature);
+      }
+    });
+  }
+
   clearFeatureLayer()
   {
     js.scoped((){
@@ -205,14 +230,7 @@ abstract class MapFeature{
 
   void addToMap(bool featureLayer) {
     js.scoped(() {
-      // if(featureLayer)
-      // {
-        LMap._featureLayerGroup.addLayer(_mapFeature);
-      // }
-      // else
-      // {
-      //   _mapFeature.addTo(LMap._map);
-      // }
+      LMap._featureLayerGroup.addLayer(_mapFeature);
       LMap.callbackList.addAll(callbacks);
     });
   }
@@ -264,7 +282,7 @@ class AnimatedPolygon extends MapFeature{
         points.push(new js.Proxy(latlng,lat,lng ));
       }
       var triangleOptions = js.map(options);
-      _mapFeature= new js.Proxy(js.context.L.animatedPolygon, points, triangleOptions);
+      _mapFeature= new js.Proxy(js.context.L.AnimatedPolygon, points, triangleOptions);
       addListeners(vmmsi);
       js.retain(_mapFeature);
     });

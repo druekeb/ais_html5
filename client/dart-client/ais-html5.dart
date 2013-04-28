@@ -11,7 +11,7 @@ import 'Vessel.dart';
 /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
                Zoomlevel 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18 */
 List ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-const WEBSOCKET_SERVER_LOCATION = '127.0.0.1';
+const WEBSOCKET_SERVER_LOCATION = '192.168.1.112';
 const WEBSOCKET_SERVER_PORT = 8090;
 const ANIMATION_MINIMAL_ZOOMLEVEL =13;
 const RETRY_SECONDS = 2; 
@@ -116,17 +116,9 @@ processVesselsInBounds(jsonArray){
   var currentZoom = LMap.getZoom();
   /*stop all animations, remove all vessels from vessels-Array and then remove all features from map*/
   vessels.forEach((k,v){
-    if(v.polygon !=null)
-    {
-      v.polygon.stopAnimation();
-    }
-    if (v.triangle != null)
-    {
-      v.triangle.stopAnimation();
-    }
-  });
+    LMap.clearFeatures(v);
+    });
   vessels.clear();
-  LMap.clearFeatureLayer();
   
   /* create new Vessel with Objects (Polygons, Circles) and paint to Map */
   for (var x in jsonArray)
@@ -135,9 +127,9 @@ processVesselsInBounds(jsonArray){
     vessel.paintToMap(currentZoom, (){
       if (currentZoom >= ANIMATION_MINIMAL_ZOOMLEVEL)
       {
-        if(vessel.triangle !=null)
+        if(vessel.feature !=null)
         {
-          vessel.triangle.startAnimation();
+          vessel.feature.startAnimation();
         }
         if(vessel.polygon !=null)
         {
@@ -170,31 +162,15 @@ processVesselPositionEvent(json){
   }
   else
   {
+    LMap.clearFeatures(vessel);
     vessel.updatePosition(json);
-    if (vessel.vector != null)
-    {
-      vessel.vector.removeFeatureLayer(true);
-      vessel.vector = null;
-    }
-    if (vessel.polygon != null)
-    {
-      vessel.polygon.stopAnimation();
-      vessel.polygon.removeFeatureLayer(true);
-      vessel.polygon = null;
-    }
-    if (vessel.triangle != null)
-    {
-      vessel.triangle.stopAnimation();
-      vessel.triangle.removeFeatureLayer(true);
-      vessel.triangle = null;
-    }
   }
   vessel.paintToMap(LMap.getZoom(), (){
     if (LMap.getZoom() >= ANIMATION_MINIMAL_ZOOMLEVEL)
     {
-      if (vessel.triangle != null)
+      if (vessel.feature != null)
       {
-        vessel.triangle.startAnimation();
+        vessel.feature.startAnimation();
       }
       if(vessel.polygon != null)
       {

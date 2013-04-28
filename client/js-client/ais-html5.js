@@ -3,7 +3,7 @@ $(document).ready(function() {
   /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
                 Zoomlevel 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18 */
   var ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-     
+  const WEBSOCKET_SERVER_LOCATION = '192.168.1.112';
   var vessels = {};
       
   var initialZoom = getParam('zoom');
@@ -15,7 +15,7 @@ $(document).ready(function() {
   
   // if user is running mozilla then use it's built-in WebSocket
   var WebSocket = window.WebSocket || window.MozWebSocket;
-  var connection = new WebSocket('ws://192.168.1.112:8090');
+  var connection = new WebSocket('ws://'+WEBSOCKET_SERVER_LOCATION);
     
   connection.onopen = function () {
         /* connection is opened and ready to use */
