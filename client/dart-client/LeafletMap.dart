@@ -1,10 +1,12 @@
-library leaflet_map;
+library LMap;
 
 import "dart:html";
 import "dart:async";
-import 'packages/js/js.dart' as js;
-import 'ais-html5.dart' as caller;
 import 'dart:json';
+
+import 'packages/js/js.dart' as js;
+import 'ais-html5.dart';
+
 
 abstract class LeafletMap {
   String _elementid;
@@ -13,9 +15,7 @@ abstract class LeafletMap {
   js.Proxy _map;
   js.Proxy _featureLayerGroup;
   js.Proxy _popup;
-  int  _zoom;
   
-
   LeafletMap(String elementid, {String width, String height}) {
     _elementid = elementid;
     if(width != null) {
@@ -50,9 +50,9 @@ class OpenStreetMap extends LeafletMap {
   var boundsTimeoutTimer;
 
   OpenStreetMap(String elementid, List mapOptions, {String width, String height}) : super(elementid, width: width, height: height){ //critical to call super constructor
-    initialZoom = mapOptions[1];
     initialLat = mapOptions[0].latitude;
     initialLon = mapOptions[0].longitude;
+    initialZoom = mapOptions[1];
     boundsTimeout = mapOptions[2]* 1000;
   }
   void loadMap() {
@@ -92,8 +92,7 @@ class OpenStreetMap extends LeafletMap {
     changeRegistration();
   }
   
-  changeRegistration()
-  {
+  changeRegistration(){
     int zoom = getZoom();
     var boundsArray = getBounds().split(",");
     var _southWest = {"lng":double.parse(boundsArray[0]),"lat":double.parse(boundsArray[1])};
@@ -104,8 +103,7 @@ class OpenStreetMap extends LeafletMap {
     message['function'] = 'register';
     message['zoom'] =  zoom;
     message['bounds'] = bounds;
-//    caller.timeFlex = new DateTime.now().millisecondsSinceEpoch;
-    caller.socket.send(stringify(message));
+    socket.send(stringify(message));
     if(!callbackList.isEmpty)
     {
       for(final x in callbackList){
@@ -114,7 +112,7 @@ class OpenStreetMap extends LeafletMap {
      callbackList.clear();
     }
     boundsTimeoutTimer = new Timer(new Duration(milliseconds:boundsTimeout),changeRegistration);  
- }
+  }
   
   String getBounds(){
     String bBox;
@@ -124,22 +122,12 @@ class OpenStreetMap extends LeafletMap {
     return bBox;
   }
 
-  zoomOut(){
-    setZoom(getZoom() -1);
-  }
-
   int getZoom() {
     int zoom;
     js.scoped((){
       zoom = _map.getZoom();
     });
     return zoom;
-  }
-  
-  setZoom(zoom){
-    js.scoped((){
-      _map.setZoom(zoom);
-    });
   }
 
   void setView(num latitude, num longitude, int zoom) {
@@ -189,9 +177,9 @@ class Popup{
     });
   }
 
-  void addTo(LeafletMap map) {
-    map.closePopup();
-    map.openPopup(_popup);
+  void addToMap() {
+    LMap.closePopup();
+    LMap.openPopup(_popup);
   }
 }
 
@@ -200,12 +188,11 @@ abstract class MapFeature{
   js.Proxy _mapFeature;
   List callbacks = new List();
 
-
   void addListeners(mmsi)
   {
-    onClickHandler(e)=> caller.onClickHandler(e, mmsi);
-    onMouseoutHandler(e)=>caller.onMouseoutHandler(e);
-    onMouseoverHandler(e) =>caller.onMouseoverHandler(e, mmsi);
+    onClickHandler(e)=> clickHandler(e, mmsi);
+    onMouseoutHandler(e)=>mouseoutHandler(e);
+    onMouseoverHandler(e) =>mouseoverHandler(e, mmsi);
     
     callbacks.add(new js.Callback.many(onClickHandler));
     callbacks.add(new js.Callback.many(onMouseoverHandler));
@@ -216,30 +203,30 @@ abstract class MapFeature{
     _mapFeature.on('mouseout', callbacks[2]);
   }
 
-  void addTo(OpenStreetMap map, bool featureLayer) {
+  void addToMap(bool featureLayer) {
     js.scoped(() {
-      if(featureLayer)
-      {
-        map._featureLayerGroup.addLayer(_mapFeature);
-      }
-      else
-      {
-        _mapFeature.addTo(map._map);
-      }
-      map.callbackList.addAll(callbacks);
+      // if(featureLayer)
+      // {
+        LMap._featureLayerGroup.addLayer(_mapFeature);
+      // }
+      // else
+      // {
+      //   _mapFeature.addTo(LMap._map);
+      // }
+      LMap.callbackList.addAll(callbacks);
     });
   }
 
-  void remove(LeafletMap map, bool featureLayer) {
+  void removeFeatureLayer(bool featureLayer) {
     js.scoped(() {
      
       if(featureLayer)
       {
-        map._featureLayerGroup.removeLayer(_mapFeature);
+        LMap._featureLayerGroup.removeLayer(_mapFeature);
       }
       else
       {
-        map._map.remove(_mapFeature);
+        LMap._map.remove(_mapFeature);
       }
     });
   }
@@ -309,41 +296,9 @@ class CircleMarker extends MapFeature{
   }
 }
 
-class Marker extends MapFeature{
-
-  Marker(num latitude, num longitude, [String tooltip, bool draggable]) {
-
-    js.scoped(() {
-      var pos = new js.Proxy(js.context.L.LatLng, latitude, longitude);
-      Map options = new Map();
-      if(tooltip != null) {
-        options['title'] = tooltip;
-      }
-      if(draggable != null) {
-        options['draggable'] = draggable;
-      }
-      _mapFeature = new js.Proxy (js.context.L.Marker, pos, js.map(options));
-      js.retain(_mapFeature);
-    });
-  }
-
-  void addTo(LeafletMap map, bool featureLayer) {
-    js.scoped(() {
-      if(featureLayer )
-      {
-        map._featureLayerGroup.addLayer(_mapFeature);
-      }
-      else
-      {
-        _mapFeature.addTo(map);
-      }
-    });
-  }
-
   Coord getCoord() {
     js.scoped(() {
       var latlng = _mapFeature.getLatLng();
-
       return new Coord(latlng.latitude, latlng.longitude);
     });
   }
@@ -351,7 +306,6 @@ class Marker extends MapFeature{
   void setCoord(Coord coord) {
     js.scoped(() {
       var latlng = new js.Proxy(js.context.L.LatLng, coord.latitude, coord.longitude);
-
       _mapFeature.setLatLng(latlng);
       _mapFeature.update();
     });
@@ -361,7 +315,6 @@ class Marker extends MapFeature{
     js.scoped(() {
       var size = new js.Proxy(js.context.L.Point, icon.dimension.width, icon.dimension.height);
       var js_icon = new js.Proxy(js.context.L.Icon, js.map({'iconUrl':icon.imageURL, 'iconSize': size}));
-
       _mapFeature.setIcon(js_icon);
     });
   }
@@ -380,25 +333,22 @@ class Marker extends MapFeature{
 
   void bindPopup(Popup popup) {
   }
-}
+
 
 class Coord {
   final num latitude;
   final num longitude;
-
   const Coord(this.latitude, this.longitude);
 }
 
 class Icon {
   final String imageURL;
   final Dimension dimension;
-
   const Icon(this.imageURL, this.dimension);
 }
 
 class Dimension {
   final num width;
   final num height;
-
   const Dimension(this.width, this.height);
 }

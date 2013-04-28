@@ -1,53 +1,52 @@
-library caller;
+library ais;
 
 import 'dart:html';
 import 'dart:json';
 import 'dart:async';
 
-import 'LeafletMap.dart' as LM;
+import 'LeafletMap.dart';
 import 'Vessel.dart';
 
 
 /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
                Zoomlevel 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18 */
 List ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-const WEBSOCKET_SERVER_LOCATION = '192.168.1.112';
+const WEBSOCKET_SERVER_LOCATION = '127.0.0.1';
 const WEBSOCKET_SERVER_PORT = 8090;
 const ANIMATION_MINIMAL_ZOOMLEVEL =13;
 const RETRY_SECONDS = 2; 
 const BOUNDS_TIMEOUT = 300; //Reload of page every 5 min to get Vessels in Bounds
 
-var leaflet_map;
+var LMap;
 Map<String, Vessel> vessels = new Map<String, Vessel>();
 WebSocket  socket;
 
 bool  encounteredError = false;
 
 /*Startpoint for Dart-Client-Application*/
-void main() {
-  double zoom = 17.0;
-  double lon = 9.947;
-  double lat = 53.518;
+void main(){
+  double initialZoom = 17.0;
+  double initialLon = 9.947;
+  double initialLat = 53.518;
   if (getParam('zoom')!= null)
   {
-    zoom = getParam('zoom');
+    initialZoom = getParam('zoom');
   }
   if (getParam('lon') != null)
   {
-    lon = getParam('lon'); 
+    initialLon = getParam('lon'); 
   }
   if (getParam('lat') != null)
   {
-    lat = getParam('lat');
+    initialLat = getParam('lat');
   }
-
+  initTypeMaps();
   initWebSocket(RETRY_SECONDS,(){
-    if(leaflet_map==null)  
+    if(LMap==null)  
     {
-      initMap( zoom,lon, lat);
+      initMap( initialZoom, initialLon, initialLat);
     }
   });
-  initTypeArrays();
 }
 
 /* load Leaflet-Map into mapDiv*/
@@ -57,9 +56,9 @@ initMap(double zoom, double lon, double lat){
   String width = window.innerWidth.toString();
   height = "$height px";
   width =  "$width px";
-  List mapOptions = [new LM.Coord(lat, lon),zoom, BOUNDS_TIMEOUT];
-  leaflet_map = new LM.OpenStreetMap(mapDiv_id, mapOptions, width:width, height:height);
-  leaflet_map.loadMap();
+  List mapOptions = [new Coord(lat, lon),zoom, BOUNDS_TIMEOUT];
+  LMap = new OpenStreetMap(mapDiv_id, mapOptions, width:width, height:height);
+  LMap.loadMap();
 }
 
 /*Logger for console output in Browser*/
@@ -114,7 +113,7 @@ void initWebSocket(int retrySeconds, callback) {
 
 /*process a websocketServerResponse with all Vessels in queried bounds*/
 processVesselsInBounds(jsonArray){
-  var currentZoom = leaflet_map.getZoom();
+  var currentZoom = LMap.getZoom();
   /*stop all animations, remove all vessels from vessels-Array and then remove all features from map*/
   vessels.forEach((k,v){
     if(v.polygon !=null)
@@ -127,7 +126,7 @@ processVesselsInBounds(jsonArray){
     }
   });
   vessels.clear();
-  leaflet_map.clearFeatureLayer();
+  LMap.clearFeatureLayer();
   
   /* create new Vessel with Objects (Polygons, Circles) and paint to Map */
   for (var x in jsonArray)
@@ -174,24 +173,24 @@ processVesselPositionEvent(json){
     vessel.updatePosition(json);
     if (vessel.vector != null)
     {
-      vessel.vector.remove(leaflet_map, true);
+      vessel.vector.removeFeatureLayer(true);
       vessel.vector = null;
     }
     if (vessel.polygon != null)
     {
       vessel.polygon.stopAnimation();
-      vessel.polygon.remove(leaflet_map, true);
+      vessel.polygon.removeFeatureLayer(true);
       vessel.polygon = null;
     }
     if (vessel.triangle != null)
     {
       vessel.triangle.stopAnimation();
-      vessel.triangle.remove(leaflet_map, true);
+      vessel.triangle.removeFeatureLayer(true);
       vessel.triangle = null;
     }
   }
-  vessel.paintToMap(leaflet_map.getZoom(), (){
-    if (leaflet_map.getZoom() >= ANIMATION_MINIMAL_ZOOMLEVEL)
+  vessel.paintToMap(LMap.getZoom(), (){
+    if (LMap.getZoom() >= ANIMATION_MINIMAL_ZOOMLEVEL)
     {
       if (vessel.triangle != null)
       {
@@ -206,20 +205,21 @@ processVesselPositionEvent(json){
 }
 
 /*MouseEvent-Handlers*/
-onClickHandler( e, mmsi){
+clickHandler( e, mmsi){
+  LMap.closePopup();
 }
-onMouseoutHandler(e){
-  leaflet_map.closePopup();
+mouseoutHandler(e){
+  LMap.closePopup();
 }
-onMouseoverHandler(e, mmsi){
+mouseoverHandler(e, mmsi){
   var vessel = vessels["${mmsi}"];
-  var latlong = new LM.Coord(vessel.pos[1], vessel.pos[0]);
+  var latlong = new Coord(vessel.pos[1], vessel.pos[0]);
   var popupOptions = {'closeButton': false,
                       'autoPan': false,
                       'offset' : [50,-50]};
-  String popupText = vessel.createMouseOverPopup();
-  var popup = new LM.Popup(latlong, popupText, popupOptions);
-  popup.addTo(leaflet_map);
+  String popupText = vessel.createPopupContent();
+  var popup = new Popup(latlong, popupText, popupOptions);
+  popup.addToMap();
 }
 
 int getFirstNegative(List sZA){
@@ -239,7 +239,6 @@ double getParam(String name){
   if (results != null)
     return double.parse(results.group(1));
   else return null;
-
 }
 
 
