@@ -140,21 +140,21 @@ class OpenStreetMap extends LeafletMap {
 
   clearFeatures(vessel){
     js.scoped((){
-      if (typeof vessel.vector != 'undefined')
+      if (vessel.vector != null)
       {
        _featureLayerGroup.removeLayer(vessel.vector);
       }
-      if (typeof vessel.polygon != 'undefined')
+      if (vessel.polygon != null)
       {
-        if (typeof vessel.polygon.stop ==='function')
+        if (vessel.polygon.stop != null)
         {
           vessel.polygon.stop();
         }
         _featureLayerGroup.removeLayer(vessel.polygon);
       }
-      if (typeof vessel.feature !="undefined")
+      if (vessel.feature != null)
       {
-        if (typeof vessel.feature.stop ==='function')
+        if (vessel.feature.stop != null)
         {
           vessel.feature.stop();
         }
