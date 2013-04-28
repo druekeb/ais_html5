@@ -1,5 +1,5 @@
 library Vessel;
-import 'LeafletMap.dart' as LM;
+import 'LeafletMap.dart';
 import 'ais-html5.dart';
 import 'dart:math';
 
@@ -9,9 +9,7 @@ class Vessel{
   String name, imo, dest;
   num cog, sog, true_heading, dim_port, dim_stern, dim_bow, dim_starboard, draught, brng;
   int time_received, time_captured;
-  LM.Polyline vector;
-  LM.AnimatedPolygon polygon, triangle;
-  LM.CircleMarker marker;
+  MapFeature vector, polygon, triangle, marker;
   const MINIMUM_SPEED = 0.4;
   
   Vessel(jsonObject){
@@ -51,13 +49,13 @@ class Vessel{
     if(pos != null)
     {
         var moving = (sog !=null && sog >= MINIMUM_SPEED && sog!=102.3) ; 
-        var shipStatics = (leaflet_map.getZoom() > 11) &&  (cog !=null ||(true_heading!=null && true_heading!=0.0 && true_heading !=511)) && (dim_port !=null && dim_stern!=null) ;
+        var shipStatics = (LMap.getZoom() > 11) &&  (cog !=null ||(true_heading!=null && true_heading!=0.0 && true_heading !=511)) && (dim_port !=null && dim_stern!=null) ;
 
         brng = calcAngle(sog, cog, true_heading);
         var cos_angle = cos(brng);
         var sin_angle = sin(brng);
-        List<LM.Coord> vectorPoints = new List();
-        LM.Coord shipPoint = new LM.Coord(pos[1],pos[0]);
+        List<Coord> vectorPoints = new List();
+        Coord shipPoint = new Coord(pos[1],pos[0]);
         vectorPoints.add(shipPoint);
 
         if (moving) //only vessel, that move with a minimum speed of MINIMUM_SPEED
@@ -67,13 +65,13 @@ class Vessel{
           var targetPoint = destinationPoint(pos[1], pos[0], cog, vectorLength);
           vectorPoints.add(targetPoint);
           var vectorWidth = (sog > 30?5:2); 
-          vector = new LM.Polyline(vectorPoints, {'color': 'red', 'weight': vectorWidth });
-          vector.addTo(leaflet_map, true);
+          vector = new Polyline(vectorPoints, {'color': 'red', 'weight': vectorWidth });
+          vector.addToMap(true);
           var animationPartsSize = vectorLength/(zoom*10); //how long are the chunks of the vector
           var animationInterval = 400; //how long is the interval between two animation steps
           if (shipStatics)
           {
-            polygon = new LM.AnimatedPolygon(vectorPoints,{
+            polygon = new AnimatedPolygon(vectorPoints,{
               'autoStart':false,
               'animation':true,
               'distance': animationPartsSize,
@@ -90,16 +88,16 @@ class Vessel{
               'fillOpacity':0.6,
               'clickable':false
             }, mmsi);
-            polygon.addTo(leaflet_map, true);
+            polygon.addToMap(true);
           }
 
-          triangle = new LM.AnimatedPolygon(vectorPoints,{
+          triangle = new AnimatedPolygon(vectorPoints,{
             'autoStart': false,
             'animation':true,
             'distance': animationPartsSize,
             'interval':animationInterval,
             'brng':brng,
-            'zoom': leaflet_map.getZoom(),
+            'zoom': LMap.getZoom(),
             'color': "black",
             'weight': 1,
             'fill':true,
@@ -107,13 +105,13 @@ class Vessel{
             'fillOpacity':0.8,
             'clickable':true
              }, mmsi);
-        triangle.addTo(leaflet_map, true);
+        triangle.addToMap( true);
         }/* paint for non moving vessels a Polygon and a circlemarker*/
         else 
         {
           if(shipStatics)
           {
-            polygon = new LM.AnimatedPolygon(vectorPoints,{
+            polygon = new AnimatedPolygon(vectorPoints,{
                 'autoStart':false,
                 'animation':false,
                 'dim_stern':dim_stern,
@@ -128,7 +126,7 @@ class Vessel{
                 'fillOpacity':0.6,
                 'clickable':false
               }, mmsi);
-            polygon.addTo(leaflet_map, true);
+            polygon.addToMap(true);
           }
           Map circleOptions = {
                            'radius':5,
@@ -139,14 +137,14 @@ class Vessel{
                            'opacity':0.4,
                            'weight':2.5
                            };
-          marker = new LM.CircleMarker(vectorPoints[0], circleOptions, mmsi);
-          marker.addTo(leaflet_map, true);
+          marker = new CircleMarker(vectorPoints[0], circleOptions, mmsi);
+          marker.addToMap(true);
         }
     }
   callback();
 }
   
-  String createMouseOverPopup(){
+  String createPopupContent(){
     String mouseOverPopup ="<div class='mouseOverPopup'><table>";
     if(name != null) {
         mouseOverPopup = "${mouseOverPopup}<tr><td colspan='2'><b>${name}</b></nobr></td></tr>";
@@ -203,7 +201,7 @@ num calcAngle(sog, cog, true_heading) {
     return (-direction *(PI / 180.0));
   }
 
-  LM.Coord destinationPoint(lat, lng, cog, dist) {
+  Coord destinationPoint(lat, lng, cog, dist) {
     dist = dist / EARTH_RADIUS;  
     var brng = cog * (PI / 180);  
     var lat1 = lat * (PI / 180);
@@ -213,14 +211,14 @@ num calcAngle(sog, cog, true_heading) {
     if (lat2.isNaN || lon2.isNaN) return null;
     lat2 = lat2 *(180/PI);
     lon2 = lon2 *(180/PI);
-    return new LM.Coord(lat2, lon2);
+    return new Coord(lat2, lon2);
   }
+  Map<int, String> shipTypes = new Map<int, String>();
+  Map<int,String> shipTypeColors = new Map<int,String>();
+  Map<int,String> nav_stati = new Map<int,String>();
 
-Map<int, String> shipTypes = new Map<int, String>();
-Map<int,String> shipTypeColors = new Map<int,String>();
-Map<int,String> nav_stati = new Map<int,String>();
-
-initTypeArrays(){
+  initTypeMaps(){
+  
   shipTypes[2] = 'Other Type';
   shipTypes[6] = 'Passenger Ships';
   shipTypes[7] = 'Cargo Ships';
@@ -275,7 +273,7 @@ initTypeArrays(){
   shipTypes[99] = 'Other Type';
   
   
-  
+ 
   shipTypeColors[2] ='#f9f9f9';
   shipTypeColors[20] ='#f9f9f9';
   shipTypeColors[29] ='#f9f9f9';
@@ -327,6 +325,7 @@ initTypeArrays(){
   shipTypeColors[97] ='#d2d2d2'/*Other Type*/;
   shipTypeColors[99] ='#d2d2d2'/*Other Type*/;
 
+  
   nav_stati[0] ='under way us. engine';
   nav_stati[1] ='at anchor';
   nav_stati[2] = 'not under command';
