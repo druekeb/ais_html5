@@ -9,7 +9,7 @@ class Vessel{
   String name, imo, dest;
   num cog, sog, true_heading, dim_port, dim_stern, dim_bow, dim_starboard, draught, brng;
   int time_received, time_captured;
-  MapFeature vector, polygon, feature, marker;
+  MapFeature vector, polygon, feature;
   const MINIMUM_SPEED = 0.4;
   
   Vessel(jsonObject){
@@ -66,14 +66,13 @@ class Vessel{
           vectorPoints.add(targetPoint);
           var vectorWidth = (sog > 30?5:2); 
           vector = new Polyline(vectorPoints, {'color': 'red', 'weight': vectorWidth });
-          vector.addToMap(true);
+          vector.addToMap(false, "");
           var animationPartsSize = vectorLength/(zoom*10); //how long are the chunks of the vector
           var animationInterval = 400; //how long is the interval between two animation steps
           if (shipStatics)
           {
             polygon = new AnimatedPolygon(vectorPoints,{
               'autoStart':false,
-              'animation':true,
               'distance': animationPartsSize,
               'interval': animationInterval,
               'dim_stern':dim_stern,
@@ -88,12 +87,9 @@ class Vessel{
               'fillOpacity':0.6,
               'clickable':false
             }, mmsi);
-            polygon.addToMap(true);
           }
-
           feature = new AnimatedPolygon(vectorPoints,{
             'autoStart': false,
-            'animation':true,
             'distance': animationPartsSize,
             'interval':animationInterval,
             'brng':brng,
@@ -105,7 +101,7 @@ class Vessel{
             'fillOpacity':0.8,
             'clickable':true
              }, mmsi);
-        feature.addToMap( true);
+
         }/* paint for non moving vessels a Polygon and a circlemarker*/
         else 
         {
@@ -113,7 +109,6 @@ class Vessel{
           {
             polygon = new AnimatedPolygon(vectorPoints,{
                 'autoStart':false,
-                'animation':false,
                 'dim_stern':dim_stern,
                 'dim_port': dim_port,
                 'dim_bow':dim_bow,
@@ -124,22 +119,25 @@ class Vessel{
                 'fill':true,
                 'fillColor':shipTypeColors[ship_type],
                 'fillOpacity':0.6,
-                'clickable':false
+                'clickable':false,
+                'zoom':false
               }, mmsi);
-            polygon.addToMap(true);
           }
-          Map circleOptions = {
+          feature = new CircleMarker(vectorPoints[0], {
                            'radius':5,
                            'fill':true,
                            'fillColor':shipTypeColors[ship_type],
                            'fillOpacity':0.8,
                            'color':"#000000",
                            'opacity':0.4,
-                           'weight':2.5
-                           };
-          marker = new CircleMarker(vectorPoints[0], circleOptions, mmsi);
-          marker.addToMap(true);
+                           'weight':2.5 
+                           }, mmsi);
         }
+        if(polygon != null)
+        {
+          polygon.addToMap(moving, ""); 
+        }
+        feature.addToMap(moving, createPopupContent());
     }
   callback();
 }

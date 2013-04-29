@@ -59,35 +59,29 @@ var LM = function(){
     return map.getZoom();
   }
 
-  function addToMap(feature){
-    if(feature.options.popupContent){ 
+  function addToMap(feature, animation, popupContent){
+    if (typeof feature === 'undefined') return;
+    if(popupContent.length > 0)
+    {
       function onMouseover(e) {
         var popupOptions, latlng;
-        if(e.latlng)
-        {
-          popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(100,120)};
-          latlng = e.latlng;            
-        }
-        else
-        {
-          popupOptions = {closeButton:false ,autoPan:false , maxWidth: 180, offset:new L.Point(100,120)};
-          latlng = e.target._latlng;
-        }
-        L.popup(popupOptions).setLatLng(latlng).setContent(feature.options.popupContent).openOn(map);
-      } 
+        popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:new L.Point(100,120)};
+        L.popup(popupOptions).setLatLng(e.latlng).setContent(popupContent).openOn(map);
+      }
 
       function onMouseout(e) {
         LM.getMap().closePopup();
       }      
+      
       feature.on('mouseover',onMouseover);
       feature.on('mouseout', onMouseout);
     }
     featureLayer.addLayer(feature);
-    if (typeof feature.start === 'function')
+    if (animation == true)
     {
       feature.start();
     }
-  }
+  } 
 
   function removePopups(){
       $('.mouseOverPopup').parentsUntil(".leaflet-popup-pane").remove();
@@ -96,34 +90,35 @@ var LM = function(){
       $('.clickPopup').remove();
   }
        
-  function clearFeature(vessel){
-         if (typeof vessel.vector !="undefined")
-          {
-             featureLayer.removeLayer(vessel.vector);
-          }
-          if (typeof vessel.polygon !="undefined")
-          {
-             if (typeof vessel.polygon.stop ==='function')
-             {
-                 vessel.polygon.stop();
-             }
-             featureLayer.removeLayer(vessel.polygon);
-          }
-          if (typeof vessel.feature !="undefined")
-          {
-            if (typeof vessel.feature.stop ==='function')
-            {
-               vessel.feature.stop();
-            }
-            featureLayer.removeLayer(vessel.feature);
-          }
+  function removeFeatures(vessel){
+    if (typeof vessel.vector !="undefined")
+    {
+       featureLayer.removeLayer(vessel.vector);
+    }
+    if (typeof vessel.polygon !="undefined")
+    {
+       if (typeof vessel.polygon.stop ==='function')
+       {
+           vessel.polygon.stop();
+       }
+       featureLayer.removeLayer(vessel.polygon);
+    }
+    if (typeof vessel.feature !="undefined")
+    {
+      if (typeof vessel.feature.stop ==='function')
+      {
+         vessel.feature.stop();
+      }
+      featureLayer.removeLayer(vessel.feature);
+    }
   }
+
   return {
 		init: init,
 		getMap: getMap,
     getZoom: getZoom,
     addToMap: addToMap,
-    clearFeature: clearFeature
+    removeFeatures: removeFeatures
   }
 }();
 

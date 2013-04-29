@@ -7,6 +7,11 @@ import 'dart:json';
 import 'packages/js/js.dart' as js;
 import 'ais-html5.dart';
 
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                                abstract class LeafletMap                           -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
 
 abstract class LeafletMap {
   String _elementid;
@@ -41,6 +46,12 @@ abstract class LeafletMap {
   void closePopup();
 }
 
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                     concrete derived class OpenStreetMap                           -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
+
 class OpenStreetMap extends LeafletMap {
   List<js.Callback> callbackList = new List<js.Callback>();
   num initialZoom;
@@ -49,12 +60,14 @@ class OpenStreetMap extends LeafletMap {
   var boundsTimeout;
   var boundsTimeoutTimer;
 
+  /* Constructor */
   OpenStreetMap(String elementid, List mapOptions, {String width, String height}) : super(elementid, width: width, height: height){ //critical to call super constructor
     initialLat = mapOptions[0].latitude;
     initialLon = mapOptions[0].longitude;
     initialZoom = mapOptions[1];
     boundsTimeout = mapOptions[2]* 1000;
   }
+
   void loadMap() {
     var tileURL = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
     var osmAttrib = 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors target="_blank">MapQuest</a>, <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>';
@@ -138,29 +151,27 @@ class OpenStreetMap extends LeafletMap {
     });
   }
 
-  clearFeatures(vessel){
-    js.scoped((){
-      if (vessel.vector != null)
+  removeFeatures(vessel){
+    if (vessel.vector != null)
+    {
+      vessel.vector.remove();
+    }
+    if (vessel.polygon != null)
+    {
+      if (vessel.polygon.animated == true)
       {
-       _featureLayerGroup.removeLayer(vessel.vector);
+        vessel.polygon.stopAnimation();
       }
-      if (vessel.polygon != null)
+      vessel.polygon.remove();
+    }
+    if (vessel.feature != null)
+    {
+      if (vessel.feature.animated == true)
       {
-        if (vessel.polygon.stop != null)
-        {
-          vessel.polygon.stop();
-        }
-        _featureLayerGroup.removeLayer(vessel.polygon);
+        vessel.feature.stopAnimation();
       }
-      if (vessel.feature != null)
-      {
-        if (vessel.feature.stop != null)
-        {
-          vessel.feature.stop();
-        }
-        _featureLayerGroup.removeLayer(vessel.feature);
-      }
-    });
+      vessel.feature.remove();
+    }
   }
 
   clearFeatureLayer()
@@ -184,40 +195,53 @@ class OpenStreetMap extends LeafletMap {
   }
 }
 
-class Popup{
-  js.Proxy _popup;
 
-  Popup(Coord popupOrigin, String content, Map options) {
-    js.scoped(() {
-      var popupOptions = options;
-      var offsetPoint = new js.Proxy(js.context.L.Point, popupOptions['offset'][0],options['offset'][1]);
-      var latlng = js.context.L.LatLng;
-      var origin = new js.Proxy(latlng, popupOrigin.latitude, popupOrigin.longitude );
-      popupOptions['offset'] = offsetPoint;
-      popupOptions = js.map(popupOptions);
-      _popup= new js.Proxy(js.context.L.Popup, popupOptions);
-      _popup.setLatLng(origin);
-      _popup.setContent(content);
-      js.retain(_popup);
-    });
-  }
-
-  void addToMap() {
-    LMap.closePopup();
-    LMap.openPopup(_popup);
-  }
-}
+ /*--------------------------------------------------------------------------------------*/
+ /*-                                                                                    -*/
+ /*-                       abstract class MapFeatures                                   -*/
+ /*-                                                                                    -*/
+ /*--------------------------------------------------------------------------------------*/
 
 abstract class MapFeature{
 
   js.Proxy _mapFeature;
   List callbacks = new List();
+  bool animated = false;
+  String popupContent = "";
+  
+  /*----------------------------------------------------*/
+  /*-        MouseEventHandlers                        -*/
+  /*----------------------------------------------------*/
+  clickHandler( e){
+    LMap.closePopup();
+  }
 
-  void addListeners(mmsi)
+  mouseoutHandler(e){
+    LMap.closePopup();
+  }
+
+  mouseoverHandler(ll){
+    var popupOptions = {'closeButton': false,
+                        'autoPan': false,
+                        'maxWidth': 150, 
+                        'offset' : [50,-50]};
+    var popup = new Popup(ll, popupContent, popupOptions);
+    popup.addToMap();
+  }
+  
+  void addListeners()
   {
-    onClickHandler(e)=> clickHandler(e, mmsi);
-    onMouseoutHandler(e)=>mouseoutHandler(e);
-    onMouseoverHandler(e) =>mouseoverHandler(e, mmsi);
+    onClickHandler(e){
+      clickHandler(e);
+    }
+    onMouseoutHandler(e){
+      mouseoutHandler(e);
+    }
+    onMouseoverHandler(e){
+      var ll = e.latlng;
+      ll =  new js.Proxy(js.context.L.LatLng ,ll.lat, ll.lng);
+      mouseoverHandler(ll);
+    }
     
     callbacks.add(new js.Callback.many(onClickHandler));
     callbacks.add(new js.Callback.many(onMouseoverHandler));
@@ -227,28 +251,38 @@ abstract class MapFeature{
     _mapFeature.on('mouseover', callbacks[1]);
     _mapFeature.on('mouseout', callbacks[2]);
   }
-
-  void addToMap(bool featureLayer) {
+  
+  /*-------------------------------------------------------*/
+ 
+  void addToMap(bool animation, String pContent) {
     js.scoped(() {
+      if(pContent.length > 0)
+      {
+        popupContent = pContent;
+        addListeners();
+      }
       LMap._featureLayerGroup.addLayer(_mapFeature);
-      LMap.callbackList.addAll(callbacks);
+      //LMap.callbackList.addAll(callbacks);
+      if (animation == true)
+      {
+        animated = true;
+        _mapFeature.start();
+      }
     });
   }
 
-  void removeFeatureLayer(bool featureLayer) {
+  void remove() {
     js.scoped(() {
-     
-      if(featureLayer)
-      {
-        LMap._featureLayerGroup.removeLayer(_mapFeature);
-      }
-      else
-      {
-        LMap._map.remove(_mapFeature);
-      }
+        LMap._featureLayerGroup.removeLayer(_mapFeature);     
     });
   }
 }
+
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                     concrete derived class Polyline                                -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
 
 class Polyline extends MapFeature{
 
@@ -269,9 +303,15 @@ class Polyline extends MapFeature{
   }
 }
 
-class AnimatedPolygon extends MapFeature{
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                     concrete derived class AnimatedPolygon                         -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
 
-  AnimatedPolygon(List<Coord> vectorPoints, Map options, int vmmsi) {
+class AnimatedPolygon extends MapFeature{
+  
+  AnimatedPolygon(List<Coord> vectorPoints, Map opts, int vmmsi) {
     js.scoped(() {
       var latlng = js.context.L.LatLng;
       var points =js.array([]);
@@ -281,9 +321,7 @@ class AnimatedPolygon extends MapFeature{
         var lng = vectorPoints[x].longitude;
         points.push(new js.Proxy(latlng,lat,lng ));
       }
-      var triangleOptions = js.map(options);
-      _mapFeature= new js.Proxy(js.context.L.AnimatedPolygon, points, triangleOptions);
-      addListeners(vmmsi);
+      _mapFeature= new js.Proxy(js.context.L.AnimatedPolygon, points, js.map(opts));
       js.retain(_mapFeature);
     });
   }
@@ -301,6 +339,12 @@ class AnimatedPolygon extends MapFeature{
   }
 }
 
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                     concrete derived class CircleMarker                            -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
+
 class CircleMarker extends MapFeature{
   CircleMarker(Coord vectorPoint, Map options, int vMmsi) {
     js.scoped(() {
@@ -308,11 +352,51 @@ class CircleMarker extends MapFeature{
       var point = new js.Proxy(latlng,vectorPoint.latitude,vectorPoint.longitude );
       var circleOptions = js.map(options);
       _mapFeature= new js.Proxy(js.context.L.CircleMarker, point, circleOptions);
-      addListeners(vMmsi);
       js.retain(_mapFeature);
     });
   }
 }
+
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                                class Popup                                        -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
+
+class Popup{
+  js.Proxy _popup;
+
+  Popup( js.Proxy ll, String content, Map options) {
+    js.scoped(() {
+      var popupOptions = options;
+      var offsetPoint = new js.Proxy(js.context.L.Point, popupOptions['offset'][0],options['offset'][1]);
+      //var origin = new js.Proxy(latlng, e.getLatLng() );
+      popupOptions['offset'] = offsetPoint;
+      popupOptions = js.map(popupOptions);
+      _popup= new js.Proxy(js.context.L.Popup, popupOptions);
+      _popup.setLatLng(ll);
+      _popup.setContent(content);
+      js.retain(_popup);
+    });
+  }
+
+  void addToMap() {
+    LMap.closePopup();
+    LMap.openPopup(_popup);
+  }
+}
+
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                        class Coord                                                 -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
+
+  class Coord {
+    final num latitude;
+    final num longitude;
+    const Coord(this.latitude, this.longitude);
+  }
 
   Coord getCoord() {
     js.scoped(() {
@@ -329,44 +413,4 @@ class CircleMarker extends MapFeature{
     });
   }
 
-  void setIcon(Icon icon) {
-    js.scoped(() {
-      var size = new js.Proxy(js.context.L.Point, icon.dimension.width, icon.dimension.height);
-      var js_icon = new js.Proxy(js.context.L.Icon, js.map({'iconUrl':icon.imageURL, 'iconSize': size}));
-      _mapFeature.setIcon(js_icon);
-    });
-  }
-
-  void setZIndexOffset(num offset) {
-    js.scoped(() {
-      _mapFeature.setZIndexOffset(offset);
-    });
-  }
-
-  void setOpacity(num opacity) {
-    js.scoped(() {
-      _mapFeature.setOpacity(opacity);
-    });
-  }
-
-  void bindPopup(Popup popup) {
-  }
-
-
-class Coord {
-  final num latitude;
-  final num longitude;
-  const Coord(this.latitude, this.longitude);
-}
-
-class Icon {
-  final String imageURL;
-  final Dimension dimension;
-  const Icon(this.imageURL, this.dimension);
-}
-
-class Dimension {
-  final num width;
-  final num height;
-  const Dimension(this.width, this.height);
-}
+/*--------------------------------------------------------------------------------------*/

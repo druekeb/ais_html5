@@ -3,7 +3,8 @@ $(document).ready(function() {
   /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
                 Zoomlevel 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18 */
   var ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-  const WEBSOCKET_SERVER_LOCATION = '192.168.1.112';
+  var WEBSOCKET_SERVER_LOCATION = '127.0.0.1';
+  var WEBSOCKET_SERVER_PORT = 8090;
   var vessels = {};
       
   var initialZoom = getParam('zoom');
@@ -12,10 +13,9 @@ $(document).ready(function() {
   initialLon = initialLon.length > 0? initialLon : 9.947;
   var initialLat = getParam('lat');
   initialLat = initialLat.length > 0? initialLat : 53.518;
-  
-  // if user is running mozilla then use it's built-in WebSocket
-  var WebSocket = window.WebSocket || window.MozWebSocket;
-  var connection = new WebSocket('ws://'+WEBSOCKET_SERVER_LOCATION);
+
+  var WebSocket = window.WebSocket;
+  var connection = new WebSocket('ws://'+WEBSOCKET_SERVER_LOCATION+":"+WEBSOCKET_SERVER_PORT);
     
   connection.onopen = function () {
         /* connection is opened and ready to use */
@@ -43,7 +43,7 @@ $(document).ready(function() {
 
   connection.onerror = function (error) {
         // an error occurred when sending/receiving data
-          console.log("an error occurred when sending/receiving data");
+          console.log("an error occurred when sending/receiving data: ");
   };
 
   connection.onmessage = function (message) {
@@ -67,7 +67,7 @@ $(document).ready(function() {
   function processVesselsInBounds(jsonArray){
     for (var v in vessels)
     {
-      LM.clearFeature(vessels[v]);
+      LM.removeFeatures(vessels[v]);
     }
     vessels = {};
     /* create new Vessel with Objects (Polygons, Circles) and paint to Map */
@@ -95,7 +95,7 @@ $(document).ready(function() {
     var vessel = vessels[jsonVessel.userid];
     if(vessel != undefined)
     {
-      LM.clearFeature(vessel);
+      LM.removeFeatures(vessel);
       vessel.updatePosition(jsonVessel);
     }
     else
