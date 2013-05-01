@@ -16,29 +16,30 @@ $(document).ready(function() {
 
   var WebSocket = window.WebSocket;
   var connection = new WebSocket('ws://'+WEBSOCKET_SERVER_LOCATION+":"+WEBSOCKET_SERVER_PORT);
-    
-  connection.onopen = function () {
-        /* connection is opened and ready to use */
-        console.log("ws-connection is open");
-
-        LM.init('map',{
-        mapOptions:{
-          closePopupOnClick:false,
+  var mapOptions = {
+          closePopupOnClick:true,
           markerZoomAnimation: false,
           zoomAnimation: false,
           worldCopyJump: true,
           maxZoom: 18,
           minZoom: 3
-        },
-        tileLayer: true,
-        featureLayer: true,
-        mousePositionControl: true,
-        onClick: true,
-        onMoveend: this,
-        zoom: initialZoom,
-        center: [initialLat, initialLon],
-        boundsTimeout: 300
-       });
+        };
+  var tileLayerOptions = {
+          osmAttribution:'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors',
+          osmUrl:'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png'
+        };
+  var initOptions = {
+          mousePositionControl: true,
+          onMoveend: connection,
+          zoom: initialZoom,
+          center: [initialLat, initialLon],
+          boundsTimeout: 300
+       }; 
+    
+  connection.onopen = function () {
+        /* connection is opened and ready to use */
+        console.log("ws-connection is open");
+        LM.init('map',mapOptions, tileLayerOptions, initOptions);
   };
 
   connection.onerror = function (error) {

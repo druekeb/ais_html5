@@ -1,25 +1,19 @@
-var LM = function(){
+var LM = (function(){
 
 	var map, featureLayer, tileLayer, zoom, socket, boundsTimeout, boundsTimeoutTimer;
 	
-  function init(divName, options){
-    map =  L.map(divName,options.mapOptions);
+  function init(divName, mapOptions, tileLayerOptions, options){
+    map =  L.map(divName, mapOptions);
     map.setView(options.center, options.zoom);
-    if (options.tileLayer )
+    featureLayer = L.layerGroup().addTo(map);
+    if (tileLayerOptions )
     {
-      addOSMLayerToMap();
+      tileLayer =  new L.tileLayer(tileLayerOptions.osmUrl, {attribution: tileLayerOptions.osmAttribution});
+      tileLayer.addTo(map);
     }
-    if (options.featureLayer)
-    {
-      featureLayer = L.layerGroup().addTo(map);
-    }
-    if (options.mousePositionControl)
+    if(options.mousePositionControl)
     {
       L.control.mousePosition().addTo(map);
-    }
-    if (options.onClick != undefined)
-    {
-      map.on('click', removePopups);
     }
     if (options.onMoveend)
     {
@@ -31,13 +25,6 @@ var LM = function(){
       boundsTimeout = options.boundsTimeout *1000;
     }
     changeRegistration();
-  }
-
-  function addOSMLayerToMap(){
-      var osmAttribution = 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors';
-      var osmUrl = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
-      var osmLayer =  new L.tileLayer(osmUrl, {attribution: osmAttribution});
-      osmLayer.addTo(map);
   }
 
   function changeRegistration(){
@@ -65,7 +52,7 @@ var LM = function(){
     {
       function onMouseover(e) {
         var popupOptions, latlng;
-        popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:new L.Point(100,120)};
+        popupOptions = {closeButton:false ,autoPan:false , minWidth: 200, maxWidth: 200, offset:new L.Point(120,-20)};
         L.popup(popupOptions).setLatLng(e.latlng).setContent(popupContent).openOn(map);
       }
 
@@ -82,13 +69,6 @@ var LM = function(){
       feature.start();
     }
   } 
-
-  function removePopups(){
-      $('.mouseOverPopup').parentsUntil(".leaflet-popup-pane").remove();
-      $('.mouseOverPopup').remove();
-      $('.clickPopup').parentsUntil(".leaflet-popup-pane").remove();
-      $('.clickPopup').remove();
-  }
        
   function removeFeatures(vessel){
     if (typeof vessel.vector !="undefined")
@@ -112,7 +92,7 @@ var LM = function(){
       featureLayer.removeLayer(vessel.feature);
     }
   }
-
+  /* return puplic API */
   return {
 		init: init,
 		getMap: getMap,
@@ -120,6 +100,6 @@ var LM = function(){
     addToMap: addToMap,
     removeFeatures: removeFeatures
   }
-}();
+})();
 
 	

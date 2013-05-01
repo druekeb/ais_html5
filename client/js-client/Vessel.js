@@ -129,7 +129,7 @@ function Vessel(jsonObject){
 const EARTH_RADIUS = 6371000;
 
 function createPopupContent(vessel){
-    var mouseOverPopup ="<div><table>";
+    var mouseOverPopup ="<div class='mouseOverPopup'><table>";
     if(vessel.name) mouseOverPopup+="<tr><td colspan='2'><b>"+vessel.name+"</b></nobr></td></tr>";
     if(vessel.imo && vessel.imo !="0")mouseOverPopup+="<tr><td>IMO</td><td>"+(vessel.imo)+"</b></nobr></td></tr>  ";
     mouseOverPopup+="<tr><td>MMSI: &nbsp;</td><td><nobr>"+(vessel.mmsi)+"</nobr></td></tr>";

@@ -3,6 +3,7 @@ library ais;
 import 'dart:html';
 import 'dart:json';
 import 'dart:async';
+import 'packages/js/js.dart' as js;
 
 import 'LeafletMap.dart';
 import 'Vessel.dart';
@@ -23,6 +24,35 @@ WebSocket  socket;
 
 bool  encounteredError = false;
 
+double initialZoom = 17.0;
+double initialLon = 9.947;
+double initialLat = 53.518;
+
+var mapOptions = js.map({
+          'closePopupOnClick':true,
+          'markerZoomAnimation': false,
+          'zoomAnimation': false,
+          'worldCopyJump': true,
+          'maxZoom': 18,
+          'minZoom': 3
+        });
+var tileLayerOptions = js.map({
+          'osmAttribution':'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors',
+          'tileUrl':'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png'
+        });
+var initOptions = js.map({
+          'mousePosition': true,
+          'onMoveend': true,
+          'zoom': initialZoom,
+          'lat' : initialLat,
+          'lon': initialLon,
+          'boundsTimeout': 300
+       }); 
+
+  String mapDiv_id = 'map';
+  String height = window.innerHeight.toString();
+  String width = window.innerWidth.toString();  
+
 /*Logger for console output in Browser*/
 logMsg(String msg){
     window.console.log(msg);
@@ -30,9 +60,7 @@ logMsg(String msg){
 
 /*Startpoint for Dart-Client-Application*/
 void main(){
-  double initialZoom = 17.0;
-  double initialLon = 9.947;
-  double initialLat = 53.518;
+  
   if (getParam('zoom')!= null)
   {
     initialZoom = getParam('zoom');
@@ -49,21 +77,11 @@ void main(){
   initWebSocket(RETRY_SECONDS,(){
     if(LMap==null)  
     {
-      initMap( initialZoom, initialLon, initialLat);
+      /* load Leaflet-Map into mapDiv*/
+      LMap = new LeafletMap(mapDiv_id, mapOptions, tileLayerOptions, initOptions, width:"$width px", height:"$height px");
+      LMap.changeRegistration();
     }
   });
-}
-
-/* load Leaflet-Map into mapDiv*/
-initMap(double zoom, double lon, double lat){
-  String mapDiv_id = 'map';
-  String height = window.innerHeight.toString();
-  String width = window.innerWidth.toString();
-  height = "$height px";
-  width =  "$width px";
-  List mapOptions = [new Coord(lat, lon),zoom, BOUNDS_TIMEOUT];
-  LMap = new OpenStreetMap(mapDiv_id, mapOptions, width:width, height:height);
-  LMap.loadMap();
 }
 
 /*initialize websocket-Connection*/

@@ -1578,6 +1578,7 @@ L.Map = L.Class.extend({
 	},
 
 	getBounds: function () {
+	console.debug("getBounds");
 		var bounds = this.getPixelBounds(),
 		    sw = this.unproject(bounds.getBottomLeft()),
 		    ne = this.unproject(bounds.getTopRight());
