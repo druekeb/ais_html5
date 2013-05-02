@@ -9,91 +9,35 @@ import 'ais-html5.dart';
 
 /*--------------------------------------------------------------------------------------*/
 /*-                                                                                    -*/
-/*-                                abstract class LeafletMap                           -*/
+/*-                                class LeafletMap                           -*/
 /*-                                                                                    -*/
 /*--------------------------------------------------------------------------------------*/
 
-abstract class LeafletMap {
-  String _elementid;
-  String _width;
-  String _height;
+class LeafletMap {
   js.Proxy _map;
   js.Proxy _featureLayerGroup;
   js.Proxy _popup;
-  
-  LeafletMap(String elementid, {String width, String height}) {
-    _elementid = elementid;
-    if(width != null) {
-      _width = width;
-    }
-    if(height != null) {
-      _height = height;
-    } else {
-      _height = "300px";
-    }
-  }
-
-  void setView(num latitude, num longitude, int zoom);
-
-  int getZoom();
-
-  String getBounds();
-
-  void loadMap();
-
-  void openPopup(js.Proxy popup);
-
-  void closePopup();
-}
-
-/*--------------------------------------------------------------------------------------*/
-/*-                                                                                    -*/
-/*-                     concrete derived class OpenStreetMap                           -*/
-/*-                                                                                    -*/
-/*--------------------------------------------------------------------------------------*/
-
-class OpenStreetMap extends LeafletMap {
   List<js.Callback> callbackList = new List<js.Callback>();
-  num initialZoom;
-  num initialLat;
-  num initialLon;
   var boundsTimeout;
   var boundsTimeoutTimer;
-
-  /* Constructor */
-  OpenStreetMap(String elementid, List mapOptions, {String width, String height}) : super(elementid, width: width, height: height){ //critical to call super constructor
-    initialLat = mapOptions[0].latitude;
-    initialLon = mapOptions[0].longitude;
-    initialZoom = mapOptions[1];
-    boundsTimeout = mapOptions[2]* 1000;
-  }
-
-  void loadMap() {
-    var tileURL = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
-    var osmAttrib = 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors target="_blank">MapQuest</a>, <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>';
-    var subDomains = ['otile1','otile2','otile3','otile4'];
+  
+  LeafletMap(String elementid, js.Proxy mapOptions,  js.Proxy initOptions, js.Proxy tileLayerOptions){
+    boundsTimeout = initOptions['boundsTimeout']*1000;
     js.scoped(() {
-        var mapOptions = js.map({
-          'closePopupOnClick':false,
-          'markerZoomAnimation': false,
-          'zoomAnimation': false,
-          'worldCopyJump': true,
-          'maxZoom': 18,
-          'minZoom': 3});
-        var tileLayerOptions = js.map({
-          'attribution': osmAttrib, 
-          'subdomains': subDomains
-          });
-        _map = new js.Proxy(js.context.L.Map, _elementid,mapOptions);
+        _map = new js.Proxy(js.context.L.Map, elementid, mapOptions);
         _featureLayerGroup = new js.Proxy(js.context.L.LayerGroup);
         _map.addLayer(_featureLayerGroup);
         js.retain(_featureLayerGroup);
-        var osm = new js.Proxy(js.context.L.TileLayer,tileURL, tileLayerOptions);
+        var osm = new js.Proxy(js.context.L.TileLayer,tileLayerOptions['tileURL'], tileLayerOptions);
         _map.addLayer(osm);
         var mouseOptions = js.map({'numDigits': 5  });
-        var mousePosition = new js.Proxy(js.context.L.Control.MousePosition, mouseOptions);
-        mousePosition.addTo(_map);
-        _map.setView(new js.Proxy(js.context.L.LatLng, initialLat, initialLon),initialZoom);
+        if(initOptions['mousePosition'] == true)
+        {
+          var mouseOptions = js.map({'numDigits': 5  });
+          var mousePosition = new js.Proxy(js.context.L.Control.MousePosition, mouseOptions);
+          mousePosition.addTo(_map);
+        }
+        _map.setView(new js.Proxy(js.context.L.LatLng, initOptions['lat'], initOptions['lon']),initOptions['zoom']);
         js.retain(_map);
         _map.on('moveend', new js.Callback.many(moveendHandler));
       });

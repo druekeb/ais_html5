@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'LeafletMap.dart';
 import 'Vessel.dart';
+import 'packages/js/js.dart' as js;
 
 
 /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
@@ -55,15 +56,29 @@ void main(){
 }
 
 /* load Leaflet-Map into mapDiv*/
-initMap(double zoom, double lon, double lat){
+initMap(double initialZoom, double initialLon, double initialLat){
   String mapDiv_id = 'map';
-  String height = window.innerHeight.toString();
-  String width = window.innerWidth.toString();
-  height = "$height px";
-  width =  "$width px";
-  List mapOptions = [new Coord(lat, lon),zoom, BOUNDS_TIMEOUT];
-  LMap = new OpenStreetMap(mapDiv_id, mapOptions, width:width, height:height);
-  LMap.loadMap();
+  var initOptions = js.map({
+    'lat':initialLat,
+    'lon':initialLon,
+    'zoom':initialZoom,
+    'boundsTimeout':BOUNDS_TIMEOUT,
+    'mousePosition': true
+    });
+  var mapOptions = js.map({
+    'closePopupOnClick':false,
+    'markerZoomAnimation': false,
+    'zoomAnimation': false,
+    'worldCopyJump': true,
+    'maxZoom': 18,
+    'minZoom': 3
+    });
+  var tileLayerOptions = js.map({
+    'tileURL': 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png',
+    'attribution': 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors target="_blank">MapQuest</a>, <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>', 
+    'subdomains': '["otile1","otile2","otile3","otile4"]' 
+  });
+  LMap = new LeafletMap(mapDiv_id, mapOptions, initOptions, tileLayerOptions);
 }
 
 /*initialize websocket-Connection*/
@@ -76,8 +91,7 @@ void initWebSocket(int retrySeconds, callback) {
     callback();
   });
 
-  socket.onClose.listen((evt)
-  {
+  socket.onClose.listen((evt){
     logMsg('web socket closed, retrying in $retrySeconds seconds');
     if (!encounteredError) 
     {
@@ -87,8 +101,7 @@ void initWebSocket(int retrySeconds, callback) {
   });
 
   /*process messages from websocketServer*/
-  socket.onMessage.listen((evt)
-  {
+  socket.onMessage.listen((evt){
     Map json = parse(evt.data);
     if (json['type'] == "vesselsInBoundsEvent")
     {
@@ -100,8 +113,7 @@ void initWebSocket(int retrySeconds, callback) {
     }
   });
   
-  socket.onError.listen((evt)
-  {
+  socket.onError.listen((evt){
     logMsg("Error connecting to ws ${evt.toString()}");
     if (!encounteredError) 
     {
@@ -168,7 +180,7 @@ int getFirstNegative(List sZA){
   }
 }
 
-double getParam(String name){ 
+double getParam(String name){
   name = name.replaceAll("/[\[]/","\\\[").replaceAll("/[\]]/","\\\]");
   var regexS = "[\\?&]"+name+"=([^&#]*)";
   RegExp regex = new RegExp( regexS );
