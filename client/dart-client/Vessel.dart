@@ -1,5 +1,6 @@
 library Vessel;
 import 'LeafletMap.dart';
+import 'MapFeature.dart';
 import 'ais-html5.dart';
 import 'dart:math';
 

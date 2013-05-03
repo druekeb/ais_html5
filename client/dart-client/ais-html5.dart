@@ -50,13 +50,13 @@ void main(){
   initWebSocket(RETRY_SECONDS,(){
     if(LMap==null)  
     {
-      initMap( initialZoom, initialLon, initialLat);
+      initMap(initialLat, initialLon, initialZoom);
     }
   });
 }
 
 /* load Leaflet-Map into mapDiv*/
-initMap(double initialZoom, double initialLon, double initialLat){
+initMap(double initialLat, double initialLon, double initialZoom){
   String mapDiv_id = 'map';
   var initOptions = js.map({
     'lat':initialLat,
@@ -155,7 +155,6 @@ processVesselsInBounds(jsonArray){
 
 /*process a Position update, initialized by the Websocket-Server*/
 processVesselPositionEvent(json){
-//  var ts_vector, ts_polygon, ts_triangle;
   var vessel = vessels[json['userid'].toString()];
   //create a new Vessel, if it's not yet in vessels-Array
   if (vessel == null)
@@ -172,10 +171,10 @@ processVesselPositionEvent(json){
   });
 }
 
-int getFirstNegative(List sZA){
-  for (var x = 0; x < sZA.length;x++)
+int getFirstNegative(List zs_Array){
+  for (var x = 0; x < zs_Array.length;x++)
   { 
-    if (sZA[x].isNegative)
+    if (zs_Array[x].isNegative)
       return x;
   }
 }
@@ -190,6 +189,3 @@ double getParam(String name){
     return double.parse(results.group(1));
   else return null;
 }
-
-
-
