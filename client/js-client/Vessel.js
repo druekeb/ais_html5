@@ -5,8 +5,7 @@ function Vessel(jsonObject){
   this.time_received = jsonObject.time_received;
   this.cog = jsonObject.cog;
   this.sog = jsonObject.sog;
-  this.lat = jsonObject.pos[1]            
-  this.lon = jsonObject.pos[0];
+  this.pos = jsonObject.pos;
   this.imo = jsonObject.imo;
   this.true_heading = jsonObject.true_heading;
   this.dim_port = jsonObject.dim_port;
@@ -24,8 +23,7 @@ function Vessel(jsonObject){
   }
       
   this.updatePosition = function(jsonObject){
-    this.lat = jsonObject.pos[1]            
-    this.lon = jsonObject.pos[0];
+    this.pos = jsonObject.pos;
     this.msgid = jsonObject.msgid;
     this.time_received = jsonObject.time_received;
     this.cog = jsonObject.cog;
@@ -35,27 +33,27 @@ function Vessel(jsonObject){
   }
 
   this.paintToMap = function(zoom, callback){
-    if(this.lat != null)
+    if(this.pos != null)
     { 
       /* does the vessel move with a speed over 0.4 knots? */   
       var moving = (this.sog && this.sog > 0.4 && this.sog!=102.3) ; 
       /* do we have all the information, that's needed for painting a ship-polygon?*/ 
       var shipStatics = (this.cog ||(this.true_heading &&  this.true_heading!=0.0 &&  this.true_heading !=511)) 
                         && (this.dim_port && this.dim_stern)
-                        && zoom > 12 ;
+                        && zoom > 11 ;
       var brng = calcAngle(this.sog, this.cog, this.true_heading);
       var vectorPoints = [];
-      var shipPoint = new L.LatLng(this.lat,this.lon);
+      var shipPoint = new L.LatLng(this.pos[1],this.pos[0]);
       vectorPoints.push(shipPoint);
       /* for moving vessel paint a speedvector, a triangle and a ship-Polygon */
       if (moving) 
       {
         var meterProSekunde = this.sog *0.51444;
         var vectorLength = meterProSekunde * 30; ///meters, which are covered in 60 sec
-        var targetPoint = destinationPoint(this.lat, this.lon, this.cog, vectorLength);
+        var targetPoint = destinationPoint(this.pos, this.cog, vectorLength);
         vectorPoints.push(targetPoint);
         var vectorWidth = (this.sog > 30?5:2); 
-        this.vector = L.polyline(vectorPoints, {color: 'red', weight: vectorWidth }).addTo(LM.getMap());
+        this.vector = L.polyline(vectorPoints, {color: 'red', weight: vectorWidth }).addTo(LMap.getMap());
         var animationPartsSize = vectorLength/(zoom*10) ; //how long are the chunks of the vector
         var animationInterval = 400; //how long is the interval between two animation steps
         if (shipStatics)
@@ -119,8 +117,11 @@ function Vessel(jsonObject){
                                               weight:2.5
         });
       }
-      LM.addToMap(this.polygon, (moving >0), "");
-      LM.addToMap(this.feature, (moving >0), createPopupContent(this));
+      if(this.polygon)
+      {
+        LMap.addToMap(this.polygon, (moving >0), "");
+      }
+      LMap.addToMap(this.feature, (moving >0), createPopupContent(this));
     }
     callback();
   }
@@ -166,15 +167,15 @@ function calcAngle (sog, cog, hdg) {
     return (-direction *(Math.PI / 180.0));
 }
  
-function destinationPoint(lat, lng, cog, dist) {
+function destinationPoint(pos, cog, dist) {
     dist = dist / EARTH_RADIUS;  
     var brng = cog.toRad();  
-    var lat1 = lat.toRad();
-    var lon1 = lng.toRad();
-    var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
-    var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat1), Math.cos(dist) - Math.sin(lat1) * Math.sin(lat2));
-    if (isNaN(lat2) || isNaN(lon2)) return null;
-    return new L.LatLng(lat2.toDeg(), lon2.toDeg());
+    var lat = pos[1].toRad();
+    var lon = pos[0].toRad();
+    var lat_dest = Math.asin(Math.sin(lat) * Math.cos(dist) + Math.cos(lat) * Math.sin(dist) * Math.cos(brng));
+    var lon_dest = lon + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat), Math.cos(dist) - Math.sin(lat) * Math.sin(lat));
+    if (isNaN(lat_dest) || isNaN(lon_dest)) return null;
+    return new L.LatLng(lat_dest.toDeg(), lon_dest.toDeg());
 }
 
 function createDate(ts, sec, msec){

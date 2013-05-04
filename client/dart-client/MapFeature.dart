@@ -16,7 +16,7 @@ import 'LeafletMap.dart';
 abstract class MapFeature{
 
   js.Proxy _mapFeature;
-  List callbacks = new List();
+  List _callbacks = new List();
   bool animated = false;
   String popupContent = "";
   
@@ -54,11 +54,11 @@ abstract class MapFeature{
       mouseoverHandler(ll);
     }
     
-    callbacks.add(new js.Callback.many(onMouseoverHandler));
-    callbacks.add(new js.Callback.many(onMouseoutHandler));
+    _callbacks.add(new js.Callback.many(onMouseoverHandler));
+    _callbacks.add(new js.Callback.many(onMouseoutHandler));
     
-    _mapFeature.on('mouseover', callbacks[0]);
-    _mapFeature.on('mouseout', callbacks[1]);
+    _mapFeature.on('mouseover', _callbacks[0]);
+    _mapFeature.on('mouseout', _callbacks[1]);
   }
   
   /*-------------------------------------------------------*/

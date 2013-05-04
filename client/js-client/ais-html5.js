@@ -21,9 +21,9 @@ $(document).ready(function() {
         /* connection is opened and ready to use */
         console.log("ws-connection is open");
 
-        LM.init('map',{
+        LMap.init('map',{
         mapOptions:{
-          closePopupOnClick:false,
+          closePopupOnClick:true,
           markerZoomAnimation: false,
           zoomAnimation: false,
           worldCopyJump: true,
@@ -65,9 +65,10 @@ $(document).ready(function() {
   };
 
   function processVesselsInBounds(jsonArray){
+    var currentZoom = LMap.getZoom();
     for (var v in vessels)
     {
-      LM.removeFeatures(vessels[v]);
+      LMap.removeFeatures(vessels[v]);
     }
     vessels = {};
     /* create new Vessel with Objects (Polygons, Circles) and paint to Map */
@@ -75,14 +76,14 @@ $(document).ready(function() {
     {
       var jsonObject = jsonArray[x];
       var vessel = new Vessel(jsonArray[x]);
-      vessel.paintToMap(LM.getZoom(), function(){
+      vessel.paintToMap(currentZoom, function(){
           vessels[vessel.mmsi] = vessel;
       });
     }
     /* show Infobox with the current minimum speed a vessel must have to be displayed */
-    if (LM.getZoom() < getFirstNegative(ZOOM_SPEED_ARRAY))
+    if (currentZoom < getFirstNegative(ZOOM_SPEED_ARRAY))
     {
-      $('#zoomSpeed').html("vessels reporting > "+(ZOOM_SPEED_ARRAY[LM.getZoom()])+" knots");
+      $('#zoomSpeed').html("vessels reporting > "+(ZOOM_SPEED_ARRAY[LMap.getZoom()])+" knots");
       $('#zoomSpeed').css('display', 'block');
     }
     else 
@@ -95,14 +96,14 @@ $(document).ready(function() {
     var vessel = vessels[jsonVessel.userid];
     if(vessel != undefined)
     {
-      LM.removeFeatures(vessel);
+      LMap.removeFeatures(vessel);
       vessel.updatePosition(jsonVessel);
     }
     else
     {
       vessel = new Vessel(jsonVessel);
     }
-    vessel.paintToMap(LM.getZoom(), function(){
+    vessel.paintToMap(LMap.getZoom(), function(){
         vessels[vessel.mmsi] = vessel;
       });
   }

@@ -17,8 +17,6 @@ import 'MapFeature.dart';
 class LeafletMap {
   js.Proxy map;
   js.Proxy featureLayerGroup;
-//  js.Proxy _popup;
-  List<js.Callback> callbackList = new List<js.Callback>();
   var boundsTimeout;
   var boundsTimeoutTimer;
   
@@ -31,10 +29,9 @@ class LeafletMap {
         js.retain(featureLayerGroup);
         var osm = new js.Proxy(js.context.L.TileLayer,tileLayerOptions['tileURL'], tileLayerOptions);
         map.addLayer(osm);
-        var mouseOptions = js.map({'numDigits': 5  });
-        if(initOptions['mousePosition'] == true)
+        var mouseOptions = initOptions['mousePosition'];
+        if( mouseOptions != false)
         {
-          var mouseOptions = js.map({'numDigits': 5  });
           var mousePosition = new js.Proxy(js.context.L.Control.MousePosition, mouseOptions);
           mousePosition.addTo(map);
         }
@@ -42,13 +39,13 @@ class LeafletMap {
         js.retain(map);
         map.on('moveend', new js.Callback.many(moveendHandler));
       });
-    changeRegistration();
+     changeRegistration();
   }
   
-  moveendHandler(e)
-  {
-    changeRegistration();
-  }
+   moveendHandler(e)
+   {
+     changeRegistration();
+   }
   
   changeRegistration(){
     int zoom = getZoom();
@@ -62,13 +59,7 @@ class LeafletMap {
     message['zoom'] =  zoom;
     message['bounds'] = bounds;
     socket.send(stringify(message));
-    if(!callbackList.isEmpty)
-    {
-      for(final x in callbackList){
-        x.dispose();
-        }
-     callbackList.clear();
-    }
+    
     boundsTimeoutTimer = new Timer(new Duration(milliseconds:boundsTimeout),changeRegistration);  
   }
   

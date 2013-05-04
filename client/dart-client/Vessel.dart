@@ -1,4 +1,5 @@
 library Vessel;
+
 import 'LeafletMap.dart';
 import 'MapFeature.dart';
 import 'ais-html5.dart';
@@ -50,7 +51,7 @@ class Vessel{
     if(pos != null)
     {
         var moving = (sog !=null && sog >= MINIMUM_SPEED && sog!=102.3) ; 
-        var shipStatics = (LMap.getZoom() > 11) &&  (cog !=null ||(true_heading!=null && true_heading!=0.0 && true_heading !=511)) && (dim_port !=null && dim_stern!=null) ;
+        var shipStatics = (zoom > 11) &&  (cog !=null ||(true_heading!=null && true_heading!=0.0 && true_heading !=511)) && (dim_port !=null && dim_stern!=null) ;
 
         brng = calcAngle(sog, cog, true_heading);
         var cos_angle = cos(brng);
@@ -63,7 +64,7 @@ class Vessel{
         {
           var meterProSekunde = sog *0.51444;
           var vectorLength = meterProSekunde * 30; //meters, which are covered in 30 sec
-          var targetPoint = destinationPoint(pos[1], pos[0], cog, vectorLength);
+          var targetPoint = destinationPoint(pos, cog, vectorLength);
           vectorPoints.add(targetPoint);
           var vectorWidth = (sog > 30?5:2); 
           vector = new Polyline(vectorPoints, {'color': 'red', 'weight': vectorWidth });
@@ -200,17 +201,17 @@ num calcAngle(sog, cog, true_heading) {
     return (-direction *(PI / 180.0));
   }
 
-  Coord destinationPoint(lat, lng, cog, dist) {
+  Coord destinationPoint(pos, cog, dist) {
     dist = dist / EARTH_RADIUS;  
     var brng = cog * (PI / 180);  
-    var lat1 = lat * (PI / 180);
-    var lon1 = lng * (PI / 180);
-    var lat2 = asin(sin(lat1) * cos(dist) + cos(lat1) * sin(dist) * cos(brng));
-    var lon2 = lon1 + atan2(sin(brng) * sin(dist) * cos(lat1), cos(dist) - sin(lat1) * sin(lat2));
-    if (lat2.isNaN || lon2.isNaN) return null;
-    lat2 = lat2 *(180/PI);
-    lon2 = lon2 *(180/PI);
-    return new Coord(lat2, lon2);
+    var lat = pos[1] * (PI / 180);
+    var lon = pos[0] * (PI / 180);
+    var lat_dest = asin(sin(lat) * cos(dist) + cos(lat) * sin(dist) * cos(brng));
+    var lon_dest = lon + atan2(sin(brng) * sin(dist) * cos(lat), cos(dist) - sin(lat) * sin(lat_dest));
+    if (lat_dest.isNaN || lon_dest.isNaN) return null;
+    lat_dest = lat_dest *(180/PI);
+    lon_dest = lon_dest *(180/PI);
+    return new Coord(lat_dest, lon_dest);
   }
   Map<int, String> shipTypes = new Map<int, String>();
   Map<int,String> shipTypeColors = new Map<int,String>();

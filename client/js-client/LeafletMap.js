@@ -1,4 +1,4 @@
-var LM = function(){
+var LMap = function(){
 
 	var map, featureLayer, tileLayer, zoom, socket, boundsTimeout, boundsTimeoutTimer;
 	
@@ -17,10 +17,10 @@ var LM = function(){
     {
       L.control.mousePosition().addTo(map);
     }
-    if (options.onClick != undefined)
-    {
-      map.on('click', removePopups);
-    }
+    // if (options.onClick != undefined)
+    // {
+    //   map.on('click', removePopups);
+    // }
     if (options.onMoveend)
     {
       socket = options.onMoveend;
@@ -60,7 +60,6 @@ var LM = function(){
   }
 
   function addToMap(feature, animation, popupContent){
-    if (typeof feature === 'undefined') return;
     if(popupContent.length > 0)
     {
       function onMouseover(e) {
@@ -70,7 +69,7 @@ var LM = function(){
       }
 
       function onMouseout(e) {
-        LM.getMap().closePopup();
+        LMap.getMap().closePopup();
       }      
       
       feature.on('mouseover',onMouseover);

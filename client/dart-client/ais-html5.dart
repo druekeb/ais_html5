@@ -63,10 +63,10 @@ initMap(double initialLat, double initialLon, double initialZoom){
     'lon':initialLon,
     'zoom':initialZoom,
     'boundsTimeout':BOUNDS_TIMEOUT,
-    'mousePosition': true
+    'mousePosition': js.map({'numDigits': 5  })
     });
   var mapOptions = js.map({
-    'closePopupOnClick':false,
+    'closePopupOnClick':true,
     'markerZoomAnimation': false,
     'zoomAnimation': false,
     'worldCopyJump': true,
@@ -125,13 +125,12 @@ void initWebSocket(int retrySeconds, callback) {
 
 /*process a websocketServerResponse with all Vessels in queried bounds*/
 processVesselsInBounds(jsonArray){
-  var currentZoom = LMap.getZoom();
+  int currentZoom = LMap.getZoom();
   /*stop all animations, remove all vessels from vessels-Array and then remove all features from map*/
   vessels.forEach((k,v){
     LMap.removeFeatures(v);
     });
   vessels.clear();
-  LMap.clearFeatureLayer();
   
   /* create new Vessel with Objects (Polygons, Circles) and paint to Map */
   for (var x in jsonArray)
