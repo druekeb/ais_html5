@@ -88,7 +88,7 @@ L.AnimatedPolygon = L.Polygon.extend({
     this._tid = setTimeout(function(){
       if (self._i === len) {
         self.options.onEnd.apply(self, Array.prototype.slice.call(arguments));
-       	self.stop();
+        self.stop();
       } else {
         self.animate();
       }
@@ -114,9 +114,11 @@ L.AnimatedPolygon = L.Polygon.extend({
 const METERS_PER_DEGREE = 111120;
 
 function createTriangle(pos, options){
+  //necessary data
   var lon = pos.lng;
   var lat = pos.lat;
   var shippoints = [];
+  //calculate the 3 points of the triangle
   var frontPoint = calcPoint(lon,lat, 0, 15,options.brng, options.zoom); 
   shippoints.push(frontPoint);
   var leftPoint = calcPoint(lon,lat, -5,-5,options.brng, options.zoom);
@@ -127,15 +129,14 @@ function createTriangle(pos, options){
 }
 
 function createShipPoints(pos, options) {
-    //benötigte Daten
-    //1. die Abmessungen
+    //necessary data
     var lon = pos.lng;
     var lat = pos.lat;
     var left = options.dim_starboard;
     var front = options.dim_bow;
     var len = (options.dim_bow + options.dim_stern);
     var wid = (options.dim_port +options.dim_starboard);
-    //ermittle aud den Daten die 5 Punkte des Polygons
+    //calculate the 5 points of the ships polygon
     var shippoints = [];
     //front left
     var dx = -left;

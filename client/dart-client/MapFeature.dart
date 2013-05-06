@@ -7,6 +7,7 @@ import 'dart:json';
 import 'packages/js/js.dart' as js;
 import 'ais-html5.dart';
 import 'LeafletMap.dart';
+
 /*--------------------------------------------------------------------------------------*/
  /*-                                                                                    -*/
  /*-                       abstract class MapFeatures                                   -*/
@@ -23,35 +24,20 @@ abstract class MapFeature{
   /*----------------------------------------------------*/
   /*-        MouseEventHandlers                        -*/
   /*----------------------------------------------------*/
-  clickHandler( e){
-    LMap.closePopup();
-  }
-
-  mouseoutHandler(e){
-    LMap.closePopup();
-  }
-
-  mouseoverHandler(ll){
-    var popupOptions = {'closeButton': false,
-                        'autoPan': false,
-                        'maxWidth': 150, 
-                        'offset' : [50,-50]};
-    var popup = new Popup(ll, popupContent, popupOptions);
-    popup.addToMap();
-  }
   
-  void addListeners()
-  {
-    onClickHandler(e){
-      clickHandler(e);
-    }
+  void addListeners(){
     onMouseoutHandler(e){
-      mouseoutHandler(e);
+      LMap.closePopup();
     }
     onMouseoverHandler(e){
       var ll = e.latlng;
       ll =  new js.Proxy(js.context.L.LatLng ,ll.lat, ll.lng);
-      mouseoverHandler(ll);
+      var popupOptions = {'closeButton': false,
+                        'autoPan': false,
+                        'maxWidth': 150, 
+                        'offset' : [50,-50]};
+     var popup = new Popup(ll, popupContent, popupOptions);
+     popup.addToMap();
     }
     
     _callbacks.add(new js.Callback.many(onMouseoverHandler));
@@ -81,7 +67,7 @@ abstract class MapFeature{
 
   void remove() {
     js.scoped(() {
-        LMap.featureLayerGroup.removeLayer(_mapFeature);     
+      LMap.featureLayerGroup.removeLayer(_mapFeature);     
     });
   }
 }
@@ -164,33 +150,3 @@ class CircleMarker extends MapFeature{
     });
   }
 }
-
-/*--------------------------------------------------------------------------------------*/
-/*-                                                                                    -*/
-/*-                                class Popup                                        -*/
-/*-                                                                                    -*/
-/*--------------------------------------------------------------------------------------*/
-
-class Popup{
-  js.Proxy _popup;
-
-  Popup( js.Proxy ll, String content, Map options) {
-    js.scoped(() {
-      var popupOptions = options;
-      var offsetPoint = new js.Proxy(js.context.L.Point, popupOptions['offset'][0],options['offset'][1]);
-      //var origin = new js.Proxy(latlng, e.getLatLng() );
-      popupOptions['offset'] = offsetPoint;
-      popupOptions = js.map(popupOptions);
-      _popup= new js.Proxy(js.context.L.Popup, popupOptions);
-      _popup.setLatLng(ll);
-      _popup.setContent(content);
-      js.retain(_popup);
-    });
-  }
-
-  void addToMap() {
-    LMap.closePopup();
-    LMap.openPopup(_popup);
-  }
-}
-

@@ -19,8 +19,9 @@ class LeafletMap {
   js.Proxy featureLayerGroup;
   var boundsTimeout;
   var boundsTimeoutTimer;
+  Popup popup;
   
-  LeafletMap(String elementid, js.Proxy mapOptions,  js.Proxy initOptions, js.Proxy tileLayerOptions){
+  LeafletMap(String elementid, js.Proxy mapOptions, js.Proxy initOptions, js.Proxy tileLayerOptions){
     boundsTimeout = initOptions['boundsTimeout']*1000;
     js.scoped(() {
         map = new js.Proxy(js.context.L.Map, elementid, mapOptions);
@@ -126,7 +127,6 @@ class LeafletMap {
   openPopup(js.Proxy popup){
     js.scoped((){
       map.openPopup(popup);
-//      _popup = popup;
     });
   }
 }
@@ -157,3 +157,32 @@ void setCoord(Coord coord) {
     mapFeature.update();
   });
 }
+/*--------------------------------------------------------------------------------------*/
+/*-                                                                                    -*/
+/*-                                class Popup                                        -*/
+/*-                                                                                    -*/
+/*--------------------------------------------------------------------------------------*/
+
+class Popup{
+  js.Proxy _popup;
+
+  Popup( js.Proxy ll, String content, Map options) {
+    js.scoped(() {
+      var popupOptions = options;
+      var offsetPoint = new js.Proxy(js.context.L.Point, popupOptions['offset'][0],popupOptions['offset'][1]);
+      popupOptions['offset'] = offsetPoint;
+      popupOptions = js.map(popupOptions);
+      _popup= new js.Proxy(js.context.L.Popup, popupOptions);
+      _popup.setLatLng(ll);
+      _popup.setContent(content);
+      js.retain(_popup);
+    });
+  }
+
+  void addToMap() {
+    LMap.closePopup();
+    LMap.popup = this;
+    LMap.openPopup(_popup);
+  }
+}
+

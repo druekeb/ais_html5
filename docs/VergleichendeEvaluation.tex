@@ -1,11 +1,14 @@
-\chapter{Vergleichende Evaluation}
+\chapter{Ergebnisse}
+
+\section{Evaluation der Anwendung}
+
+\section{Vergleichende Evaluation der Javascript- und der Dart-Anwendung}
 Die realisierten Implementierungen lassen zwei Vergleiche zu: 
 \begin{itemize}
 \item Node.js-server mit socket.io-Websocket-Server vs. node.js-Server mit HTML5-Websocket-Server, wobei die Javascript-Clients sich nur marginal unterscheiden.
 \item Javascript-Client vs. Dart-Client, wobei beide auf denselben node.js-Server mit HTML5-Websocket-Server zugreifen
 \end{itemize}
-
-\section{Socket.io-Websocket vs. HTML5-Websocket}
+\subsection{Socket.io-Websocket vs. HTML5-Websocket}
 \subsection{Implementierungsaufwand}
 Anzahl zeilen code
 
@@ -40,8 +43,8 @@ Firefox, Chrome, IE, Safari
 
 \subsubsection{js-Client}
 Zeilen Code
-
-
+\subsubsection{dart-Client}
+Das Arbeiten mit zwei unterschiedlichen Scopes (javascript und Dart) verlangt dem Programmierer einiges ab und ist am Anfang sehr fehleranfällig. Die Fehler sind schwieriger zu debuggen als in reinem javascript oder reinem Dart, weil die Fehlermeldungen ebenfalls nicht über die Grenzen des Namensraumes wechseln können. 
 
 \subsection{Latenzzeit}
 queryTime

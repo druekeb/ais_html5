@@ -5,6 +5,7 @@ $(document).ready(function() {
   var ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
   var WEBSOCKET_SERVER_LOCATION = '127.0.0.1';
   var WEBSOCKET_SERVER_PORT = 8090;
+  var BOUNDS_TIMEOUT = 300;
   var vessels = {};
       
   var initialZoom = getParam('zoom');
@@ -20,25 +21,28 @@ $(document).ready(function() {
   connection.onopen = function () {
         /* connection is opened and ready to use */
         console.log("ws-connection is open");
-
-        LMap.init('map',{
-        mapOptions:{
-          closePopupOnClick:true,
-          markerZoomAnimation: false,
-          zoomAnimation: false,
-          worldCopyJump: true,
-          maxZoom: 18,
-          minZoom: 3
-        },
-        tileLayer: true,
-        featureLayer: true,
-        mousePositionControl: true,
-        onClick: true,
-        onMoveend: this,
-        zoom: initialZoom,
-        center: [initialLat, initialLon],
-        boundsTimeout: 300
-       });
+          var initOptions = {
+            lat:initialLat,
+            lon:initialLon,
+            zoom:initialZoom,
+            boundsTimeout:BOUNDS_TIMEOUT,
+            mousePosition: {numDigits: 5  },
+            onMoveend:this
+          };
+          var mapOptions = {
+            closePopupOnClick:true,
+            markerZoomAnimation: false,
+            zoomAnimation: false,
+            worldCopyJump: true,
+            maxZoom: 18,
+            minZoom: 3
+          };
+          var tileLayerOptions = {
+            tileURL: 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png',
+            attribution: 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors target="_blank">MapQuest</a>, <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>',
+            subdomains: ['t1','t2','t3']
+          } 
+         LMap.init('map',initOptions, mapOptions, tileLayerOptions);
   };
 
   connection.onerror = function (error) {

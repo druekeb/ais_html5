@@ -2,42 +2,22 @@ var LMap = function(){
 
 	var map, featureLayer, tileLayer, zoom, socket, boundsTimeout, boundsTimeoutTimer;
 	
-  function init(divName, options){
-    map =  L.map(divName,options.mapOptions);
-    map.setView(options.center, options.zoom);
-    if (options.tileLayer )
-    {
-      addOSMLayerToMap();
-    }
-    if (options.featureLayer)
-    {
-      featureLayer = L.layerGroup().addTo(map);
-    }
-    if (options.mousePositionControl)
+  function init(elementid, initOptions, mapOptions, tileLayerOptions){
+    map =  L.map(elementid,mapOptions);
+
+    var tileLayer =  new L.tileLayer(tileLayerOptions.tileURL, tileLayerOptions);
+    tileLayer.addTo(map);
+
+    featureLayer = L.layerGroup().addTo(map);
+    if (initOptions.mousePosition)
     {
       L.control.mousePosition().addTo(map);
     }
-    // if (options.onClick != undefined)
-    // {
-    //   map.on('click', removePopups);
-    // }
-    if (options.onMoveend)
-    {
-      socket = options.onMoveend;
-      map.on('moveend', changeRegistration);
-    }
-    if (options.boundsTimeout)
-    {
-      boundsTimeout = options.boundsTimeout *1000;
-    }
+    socket = initOptions.onMoveend;
+    map.on('moveend', changeRegistration);
+    boundsTimeout = initOptions.boundsTimeout *1000;
+    map.setView(new L.LatLng(initOptions.lat,initOptions.lon), initOptions.zoom);
     changeRegistration();
-  }
-
-  function addOSMLayerToMap(){
-      var osmAttribution = 'Map-Data <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-By-SA</a> by <a href="http://openstreetmap.org/">OpenStreetMap</a> contributors';
-      var osmUrl = 'http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png';
-      var osmLayer =  new L.tileLayer(osmUrl, {attribution: osmAttribution});
-      osmLayer.addTo(map);
   }
 
   function changeRegistration(){
@@ -45,7 +25,7 @@ var LMap = function(){
       message.function = "register"
       message.zoom = map.getZoom();
       message.bounds = map.getBounds();
-      socket.timeQuery = new Date().getTime();
+     
       socket.send(JSON.stringify(message));
       if (boundsTimeoutTimer) clearTimeout(boundsTimeoutTimer);
       boundsTimeoutTimer = setTimeout(changeRegistration,boundsTimeout); 
@@ -64,7 +44,7 @@ var LMap = function(){
     {
       function onMouseover(e) {
         var popupOptions, latlng;
-        popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:new L.Point(100,120)};
+        popupOptions = {closeButton:false ,autoPan:false , maxWidth: 150, offset:new L.Point(50,-50)};
         L.popup(popupOptions).setLatLng(e.latlng).setContent(popupContent).openOn(map);
       }
 
@@ -81,13 +61,6 @@ var LMap = function(){
       feature.start();
     }
   } 
-
-  function removePopups(){
-      $('.mouseOverPopup').parentsUntil(".leaflet-popup-pane").remove();
-      $('.mouseOverPopup').remove();
-      $('.clickPopup').parentsUntil(".leaflet-popup-pane").remove();
-      $('.clickPopup').remove();
-  }
        
   function removeFeatures(vessel){
     if (typeof vessel.vector !="undefined")

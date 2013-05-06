@@ -88,10 +88,10 @@ Aus mehreren Gründen erscheint es angebracht, die geographischen Schiffspositio
 
 \section{Aufbau der Arbeit}\label{s.Aufbau der Arbeit}
 Im Kapitel 2 werden mögliche Anwendungs-Szenarien genauer beleuchtet und die funktionalen und nicht funktionalen Anforderungen an die geplante Anwendung herausgestellt. Anschließend wird die Systemarchitektur der geplanten Anwendung grob entworfen.
-Kapitel 3.1 gibt eine kurze Einführung in die Websocket-Technologie, Kapitel 3.2 stellt die Programmiersprache Google Dart vor.
-In Kapitel werden zunächst die Gründe für die getroffene Auswahl an Implementierungen dargelegt und anschließend die Vorgehensweise bei der Implementierung erläutert. Die Implementierungen werden auszugsweise vorgestellt.
-Die ausgearbeiteten Implementierungen werden dann in Kapitel 5 getestet und nach verschiedenen Aspekten verglichen.
-Kapitel 6 fasst die Ergebnisse zusammen.
+In Kapitel 3 wird kurz auf die Grundlagen der verwendeten Technologien eingegangen: die AIS-Technologie, die zur Gewinnung des Datenmaterials verwendet wird und damit für Art und Format der Daten verantwortlich ist; node.js und Google Dart, die bei der Verarbeitung der Daten zum Einsatz kommen; HTML5-Websockets, weil sie für die Verteilung , mongoDB und Redis, weil sie für die Zwischenspeicherung der Daten  eingesetzt werden. Im Zusammenhang mit der Datenpräsentation wird kurz das OpenStreetMap-Projekt vorgestellt als Lieferant des Kartenmaterials, sowie die Leaflet-Bibliotheken, mit deren Hilfe die Schiffsobjekte letztlich in Echtzeit auf der Karte angezeigt werden.
+
+In Kapitel 4 werden zunächst die Gründe für die Auswahl an Implementierungen dargelegt. Anschließend wird die Vorgehensweise bei der Implementierung erläutert und zwar einmal ausführlich für die jeweils erste Server- bzw. Client-Implementierung (socket.io-Server und socket.io-Client) und anschließend nur dort, wo sich die Implementierungen im Kern unterscheiden. Die ausgearbeiteten Implementierungen werden dann in Kapitel 5 getestet und nach verschiedenen Aspekten verglichen.
+Kapitel 6 fasst die Ergebnisse zusammen und gibt einen Ausblick auf mögliche Weiterentwicklungen.
 
 %---------------------------------------------------------------------------------------------------------------------------------------------
 \chapter{Realtime-Schiffsverfolgung per AIS-Daten-Strom}\label{c.Realtime-Schiffsverfolgung per AIS-Daten-Strom}

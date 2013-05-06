@@ -189,11 +189,10 @@ socket.on('vesselPosEvent', function (data) {...}
 Bezüglich der an den Websocket-Server zu sendenden register-Nachricht ergab sich durch die Kapselung der LeafletMap als revealing Module eine Besonderheit: der moveEnd-Event, der die neue Registrierung triggern soll, befindet sich im LeafletMap-Objekt. Als Lösung wird diese Aufgabe dem LeafletMap-Objekt übertragen, weswegen bei der init-Funktion der socket mit übergeben wird. Diese Lösung ist unproblematisch, weil beim Verlust der socket-Verbindung ohnehin ein Reload der Seite stattfinden muss.
 Um geeignete Objekte aus den Ais-Messages zu erstellen (Punkt 5), wird in der Datei Vessel.js eine Konstruktor-Funktion zur Verfügung gestellt, mit der Instanzen von Vessel-Objekten generiert werden können. Diese Instanzen werden in einem assoziativen Array, also einem Objekt, namens ‘vessels’ gespeichert. Beim Empfang eines Vessel-Position-Events kann mit vessels[mmsi] nach dem passenden vessel-Objekt zum Update gesucht werden.
 Schließlich sind die Vessel-Objekte auf die Karte zu rendern. Dazu wird in Vessel.js eine asynchrone Funktion genutzt (siehe Listing \ref{vessel.createMapObjects}), mit der zuerst je nach Status (moving / not moving) und zoomlevel unterschiedliche Features für ein Schiff erstellt werden (Polygon, Triangle, Speedvector, Circle). Anschließend wird das vessel-Objekt auf die Karte gerendert und das Objekt mit den Features gespeichert. Das ist notwendig, um die Features bei Vessel-Position-Updates von der Karte zu entfernen, bevor sie an der neuen Position dargestellt werden.
-\begin{lstlisting}[caption=Aufruf der public function createMapObjects des Vessel-Objekts in ais-socket.io.js, label=vessel.createMapObjects]
-vessel.createMapObjects(LM.getZoom(), function(){
-              LM.paintVessel(vessel);
+\begin{lstlisting}[caption=Aufruf der public function paintToMap des Vessel-Objekts in ais-socket.io.js, label=vessel.paintToMap]
+          vessel.paintToMap(LMap.getZoom(), function(){
               vessels[vessel.mmsi] = vessel;
-            });
+          });
 \end{lstlisting}
 
 Für díe letzte Aufgabe, die Animation, wird das Polygon-Objekt des Leaflet-Frameworks erweitert zur Klasse L.AnimatedPolygon. Ein Polygon in Leaflet ist eine Polyline, die mehrere Punkte auf der Karte verbindet. Die Animation eines Punktes entlang einer Linie mit einer bestimmten Geschwindigkeit wurde aus dem Leaflet-Plugin L.AnimatedMarker \footnote{\label{foot:2}https://github.com/openplans/Leaflet.AnimatedMarker} übernommen. Die dort präferierte css3-Transition zur Animation konnte aber nicht verwendet werden, weil dazu ein Objekt im DOM-Baum verwendet werden muss. Das von Leaflet für ein Polygon erstellte DOM-Objekt (svn-Graphik) ist aber durch die Leaflet-Bibliothek gekapselt, so dass ein Zugriff von außen nicht vorgesehen ist.  \\
@@ -230,22 +229,21 @@ Die Modularisierung, also die Verteilung der Objekte und Funktionalitäten auf P
 
 Die main-Funktion in ais-html5.dart startet die Anwendung, die den html5-Websocket initialisiert. Im Falle eines erfolgreichen Verbindungsaufbaus wird die Callback-Funktion ausgeführt, die das LeafletMap-Objekt erstellt. Beide Objekte sind Singletons und bleiben über die Laufzeit der Anwendung erhalten.
 Das LeafletMap-Objekt kapselt für die Anwendung den Zugriff auf das javascript L.Map-Objekt der leaflet.js-Bibliothek (siehe Listing \ref{LeafletMapConstructor}). Dafür wechselt es in den Javascript-Scope der Anwendung und initialisiert in diesem ein L.Map-Objekt und ein L.LayerGroup-Objekt und deklariert sie mit der Anweisung js.retain(...) im javascript-Scope als globale Variable, so dass sie für jede folgende Funktion, die den javascript-Scope benutzt, zur Verfügung stehen.
-In der Gegenrichtung muss eine Möglichkeit existieren, von der Javascript-Seite der Anwendung den Dart-Code aufzurufen. Ein Beispiel dafür ist der moveend-Listener, der Teil der leaflet.js-Bibliothek ist. Für den Javascript-Listener wird ein Dart-Callback.many-Objekt aus der Dart-Funktion changeRegistration() erstellt. Das Dart-Callback.many-Objekt kann im Unterschied zum Callback.once-Objekt mehrmals aufgerufen werden. Das heißt, jedes Mal, wenn in Javascript der Moveend-Listener einen Moveend-Event registriert, ruft er die Dart-Funktion changeRegistration auf. Diese Funktion sendet an den HTML5-Websocket eine Nachricht vom Typ ‘register’ mit den aktuellen Bounds der Karte.
+In der Gegenrichtung muss eine Möglichkeit existieren, von der Javascript-Seite der Anwendung den Dart-Code aufzurufen. Ein Beispiel dafür ist der moveend-Listener, der Teil der leaflet.js-Bibliothek ist. Für den Javascript-Listener wird ein Dart-Callback.many-Objekt erstellt, das als Ziel die changeRegistration-Funktion aus dem Dart-Scope aufruft. Das Dart-Callback.many-Objekt kann im Unterschied zum Callback.once-Objekt mehrmals aufgerufen werden. Das heißt, jedes Mal, wenn in Javascript der Moveend-Listener einen Moveend-Event registriert, ruft er die Dart-Funktion changeRegistration auf. Diese Funktion sendet an den HTML5-Websocket eine Nachricht vom Typ ‘register’ mit den aktuellen Bounds der Karte.
 
 \begin{lstlisting}[caption=Konstruktor des LeafletMap-Objektes mit Zugriff auf den javascript-Scope, label=LeafletMapConstructor]
-LeafletMap(String elementid, js.Proxy mapOptions,  js.Proxy initOptions, js.Proxy tileLayerOptions){
+LeafletMap(String elementid, js.Proxy mapOptions, js.Proxy initOptions, js.Proxy tileLayerOptions){
     boundsTimeout = initOptions['boundsTimeout']*1000;
     js.scoped(() {
         map = new js.Proxy(js.context.L.Map, elementid, mapOptions);
         featureLayerGroup = new js.Proxy(js.context.L.LayerGroup);
         map.addLayer(featureLayerGroup);
         js.retain(featureLayerGroup);
-        var osm = new js.Proxy(js.context.L.TileLayer,tileLayerOptions['tileURL'], tileLayerOptions);
-        map.addLayer(osm);
-        var mouseOptions = js.map({'numDigits': 5  });
-        if(initOptions['mousePosition'] == true)
+        var tileLayer = new js.Proxy(js.context.L.TileLayer,tileLayerOptions['tileURL'], tileLayerOptions);
+        map.addLayer(tileLayer);
+        var mouseOptions = initOptions['mousePosition'];
+        if( mouseOptions != false)
         {
-          var mouseOptions = js.map({'numDigits': 5  });
           var mousePosition = new js.Proxy(js.context.L.Control.MousePosition, mouseOptions);
           mousePosition.addTo(map);
         }
@@ -253,14 +251,56 @@ LeafletMap(String elementid, js.Proxy mapOptions,  js.Proxy initOptions, js.Prox
         js.retain(map);
         map.on('moveend', new js.Callback.many(moveendHandler));
       });
-    changeRegistration();
+     changeRegistration();
   }
 \end{lstlisting}
-Der Websocket-Server antwortet auf diese Nachricht mit einer Nachricht von Typ “VesselInBoundsEvent” (siehe Listing \ref{websocket-message}).
+Der Websocket-Server antwortet auf diese Nachricht mit einer Nachricht von Typ “VesselsInBoundsEvent” (siehe Listing \ref{websocket-message}).\\
+Diese Nachricht und die “VesselPositionEvent”-Nachricht empfängt und verarbeitet der Dart-Client genauso wie der Javascript-Client in listing \ref{vessel.paintToMap}. Bei der Ausführung der paintToMap-Methode des Vessel-Objektes allerdings besteht ein wichtiger Unterschied darin, dass in Javascript direkt Map-Feature-Objekte der Leaflet.js Bibliothek (L.Polyline, L.AnimatedPolygon und L.CircleMarker) erzeugt werden, wohingegen in Dart der Konstruktor einer Unterklasse (Polyline, AnimatedPolygon oder CircleMarker) von MapFeature aufgerufen wird. Die Konstruktoren aller Unterklassen von MapFeature wechseln in den Javascript-Scope, konstruieren dort über einen Proxy ein entsprechendes Objekt aus der Leaflet-Bibliothek und stellen dieses als Attribut des MapFeature-Objektes im Dart-Scope zur Verfügung (siehe Beispiel Klasse Polyline \ref{Constructor Polyline}).
 
-Ebenso kapselt die eigene Bibliothek MapFeature.dart den Zugriff auf die L.Feature-Objekte der leaflet.js-Bibliothek. 
-So kann der moveend-Event, der nach dem Rendern der Karte ausgelöst wird, über die changeRegistration-Funktion und den bereitgestellten websocket den ersten Vessel-In-Bounds-Request senden.
+\begin{lstlisting}[caption= Constructor des Dart-Objekts Polyline, label = Constructor Polyline]
+class Polyline extends MapFeature{
+  Polyline(List<Coord> vectorPoints, Map options) {
+    js.scoped(() {
+      var latlng = js.context.L.LatLng;
+      var points =js.array([]);
+      for(var x = 0;x < vectorPoints.length; x++)
+      {
+        var lat =  vectorPoints[x].latitude;
+        var lng = vectorPoints[x].longitude;
+        points.push(new js.Proxy(latlng,lat,lng ));
+      }
+      var lineOptions = js.map(options);
+      _mapFeature= new js.Proxy(js.context.L.Polyline, points, lineOptions);
+      js.retain(_mapFeature);
+    });
+  }
+}
+\end{lstlisting}
+Auf diese Weise erhält im Array ‘Vessels’, der alle dargestellten Schiffe enthält, jedes Vessel-Objekt als Attribut .feature oder .polygon eine Assoziation zu einer Dart-Klasse, die die Verwaltung des dazugehörigen Javascript-Objektes im DOM-Baum für die Anwendung kapselt.
 
 
-
-, die die beiden Dart-Libraries Vessel (Vessel.dart) und LMap (LeafletMap.dart) einbindet. Die Library Vessel stellt die Klasse Vessel für die Initialisierung der Vessel-Objekte zur Verfügung, die Library leaflet\_map stellt die abstrakte Klasse LeafletMap zur Verfügung mit ihrer konkreten Ausprägung OpenStreetMap 
+Ebenso ist für Popups eine Dart-Klasse eingeführt in LeafletMap.dart, die im Konstruktor einen Proxy zu einem Leaflet.js-Popup-Objekt erstellt und als Klassenattribut speichert. Mit der addToMap-Funktion der Klasse Popup wird im Dart-Scope die Popup-Instanz dem LeafletMap-Objekt als Attribut hinzugefügt und im Javascript-Scope das Proxy-Popup-Objekt dem Proxy-map-Objekt der LeafletMap.\\ Um Popups auf den MapFeature-Objekten über MouseEvents öffnen und schließen zu können, werden auf den mouseover und den mouseout-EventListener des Javascript-Proxies eines jeden MapFeature-Objektes EventHandler registriert, für die Dart-Callback.many-Funktionen eingerichtet sind (siehe listing \ref{EventHandling}). Diese Callback.many-Funktionen übernehmen den Wechsel zurück in den Dart-Scope.
+\begin{lstlisting}[caption=EventHandling mithilfe von Callback-Funktionen, label= EventHandling]
+void addListeners(){
+    onMouseoutHandler(e){
+      LMap.closePopup();
+    }
+    onMouseoverHandler(e){
+      var ll = e.latlng;
+      ll =  new js.Proxy(js.context.L.LatLng ,ll.lat, ll.lng);
+      
+      var popupOptions = {'closeButton': false,
+                        'autoPan': false,
+                        'maxWidth': 150, 
+                        'offset' : [50,-50]};
+      var popup = new Popup(ll, popupContent, popupOptions);
+      popup.addToMap();
+    }
+    
+    _callbacks.add(new js.Callback.many(onMouseoverHandler));
+    _callbacks.add(new js.Callback.many(onMouseoutHandler));
+    
+    _mapFeature.on('mouseover', _callbacks[0]);
+    _mapFeature.on('mouseout', _callbacks[1]);
+  }
+  \end{lstlisting}

@@ -157,26 +157,23 @@ class Vessel{
       mouseOverPopup = "${mouseOverPopup}<tr><td>NavStatus: &nbsp;</td><td><nobr>${nav_stati[nav_status]}</nobr></td></tr>";
     }
     if(sog!= null) {
-      mouseOverPopup = "${mouseOverPopup}<tr><td>Speed: &nbsp;</td><td><nobr>${sog.toString()}</nobr></td></tr>";
+      mouseOverPopup = "${mouseOverPopup}<tr><td>Speed: &nbsp;</td><td><nobr>${sog.toString()} kn</nobr></td></tr>";
     }
     if(true_heading != null && true_heading != 511) {
-      mouseOverPopup = "${mouseOverPopup}<tr><td>Heading: &nbsp;</td><td><nobr>${true_heading.toString()}</nobr></td></tr>";
+      mouseOverPopup = "${mouseOverPopup}<tr><td>Heading: &nbsp;</td><td><nobr>${true_heading.toString()} °</nobr></td></tr>";
     }
-    if(cog != null) {
-      mouseOverPopup = "${mouseOverPopup}<tr><td>Course: &nbsp;</td><td><nobr>${cog.toString()}</nobr></td></tr>";
+    else if(cog != null) {
+      mouseOverPopup = "${mouseOverPopup}<tr><td>Course: &nbsp;</td><td><nobr>${cog.toString()} °</nobr></td></tr>";
     }
-    var time = new DateTime.fromMillisecondsSinceEpoch(time_received,isUtc: false);
-    var timeString = time.toString().substring(0, 16);
-    mouseOverPopup = "${mouseOverPopup}<tr><td>TimeReceived: &nbsp;</td><td><nobr>${timeString}</nobr></td></tr>";
+    mouseOverPopup = "${mouseOverPopup}<tr><td>TimeReceived: &nbsp;</td><td><nobr>${getDate(time_received)}</nobr></td></tr>";
     if(dest != null) {
       mouseOverPopup = "${mouseOverPopup}<tr><td>Dest</td><td>${dest}</b></nobr></td></tr>";
     }
     if(draught != null) {
-      mouseOverPopup = "${mouseOverPopup}<tr><td>draught</td><td>${(draught/10).toString()}</b></nobr></td></tr>";
+      mouseOverPopup = "${mouseOverPopup}<tr><td>draught</td><td>${(draught/10).toString()} m</b></nobr></td></tr>";
     }
     if(dim_bow != null && dim_port != null) {
-      mouseOverPopup = "${mouseOverPopup}<tr><td>length, width</td><td>${(dim_stern+dim_bow).toString()},"
-      "${(dim_starboard+dim_port).toString()}</b></nobr></td></tr>";
+      mouseOverPopup = "${mouseOverPopup}<tr><td>length</td><td>${(dim_stern+dim_bow).toString()} m</b></nobr></td></tr>";
     }
     if (shipTypes[ship_type] != null) {
       mouseOverPopup = "${mouseOverPopup}<tr><td>ship_type</td><td>${shipTypes[ship_type]}</b></nobr></td></tr>";
@@ -187,6 +184,14 @@ class Vessel{
 }
 
 const EARTH_RADIUS = 6371000; 
+
+String getDate(timeReceived){
+  var timeString = (new DateTime.fromMillisecondsSinceEpoch(timeReceived,isUtc: false)).toString();
+  var month = timeString.substring(5, 7);
+  var day = timeString.substring(8,10);
+  var time = timeString.substring(10,16);
+  return "${day}.${month}. ${time}";
+}
 
 num calcAngle(sog, cog, true_heading) {
     var direction = 0;
