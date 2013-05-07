@@ -41,7 +41,7 @@ function Vessel(jsonObject){
       var shipStatics = (this.cog ||(this.true_heading &&  this.true_heading!=0.0 &&  this.true_heading !=511)) 
                         && (this.dim_port && this.dim_stern)
                         && zoom > 11 ;
-      var direction = defineDirection(this.sog, this.cog, this.true_heading);
+      var brng = calcAngle(this.sog, this.cog, this.true_heading);
       var vectorPoints = [];
       var shipPoint = new L.LatLng(this.pos[1],this.pos[0]);
       vectorPoints.push(shipPoint);
@@ -66,7 +66,7 @@ function Vessel(jsonObject){
                                                  dim_port: this.dim_port,
                                                  dim_bow: this.dim_bow,
                                                  dim_starboard: this.dim_starboard,
-                                                 direction:direction,
+                                                 brng:brng,
                                                  color: "blue",
                                                  weight: 3,
                                                  fill:true,
@@ -79,7 +79,7 @@ function Vessel(jsonObject){
                                                 autoStart: false,
                                                 distance: animationPartsSize,
                                                 interval:animationInterval,
-                                                direction:direction,
+                                                brng:brng,
                                                 zoom: zoom,
                                                 color: "black",
                                                 weight: 1,
@@ -98,7 +98,7 @@ function Vessel(jsonObject){
                                                  dim_port: this.dim_port,
                                                  dim_bow: this.dim_bow,
                                                  dim_starboard: this.dim_starboard,
-                                                 direction:direction,
+                                                 brng:brng,
                                                  color: "blue",
                                                  weight: 3,
                                                  fill:true,
@@ -154,7 +154,7 @@ function createPopupContent(vessel){
     return mouseOverPopup;
 }
 
-function defineDirection (sog, cog, hdg) {
+function calcAngle (sog, cog, hdg) {
     var direction = 0;
     if (sog && sog > 0.4 && cog < 360)
     {
@@ -164,7 +164,7 @@ function defineDirection (sog, cog, hdg) {
     {
       direction = hdg;
     }
-    return (direction);
+    return (-direction *(Math.PI / 180.0));
 }
  
 function destinationPoint(pos, cog, dist) {
