@@ -119,11 +119,12 @@ function createTriangle(pos, options){
   var lat = pos.lat;
   var shippoints = [];
   //calculate the 3 points of the triangle
-  var frontPoint = calcPoint(lon,lat, 0, 15,options.brng, options.zoom); 
+  var dist = Math.pow (2, options.zoom);
+  var frontPoint = destVincenty(lat,lon, options.direction, 1500000 / dist); 
   shippoints.push(frontPoint);
-  var leftPoint = calcPoint(lon,lat, -5,-5,options.brng, options.zoom);
+  var leftPoint = destVincenty(lat,lon,(options.direction + 90), 300000 / dist); 
   shippoints.push(leftPoint);
-  var rightPoint = calcPoint(lon,lat, 5,-5,options.brng, options.zoom);
+  var rightPoint = destVincenty(lat,lon,(options.direction -90), 300000 / dist); 
   shippoints.push(rightPoint);
   return shippoints;
 }
@@ -141,40 +142,31 @@ function createShipPoints(pos, options) {
     //front left
     var dx = -left;
     var dy = front-(len/10.0);  
-    shippoints.push(calcPoint(lon,lat, dx, dy,options.brng));
+    shippoints.push(calcPoint(lon,lat, dx, dy,-options.direction));
     //rear left
     dx = -left;
     dy = -(len-front);
-    shippoints.push(calcPoint(lon,lat, dx,dy,options.brng));
+    shippoints.push(calcPoint(lon,lat, dx,dy,-options.direction));
     //rear right
     dx =  wid - left;
     dy = -(len-front);
-    shippoints.push(calcPoint(lon,lat, dx,dy,options.brng));
+    shippoints.push(calcPoint(lon,lat, dx,dy,-options.direction));
     //front right
     dx = wid - left;
     dy = front-(len/10.0);
-    shippoints.push(calcPoint(lon,lat,dx,dy,options.brng));  
+    shippoints.push(calcPoint(lon,lat,dx,dy,-options.direction));  
     //front center
     dx = wid/2.0-left;
     dy = front;
-    shippoints.push(calcPoint(lon,lat,dx,dy,options.brng));
+    shippoints.push(calcPoint(lon,lat,dx,dy,-options.direction));
     return shippoints;
    }
  
 
-  function calcPoint(lon, lat, dx, dy, brng, zoom){
-    var divisor;
-    if(zoom)
-    {
-      zoom = (zoom < 13?(zoom + 0.5):zoom);
-      var divisor = Math.pow(2,zoom);
-    }
-    else
-    {
-      divisor = METERS_PER_DEGREE;
-    }  
-    var dy_deg = -(dx*Math.sin(brng) + dy*Math.cos(brng))/divisor;
-    var dx_deg = -((dx*Math.cos(brng) - dy*Math.sin(brng))/divisor)/Math.cos(lat * (Math.PI /180.0));
+  function calcPoint(lon, lat, dx, dy, direction){
+    var brng = direction * (Math.PI / 180);
+    var dy_deg = -(dx*Math.sin(brng) + dy*Math.cos(brng))/METERS_PER_DEGREE;
+    var dx_deg = -((dx*Math.cos(brng) - dy*Math.sin(brng))/METERS_PER_DEGREE)/Math.cos(lat * (Math.PI /180.0));
     return new L.LatLng(lat - dy_deg, lon - dx_deg);
   }
 
