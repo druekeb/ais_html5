@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: bachelor.aux
+A level-1 auxiliary file: Grundlagen.aux
+A level-1 auxiliary file: Implementierungen.aux
+A level-1 auxiliary file: VergleichendeEvaluation.aux
+The style file: alphadin_martin.bst
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: literatur.bib
+You've used 7 entries,
+            4793 wiz_defined-function locations,
+            929 strings with 7207 characters,
+and the built_in function-call counts, 3071 in all, are:
+= -- 311
+> -- 60
+< -- 57
++ -- 60
+- -- 18
+* -- 161
+:= -- 518
+add.period$ -- 12
+call.type$ -- 7
+change.case$ -- 28
+chr.to.int$ -- 7
+cite$ -- 7
+duplicate$ -- 111
+empty$ -- 255
+format.name$ -- 41
+if$ -- 654
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 36
+newline$ -- 52
+num.names$ -- 21
+pop$ -- 46
+preamble$ -- 1
+purify$ -- 42
+quote$ -- 0
+skip$ -- 176
+stack$ -- 0
+substring$ -- 141
+swap$ -- 19
+text.length$ -- 16
+text.prefix$ -- 6
+top$ -- 0
+type$ -- 74
+warning$ -- 0
+while$ -- 23
+width$ -- 9
+write$ -- 101

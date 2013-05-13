@@ -1,0 +1,24 @@
+TODO
+
+1. nicht funktionale Anforderungen:
+- Verzögerung time_received -> painted in socket.io (siehe Abbildungen)
+- 300 Verbindungen gleichzeitig testen
+- Browserunterstützung: Safari und IE testen (mac-book, Achims Windows)
+
+2. Literaturlinks einbauen
+
+3. Fußnoten einbauen
+
+4. Evaluation schreiben
+
+5. Fazit schreiben
+
+6. noSQL datenbanken in Grundlagen? NEIN
+
+7. subsubsection nummerierung
+
+8. Javascript map oder object ERLEDIGT Object
+
+9. Fragen wegen Bindung und Ausdrucken -> Cobra Copy
+
+10.Legende

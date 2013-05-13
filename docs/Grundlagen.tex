@@ -1,16 +1,16 @@
 \chapter{Grundlagen}\label{s.Grundlagen}
 \section{Automatisches Informationssystem}\label{s.Automatisches Informationssystem (AIS)}
-Das Automatic Identification System (AIS) ist ein UKW-Funksystem im Schiffsverkehr, das seit 2004 für alle Berufsschiffe über 300 BRZ in internationaler Fahrt und seit 2008 auch für solche über 500 BRZ in nationaler Fahrt verpflichtend eingeführt worden ist. Es soll dabei helfen, Kollisionen zwischen Schiffen zu verhüten und die landseitige Überwachung und Lenkung des Schiffsverkehrs zu erleichtern. Außerdem verbessert AIS die Planung an Bord, weil nicht nur Position, Kurs und Geschwindigkeit der umgebenden Schiffe übertragen werden, sondern auch Schiffsdaten (Schiffsname, MMSI-Nummer, Funkrufzeichen, etc.). AIS ist mit UKW-Signalen unabhängig von optischer Sicht und Radarwellenausbreitung.\\
+Das Automatic Identification System (AIS) ist ein UKW-Funksystem im Schiffsverkehr, das seit 2004 für alle Berufsschiffe über 300 BRZ in internationaler Fahrt und seit 2008 auch für solche über 500 BRZ in nationaler Fahrt verpflichtend eingeführt worden ist. Es soll dabei helfen, Kollisionen zwischen Schiffen zu verhüten und die landseitige Überwachung und Lenkung des Schiffsverkehrs zu erleichtern. Außerdem verbessert AIS die Planung an Bord, weil nicht nur Position, Kurs und Geschwindigkeit der umgebenden Schiffe übertragen werden, sondern auch Schiffsdaten (Schiffsname, MMSI-Nummer, Funkrufzeichen, etc.). AIS ist mit UKW-Signalen unabhängig von optischer Sicht und Radarwellenausbreitung \cite{wiki:ais}.\\
 Für die Nutzung von AIS ist ein aktives, technisch funktionsfähiges Gerät an Bord Voraussetzung, das sowohl Daten empfängt als auch Daten sendet. Für Schiffe der Berufsschifffahrt sind Klasse-A-Transceiver an Bord vorgesehen, für nicht ausrüstungspflichtige Schiffe genügen Klasse-B-Transceiver, die mit niedriger VHF-Signalstärke und weniger häufig senden.  \\
 Die dynamischen Schiffsdaten (LAT, LON, COG, SOG, UTC) erhält der AIS-Transceiver vom integrierten GPS-Empfänger, bei Klasse A auch von der Navigationsanlage des Schiffes. Die Kursrichtung (Heading =  HDG) kann über eine NMEA-183-Schnittstelle vom Kompass eingespeist werden.
 
 Die AIS-Einheit sendet schiffsspezifische Daten, die von jedem AIS-Empfangsgerät in Reichweite empfangen und ausgewertet werden können:
 \subsubsection{Statische Schiffsdaten} \label{Statische Schiffsdaten}
 \begin{itemize}
-\item IMO-Nummer
+\item IMO-Nummer\footnote{http://de.wikipedia.org/wiki/Schiffsnummer\#IMO-Nummer}
 \item Schiffsname
-\item Rufzeichen
-\item MMSI-Nummer
+\item Rufzeichen\footnote{http://de.wikipedia.org/wiki/Schiffsnummer\#Unterscheidungssignal}
+\item MMSI-Nummer\footnote{http://de.wikipedia.org/wiki/Schiffsnummer\#MMSI}
 \item Schiffstyp (Frachter, Tanker, Schlepper, Passagierschiff, SAR, Sportboot u. a.)
 \item Abmessungen des Schiffes (Abstand der GPS-Antenne von Bug, Heck, Backbord- und Steuerbordseite)
 \end{itemize}
@@ -30,8 +30,8 @@ Die AIS-Einheit sendet schiffsspezifische Daten, die von jedem AIS-Empfangsgerä
 \begin{itemize}
 \item aktueller maximaler statischer Tiefgang in dm
 \item Gefahrgutklasse der Ladung (IMO)
-\item Reiseziel (UN/LOCODE)[5]
-\item geschätzte Ankunftszeit (ETA)
+\item Reiseziel (UN/LOCODE)\footnote{http://www.unece.org/cefact/locode/service/location.html}
+\item geschätzte Ankunftszeit (estimated Time of Arrival = ETA)
 \item Personen an Bord
 \end{itemize}
 
@@ -50,52 +50,53 @@ Class A&in Fahrt&>23kn&2 sec\\
 Class B&&<2 kn&3 min\\
 Class B&&>2 kn&30 sec\\\hline
 \end{tabular}
-\caption[Intervalle, in denen ein Schiff seine Daten aussendet] {Intervalle, in denen ein Schiff seine Daten aussendet}
+\caption[Intervalle, in denen ein Schiff AIS-Nachrichten sendet] {Intervalle, in denen ein Schiff AIS-Nachrichten sendet}
 \end{table}
 
-Für AIS-Daten sind 22 standardisierte Nachrichtentypen bzw. Telegramme festgelegt. In dieser Arbeit werden nur Nachrichten vom Type 1 -3 (reguläre Positionsmeldung eines Klasse-A-Transceivers) und vom Typ 5 ( reguläre Meldung von Schiffs- und Reisedaten eines Klasse-A-Transceivers) benötigt. 
+Für AIS-Daten sind 22 standardisierte Nachrichtentypen bzw. Telegramme festgelegt. Für diese Arbeit interessieren nur die regulären Positionsmeldungen (dynamische Schiffsdaten) der Klasse-A-Transceiver (Typ 1- ,2-  und 3-Messages) und die regulären Meldungen von (statischen) Schiffs- und Reisedaten der Klasse-A-Transceiver (Typ 5-Messages). 
 \section{OpenStreetMap}\label{OpenStreetMap}
-OpenStreetMap ist eine freie, editierbare Karte der gesamten Welt auf der Basis von Daten, die von einer breiten Nutzergemeinde zusammengetragen werden. Inzwischen kann die Qualität der Karten mit denen proprietärer Angebote mithalten und übertrifft sie sogar in manchen Bereichen. Die Daten können gemäß der entsprechenden Freien Lizenz frei heruntergeladen und genutzt werden unter der Bedingung, dass sie nur unter der “Creative Commons Attribution-Share-Alike” (CC-BY-SA) -Lizenz weitergegeben werden.
+OpenStreetMap \footnote{http://www.openstreetmap.org/} ist eine freie, editierbare Karte der gesamten Welt auf der Basis von Daten, die von einer breiten Nutzergemeinde zusammengetragen werden. Inzwischen kann die Qualität der Karten mit denen proprietärer Angebote mithalten und übertrifft sie sogar in manchen Bereichen. Die Daten können gemäß der entsprechenden Freien Lizenz frei heruntergeladen und genutzt werden unter der Bedingung, dass sie nur unter der “Creative Commons Attribution-Share-Alike” (CC-BY-SA) -Lizenz weitergegeben werden.
 
 \section{Leaflet}\label{Leaflet}
-Leaflet ist eine open-source JavaScript-Bibliothek für interaktive Karten, das von einer Gruppe um Vladimir Agafonkin geschrieben wurde. Die Bibliothek zeichnet sich im Vergleich zu OpenLayers durch ein schlankes und einfaches Design aus und überzeugt durch gute Performance. Es unterstützt alle verbreiteten Plattformen auch im mobilen Bereich mithilfe von HTML5 und CSS3. Es ist hinreichend dokumentiert und verfügt über gut lesbaren source code.
+Leaflet ist eine open-source JavaScript-Bibliothek \footnote{http://leafletjs.com/reference.html} für interaktive Karten, die von einer Gruppe um Vladimir Agafonkin geschrieben wurde. Die Bibliothek zeichnet sich im Vergleich zu OpenLayers durch ein klares, schlankes Design aus und überzeugt durch gute Performance. Es unterstützt alle verbreiteten Plattformen auch im mobilen Bereich mithilfe von HTML5 und CSS3. Es ist hinreichend dokumentiert und verfügt über gut lesbaren Quellcode.
 
 \section{Bidirektionale Kommunikation über HTML5 Websockets}\label{s.Websockets}
 In der Entwicklung der Kommunikationstechnologien im Internet galt lange Zeit das request/response Paradigma, nach dem Anfragen vom Client vom Server beantwortet werden. Dieses Paradigma wird Stück für Stück aufgebrochen durch kontinuierliche Weiterentwicklungen in Richtung einer bidirektionalen Kommunikation zwischen Server und Client.\\
 Schon seit HTTP Long Polling, HTTP Streaming und Ajax on demand ist es für Serveranwendungen möglich nach einem initialen Verbindungsaufbau durch den Client, beim serverseitigen Eintreffen neuer Daten scheinbar selbständig einen Datenaustausch zum Client zu initieren. Dabei handelt es sich eigentlich nur um einen aufgeschobenen response auf einen zuvor gestellten client-Request.\\
-Der Nachteil dieser Technologien liegt darin, dass sie, weil sie Nachrichten über das HTTP-Protokoll austauschen, einen großen Überhang an Header-Informationen mitzusenden gezwungen sind, der sich in Summe negativ auf die Latenzzeit auswirkt. Damit sind diese Technologien für zeitkritische (realtime) Anwendungen nicht unbedingt geeignet.
+Der Nachteil dieser Technologien liegt darin, dass sie, weil sie Nachrichten über das HTTP-Protokoll austauschen, einen großen Überhang an Header-Informationen mitzusenden gezwungen sind, der sich in Summe negativ auf die Latenzzeit auswirkt \cite{varaksin}. Damit sind diese Technologien für zeitkritische (realtime) Anwendungen nicht unbedingt geeignet.
 \\
-Das 2011 eingeführte Websocket-Protokoll dagegen spezifiziert eine API (HTML5-Websocket API-Spezifikation), die eine echte bidirektionale Socket-Verbindung zwischen Server und Client ermöglicht, in der beide Seiten jederzeit Daten schicken können. Dieser Socket wird im Anschluss an einen intialen HTTP-handshake aufgebaut, indem Server und Client  einen Upgrade der Verbindung auf das Websocket-Protokoll aushandeln. 
+Das 2011 eingeführte Websocket-Protokoll dagegen spezifiziert eine API (HTML5-Websocket API-Spezifikation \footnote{http://www.w3.org/TR/2011/WD-websockets-20110419/}), die eine echte bidirektionale Socket-Verbindung zwischen Server und Client ermöglicht, in der beide Seiten jederzeit Daten schicken können. Dieser Socket wird im Anschluss an einen intialen HTTP-handshake aufgebaut, indem Server und Client  einen Upgrade der Verbindung auf das Websocket-Protokoll aushandeln  \cite{html5rocks}. 
 
 \section{Node.js}\label{Node.js}
-Node.js ist ein Framework zur Entwicklung serverseitiger Webanwendungen in Javascript. Es wurde 2009 von Ryald Dahl veröffentlich und hat seitdem viel Aufmerksamkeit erregt, weil Anwendungen in node.js
+Node.js \footnote{http://www.nodejs.org/} ist ein Framework zur Entwicklung serverseitiger Webanwendungen in Javascript. Es wurde 2009 von Ryald Dahl veröffentlich und hat seitdem viel Aufmerksamkeit erregt, weil Anwendungen in node.js
 \begin{itemize}
 
 \item hoch performant
 \item skalierbar
 \item und echtzeitfähig sind.
 \end{itemize}
+
 Diese Eigenschaften sind größtenteils dem Konzept des asynchronen, nicht blockierenden I/O von javascript im Allgemeinen und node.js im Besonderen geschuldet.
 Javascript ist von Anfang asynchron konzipiert für die Verwendung im Webbrowser, wo synchrone Verarbeitung wegen der Verzögerung des Seitendarstellung nicht in Frage kommt. Den gleichen Ansatz übernimmt node.js für die Serverseite.
 \\
 Node.js arbeitet single-threaded und eventbasiert. Die zentrale Kontrollstruktur, die den Programmablauf steuert, ist der Event-Loop. Er empfängt Events, die von Programm- oder Nutzeraktionen ausgelöst werden und setzt sie in Callback-Funktionen um.
-Kommt es im Programmablauf zur Interaktion mit einer externen Ressource, wird diese Interaktion in einen neuen Prozess ausgelagert und mit einer Callback-Methode versehen. Anschließend kann der Event Loop weitere aufgelaufene Events verarbeiten. Ist die Interaktion abgeschlossen bekommt der Event Loop ein Signal und setzt beizeiten die Verabeitung mit der entsprechenden Callback-Methode  fort.\\
+Kommt es im Programmablauf zur Interaktion mit einer externen Ressource, wird diese Interaktion in einen neuen Prozess ausgelagert und mit einer Callback-Methode versehen. Anschließend kann der Event Loop weitere aufgelaufene Events verarbeiten. Ist die Interaktion abgeschlossen bekommt der Event Loop ein Signal und setzt beizeiten die Verabeitung mit der entsprechenden Callback-Methode  fort \cite{teixeira}.\\
 Node.js bringt als Laufzeitumgebung die V8-Javascript-Engine mit, die die Ausführung von javascript-code durch Just-In-Time-Kompilierung optimiert. Außerdem bietet node.js eine direkte Unterstützung für das HTTP-Protokoll Websockets. Mit der Unterstützung des JSON-Datenformats sind alle notwendigen Bausteine zusammen für skalierbare, echtzeitfähige Serveranwendungen.
 Außerdem lassen sich mit dem Node Package Manager npm jederzeit weitere Pakete aus dem wachsenden Angebot nachinstallieren und verwalten.\\
-Als konkrete Pakete für Websockets standen innerhalb von node.js zum Zeitpunkt der Implementierung (November 2012) die Bibliotheken websocket (https://github.com/Worlize/WebSocket-Node) und socket.io (http://socket.io) zur Verfügung. Die Bibliothek websocket genügt der HTML5-Websocket-Api-Spezifikation (s.o). Socket.io erweitert die Funktionalität des websockets um heartbeats, timeouts and disconnection support. Außerdem kapselt socket.io die Details des Nachrichtenaustauschs: Bei Browsern, die Websockets nicht unterstützen, handelt socket.io die bestmögliche Verbindungsalternative aus in der Reihenfolge: 
+Als konkrete Pakete für Websockets standen innerhalb von node.js zum Zeitpunkt der Implementierung (November 2012) die Bibliotheken websocket \footnote{https://github.com/Worlize/WebSocket-Node} und socket.io \footnote{http://socket.io} zur Verfügung. Die Bibliothek websocket genügt der HTML5-Websocket-Api-Spezifikation (s.o). Socket.io erweitert die Funktionalität des websockets um heartbeats, timeouts and disconnection support. Außerdem kapselt socket.io die Details des Nachrichtenaustauschs: Bei Browsern, die Websockets nicht unterstützen, handelt socket.io die bestmögliche Verbindungsalternative aus in der Reihenfolge: 
 -->    WebSocket 
  -->   Adobe® Flash® Socket
   -->  AJAX long polling
    --> AJAX multipart streaming
  -->   Forever Iframe
  -->   JSONP Polling
-.
+\footnote{http://socket.io/\#browser-support}.
 
 \section{Google Dart}\label{s.Google Dart }
 
 \subsubsection{Motivation für Dart}
 Dart ist eine von der Firma Google als OpenSource Projekt seit ca. 2 Jahren explizit für Webanwendungen entwickelte Programmiersprache. Das Ziel ist es, eine Sprache zu entwickeln, die komplexe Webanwendungen besser unterstützt als Javascript mit seinen historisch bedingten Ungereimtheiten und Schwächen.
-Das Entwicklerteam definiert die Design-Ziele folgendermaßen:
+Das Entwicklerteam definiert die Design-Ziele folgendermaßen\footnote{http://www.dartlang.org/docs/technical-overview/\#goals}:
 Dart soll
 \begin{itemize}   
 \item eine sowohl strukturierte als auch flexible Web-Programmiersprache sein
@@ -122,19 +123,14 @@ Zur {\bf Parallelverarbeitung} nutzt Dart das Konzept von Isolates (übernommen 
 \item Der {\bf dart2js Compiler} ist ebenfalls im DartEditor enthalten und kompiliert Dart-Code zu Javascript-Code, der für die Chrome V8 Javascript engine optimiert ist.
 \item Mit {\bf Pub} verfügt Dart über einen Package Manager vergleichbar dem Node Package Manager npm.
 \end{itemize}
-
+\cite{dartvsjs}\cite{builddartapps}
 
 \subsubsection{Einbindung von Javascript-Bibliotheken in Dart mit js-interop}\label{js-interop}
-Für die Verwendung von Javascript-Bibliotheken in Dart-Code existiert die Dart-Bibliothek {\bf js-interop}. Damit können Dart-Anwendungen Javascript-Bibliotheken verwenden und zwar sowohl in nativem Dart code, der in der Dart-Virtual-Machine ausgeführt wird als auch in mit dart2js zu Javascript kompilierten Dart-Code.\\
+Für die Verwendung von Javascript-Bibliotheken in Dart-Code existiert die Dart-Bibliothek {\bf js-interop} \footnote{https://github.com/dart-lang/js-interop}. Damit können Dart-Anwendungen Javascript-Bibliotheken verwenden und zwar sowohl in nativem Dart code, der in der Dart-Virtual-Machine ausgeführt wird als auch in mit dart2js zu Javascript kompilierten Dart-Code.\\
 
 Nachdem die Bibliothek in eine Dart-Anwendung eingebunden worden ist, kann ein sogenannter {\bf Proxy} zum javascript-Kontext der Seite erstellt werden. Referenzen an diesen Proxy werden automatisch zu Javascript umgeleitet. Auf oberster Ebene lassen sich damit Javascript-Arrays und -Maps generieren, die mit den entsprechenden Objekten in Dart korrespondieren. Über diesen Proxy können aber auch Proxies zu beliebigen Javascript-Objekten erstellt werden, deren Eigenschaften und Methoden im Javascript-Scope zur Verfügung stehen.\\
 
-Um Dart-Funktionen aus dem javascript-Scope heraus aufzurufen, wird die entsprechende Funktion in ein {\bf Callback-Objekt} umgewandelt, das entweder ein einziges Mal oder mehrmals aufrufbar ist. Um die Lebensdauer dieser Proxies und Callback-Objekte zu verwalten benutzt Dart das Scope-Konzept: Per default haben alle proxies nur lokale Gültigkeit. Sollen sie den Ausführungszeitraum des Scopes überdauern, können sie ausdrücklich aufbewahrt werden, müssen dann aber zu Vermeidung von memory leaks auch explizit wieder freigegeben werden. Dasselbe gilt für Callback-Objekte, die mehrmals aufrufbar sind.
+Um Dart-Funktionen aus dem javascript-Scope heraus aufzurufen, wird die entsprechende Funktion in ein {\bf Callback-Objekt} umgewandelt, das entweder ein einziges Mal oder mehrmals aufrufbar ist. Um die Lebensdauer dieser Proxies und Callback-Objekte zu verwalten benutzt Dart das Scope-Konzept: Per default haben alle proxies nur lokale Gültigkeit. Sollen sie den Ausführungszeitraum des Scopes überdauern, können sie ausdrücklich aufbewahrt werden, müssen dann aber zu Vermeidung von memory leaks auch explizit wieder freigegeben werden. Dasselbe gilt für Callback-Objekte, die mehrmals aufrufbar sind \cite{js-interop}.
 
 \subsubsection{Dart-Websockets}
-Für serverseitiges Dart, das auf der serverseitigen Dart-VM läuft existiert das Paket Dart:io. Es ermöglicht Zugriff auf das Dateisystem und auf Prozesse. In Dart:io existiert auch eine Websocket-Implementierung, mit der bereits einfache Websocket-Server geschrieben werden können.
-
-
-\section{NoSQL-Datenbanken}
-\subsection{MongoDB}
-\subsection{Redis}
+Für serverseitiges Dart, das auf der serverseitigen Dart-VM läuft existiert das Paket Dart:io. Es ermöglicht Zugriff auf das Dateisystem und auf Prozesse. In Dart:io existiert auch eine Websocket-Implementierung,\footnote{http://api.dartlang.org/docs/releases/latest/dart\_io/WebSocket.html} mit der bereits einfache Websocket-Server geschrieben werden können \footnote{http://www.dartlang.org/docs/dart-up-and-running/contents/ch05.html}.

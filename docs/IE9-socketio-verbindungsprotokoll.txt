@@ -1,0 +1,9 @@
+Schlüssel	Wert
+Anforderung	GET /socket.io/static/flashsocket/WebSocketMain.swf HTTP/1.1
+Accept	*/*
+Accept-Language	de-DE
+Referer	http://192.168.1.214:8090/ais-socket.io_js.html
+x-flash-version	10,0,32,18
+Accept-Encoding	gzip, deflate
+User-Agent	Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)
+Host	192.168.1.214:8090

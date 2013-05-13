@@ -11,6 +11,7 @@
 \usepackage{amsmath,marvosym} % Mathesachen
 \usepackage[T1]{fontenc} % Ligaturen, richtige Umlaute im PDF
 \usepackage[utf8]{inputenc}% UTF8-Kodierung für Umlaute usw
+\usepackage{url}%für online-Zitate
 
 \usepackage{geometry}
 \geometry{a4paper,left=30mm,right=25mm, top=1cm, bottom=2cm}
@@ -18,16 +19,20 @@
 \usepackage{mathpazo} % Palatino für Mathemodus
 %\usepackage{mathpazo,tgpagella} % auch sehr schöne Schriften
 \usepackage{setspace} % Zeilenabstand
+\usepackage{caption} %Zeilenumbruch in Bildunterschriften
 \onehalfspacing % 1,5 Zeilen
 % Schriften-Größen
 \setkomafont{chapter}{\Large\rmfamily} % Überschrift der Ebene
 \setkomafont{section}{\large\rmfamily}
 \setkomafont{subsection}{\rmfamily}
 \setkomafont{subsubsection}{\rmfamily}
+
 \setkomafont{chapterentry}{\large\rmfamily} % Überschrift der Ebene in Inhaltsverzeichnis
 \setkomafont{descriptionlabel}{\bfseries\rmfamily} % für description Umgebungen
 \setkomafont{captionlabel}{\small\bfseries}
 \setkomafont{caption}{\small}
+% Nummerierung der Sections und subsections und subsubsections
+\setcounter{secnumdepth}{2}
 % Sprache: Deutsch
 \usepackage[ngerman]{babel} % Silbentrennung
 % PDF
@@ -61,7 +66,8 @@
 \usepackage[all]{hypcap} % Beim Klicken auf Links zum Bild und nicht zu Caption gehen
 % Bildunterschrift
 \setcapindent{0em} % kein Einrücken der Caption von Figures und Tabellen
-\setcapwidth[c]{0.9\textwidth}
+%
+%\setcapwidth[c]{0.9\textwidth}
 \setlength{\abovecaptionskip}{0.2cm} % Abstand der zwischen Bild- und Bildunterschrift
 % Quellcode
 \usepackage{listings} % für Formatierung in Quelltexten
@@ -120,7 +126,7 @@
 % linksbündige Fußboten
 \deffootnote{1.5em}{1em}{\makebox[1.5em][l]{\thefootnotemark}}
 
-%\typearea{14} % typearea am Schluss berechnen lassen, damit die Einstellungen oben berücksichtigt werden
+%typearea{14} % typearea am Schluss berechnen lassen, damit die Einstellungen oben berücksichtigt werden
 % für autoref von Gleichungen in itemize-Umgebungen
 \makeatletter
 \newcommand{\saved@equation}{}
