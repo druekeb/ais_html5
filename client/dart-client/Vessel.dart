@@ -60,7 +60,7 @@ class Vessel{
         Coord shipPoint = new Coord(pos[1],pos[0]);
         vectorPoints.add(shipPoint);
 
-        if (moving) //only vessel, that move with a minimum speed of MINIMUM_SPEED
+        if (moving) //only vessels, that move with a minimum speed of MINIMUM_SPEED
         {
           var meterProSekunde = sog *0.51444;
           var vectorLength = meterProSekunde * 30; //meters, which are covered in 30 sec
@@ -88,7 +88,7 @@ class Vessel{
               'fillColor':shipTypeColors[ship_type],
               'fillOpacity':0.6,
               'clickable':false
-            }, mmsi);
+            });
           }
           feature = new AnimatedPolygon(vectorPoints,{
             'autoStart': false,
@@ -102,7 +102,7 @@ class Vessel{
             'fillColor': shipTypeColors[ship_type],
             'fillOpacity':0.8,
             'clickable':true
-             }, mmsi);
+             });
 
         }/* paint for non moving vessels a Polygon and a circlemarker*/
         else 
@@ -123,7 +123,7 @@ class Vessel{
                 'fillOpacity':0.6,
                 'clickable':false,
                 'zoom':false
-              }, mmsi);
+              });
           }
           feature = new CircleMarker(vectorPoints[0], {
                            'radius':5,
@@ -133,7 +133,7 @@ class Vessel{
                            'color':"#000000",
                            'opacity':0.4,
                            'weight':2.5 
-                           }, mmsi);
+                           });
         }
         if(polygon != null)
         {

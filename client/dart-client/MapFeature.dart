@@ -36,8 +36,9 @@ abstract class MapFeature{
                         'autoPan': false,
                         'maxWidth': 150, 
                         'offset' : [50,-50]};
-     var popup = new Popup(ll, popupContent, popupOptions);
-     popup.addToMap();
+      var popup = new Popup(ll, popupContent, popupOptions);
+      LMap.closePopup();
+      LMap.openPopup(popup);
     }
     
     _callbacks.add(new js.Callback.many(onMouseoverHandler));
@@ -49,11 +50,11 @@ abstract class MapFeature{
   
   /*-------------------------------------------------------*/
  
-  void addToMap(bool animation, String pContent) {
+  void addToMap(bool animation, String popupText) {
     js.scoped(() {
-      if(pContent.length > 0)
+      if(popupText.length > 0)
       {
-        popupContent = pContent;
+        popupContent = popupText;
         addListeners();
       }
       LMap.featureLayerGroup.addLayer(_mapFeature);
@@ -105,7 +106,7 @@ class Polyline extends MapFeature{
 
 class AnimatedPolygon extends MapFeature{
   
-  AnimatedPolygon(List<Coord> vectorPoints, Map opts, int vmmsi) {
+  AnimatedPolygon(List<Coord> vectorPoints, Map options) {
     js.scoped(() {
       var latlng = js.context.L.LatLng;
       var points =js.array([]);
@@ -115,7 +116,7 @@ class AnimatedPolygon extends MapFeature{
         var lng = vectorPoints[x].longitude;
         points.push(new js.Proxy(latlng,lat,lng ));
       }
-      _mapFeature= new js.Proxy(js.context.L.AnimatedPolygon, points, js.map(opts));
+      _mapFeature= new js.Proxy(js.context.L.AnimatedPolygon, points, js.map(options));
       js.retain(_mapFeature);
     });
   }
@@ -140,7 +141,7 @@ class AnimatedPolygon extends MapFeature{
 /*--------------------------------------------------------------------------------------*/
 
 class CircleMarker extends MapFeature{
-  CircleMarker(Coord vectorPoint, Map options, int vMmsi) {
+  CircleMarker(Coord vectorPoint, Map options) {
     js.scoped(() {
       var latlng = js.context.L.LatLng;
       var point = new js.Proxy(latlng,vectorPoint.latitude,vectorPoint.longitude );

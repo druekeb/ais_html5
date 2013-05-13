@@ -127,7 +127,7 @@ function Vessel(jsonObject){
   }
 }
 
-const EARTH_RADIUS = 6371000;
+var EARTH_RADIUS = 6371000;
 
 function createPopupContent(vessel){
     var mouseOverPopup ="<div class='mouseOverPopup'><table>";

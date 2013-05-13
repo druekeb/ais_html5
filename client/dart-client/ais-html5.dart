@@ -31,7 +31,7 @@ logMsg(String msg){
 
 /*Startpoint for Dart-Client-Application*/
 void main(){
-  double initialZoom = 17.0;
+  int initialZoom = 17;
   double initialLon = 9.947;
   double initialLat = 53.518;
   if (getParam('zoom')!= null)
@@ -56,7 +56,7 @@ void main(){
 }
 
 /* load Leaflet-Map into mapDiv*/
-initMap(double initialLat, double initialLon, double initialZoom){
+initMap(double initialLat, double initialLon, int initialZoom){
   String mapDiv_id = 'map';
   var initOptions = js.map({
     'lat':initialLat,

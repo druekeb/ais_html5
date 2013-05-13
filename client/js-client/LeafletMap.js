@@ -9,6 +9,9 @@ var LMap = function(){
     tileLayer.addTo(map);
 
     featureLayer = L.layerGroup().addTo(map);
+
+    addLegend();
+
     if (initOptions.mousePosition)
     {
       L.control.mousePosition().addTo(map);
@@ -39,6 +42,18 @@ var LMap = function(){
     return map.getZoom();
   }
 
+  function addLegend() {
+    var legendContent ='<table><tr><th>Liegende /Fahrende Schiffe</th></tr>'+
+      '<tr><td><img src="./images/vessel_passenger_notmoving.png" /><img src="./images/vessel_passenger_moving.png"/>Passagier</td></tr>'+
+      '<tr><td><img src="./images/vessel_cargo_notmoving.png" /><img src="./images/vessel_cargo_moving.png" />Cargo</td></tr>'+
+      '<tr><td><img src="./images/vessel_tanker_notmoving.png" /><img src="./images/vessel_tanker_moving.png" />Tanker</td></tr>'+
+      '<tr><td><img src="./images/vessel_other_notmoving.png" /><img  src="./images/vessel_other_moving.png" />Lotsen, Schlepper</td></tr>'+
+      '<tr><td><img src="./images/vessel_unknown_notmoving.png" /><img src="./images/vessel_unknown_moving.png" />Unbekannt</td></tr></table>';
+    var legendElement = $('<div></div>', {class: 'legend leaflet-container', html: legendContent});
+    var controlElement = $('.leaflet-bottom.leaflet-left');
+    controlElement.append(legendElement);
+  }
+  
   function addToMap(feature, animation, popupContent){
     if(popupContent.length > 0)
     {
