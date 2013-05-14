@@ -1,0 +1,19 @@
+
+Request URL:ws://192.168.1.214:8090/
+Request Method:GET
+Status Code:101 Switching Protocols
+Request Headersview source
+Cache-Control:no-cache
+Connection:Upgrade
+Host:192.168.1.214:8090
+Origin:http://192.168.1.214:8090
+Pragma:no-cache
+Sec-WebSocket-Extensions:x-webkit-deflate-frame
+Sec-WebSocket-Key:MbTmTJvNqo9vR2kbo8Ukrg==
+Sec-WebSocket-Version:13
+Upgrade:websocket
+Response Headersview source
+Connection:Upgrade
+Origin:http://192.168.1.214:8090
+Sec-WebSocket-Accept:KS2mL8GMwgoSH123aZLYQ8Q5Owc=
+Upgrade:websocket
