@@ -12,7 +12,7 @@ import 'packages/js/js.dart' as js;
 /* Array that defines for every zoomlevel the minimun speed of a displayed vessel:
                Zoomlevel 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18 */
 List ZOOM_SPEED_ARRAY = [20,20,20,20,20,20,16,12,8,4,2,1,0.1,-1,-1,-1,-1,-1,-1];
-const WEBSOCKET_SERVER_LOCATION = '127.0.0.1';
+const WEBSOCKET_SERVER_LOCATION = '192.168.1.214';
 const WEBSOCKET_SERVER_PORT = 8090;
 const ANIMATION_MINIMAL_ZOOMLEVEL =13;
 const RETRY_SECONDS = 2; 
@@ -21,6 +21,7 @@ const BOUNDS_TIMEOUT = 300; //Reload of page every 5 min to get Vessels in Bound
 var LMap;
 Map<String, Vessel> vessels = new Map<String, Vessel>();
 WebSocket  socket;
+var time;
 
 bool  encounteredError = false;
 
@@ -105,6 +106,7 @@ void initWebSocket(int retrySeconds, callback) {
     Map json = parse(evt.data);
     if (json['type'] == "vesselsInBoundsEvent")
     {
+      time = new DateTime.now();
       processVesselsInBounds(json['vessels']);
     }
     if (json['type'] == "vesselPosEvent")
@@ -140,6 +142,7 @@ processVesselsInBounds(jsonArray){
       vessels["${x['mmsi']}"] = vessel;
     });
   }
+  logMsg("${vessels.length}  ${(new DateTime.now().difference(time)).inMilliseconds}");
   //display an Infobox with the current minimal speed of displayed vessels
   if (currentZoom < (getFirstNegative(ZOOM_SPEED_ARRAY)))
   {

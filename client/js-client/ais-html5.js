@@ -7,6 +7,7 @@ $(document).ready(function() {
   var WEBSOCKET_SERVER_PORT = 8090;
   var BOUNDS_TIMEOUT = 300;
   var vessels = {};
+  var time;
       
   var initialZoom = getParam('zoom');
   initialZoom = initialZoom.length >0? initialZoom : 17;
@@ -60,6 +61,7 @@ $(document).ready(function() {
     }
     if (json.type == "vesselsInBoundsEvent")
     {
+      time = new Date().getTime();
       processVesselsInBounds(json.vessels);
     }
     else if (json.type == "vesselPosEvent")
@@ -84,6 +86,7 @@ $(document).ready(function() {
           vessels[vessel.mmsi] = vessel;
       });
     }
+    console.debug(Object.keys(vessels).length +" "+(new Date().getTime() -time));
     /* show Infobox with the current minimum speed a vessel must have to be displayed */
     if (currentZoom < getFirstNegative(ZOOM_SPEED_ARRAY))
     {

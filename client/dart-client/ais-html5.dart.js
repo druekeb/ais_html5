@@ -13,18 +13,9 @@ var $ = Isolate.$isolateProperties;
 var $$ = {};
 
 // Classes
-$$.LeafletMap = {"": "Object;_elementid<,_liblib4$_map@,_featureLayerGroup@,_popup@",
-  LeafletMap$3$height$width: function(elementid, height, width) {
-    this._elementid = elementid;
-    this._width = width;
-    this._height = height;
-  }
-};
-
-$$.OpenStreetMap = {"": "LeafletMap;callbackList,initialZoom<,initialLat<,initialLon<,boundsTimeout,boundsTimeoutTimer,_elementid,_width,_height,_liblib4$_map,_featureLayerGroup,_popup",
-  loadMap$0: function() {
-    $.scoped(new $.OpenStreetMap_loadMap_anon(this, "http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png", "Map-Data <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-By-SA</a> by <a href=\"http://openstreetmap.org/\">OpenStreetMap</a> contributors target=\"_blank\">MapQuest</a>, <a href=\"http://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>", ["otile1", "otile2", "otile3", "otile4"]));
-    this.changeRegistration$0();
+$$.LeafletMap = {"": "Object;map*,featureLayerGroup@,boundsTimeout,boundsTimeoutTimer",
+  map$1: function($receiver, arg0) {
+    return this.map.call$1(arg0);
   },
   moveendHandler$1: function(e) {
     this.changeRegistration$0();
@@ -58,12 +49,6 @@ $$.OpenStreetMap = {"": "LeafletMap;callbackList,initialZoom<,initialLat<,initia
     output = $.StringBuffer$("");
     $._JsonStringifier$(output).stringifyValue$1(message);
     $.send$1$x(t1, output.toString$0(output));
-    t1 = this.callbackList;
-    if (!$.JSArray_methods.get$isEmpty(t1)) {
-      for (t2 = $.JSArray_methods.get$iterator(t1); t2.moveNext$0();)
-        t2.get$current().dispose$0();
-      $.JSArray_methods.clear$0(t1);
-    }
     t1 = $.Duration$(0, 0, 0, this.boundsTimeout, 0, 0);
     t2 = this.get$changeRegistration();
     milliseconds = t1.get$inMilliseconds();
@@ -83,12 +68,6 @@ $$.OpenStreetMap = {"": "LeafletMap;callbackList,initialZoom<,initialLat<,initia
     output = $.StringBuffer$("");
     $._JsonStringifier$(output).stringifyValue$1(message);
     $.send$1$x(t1, output.toString$0(output));
-    t1 = this.callbackList;
-    if (!$.JSArray_methods.get$isEmpty(t1)) {
-      for (t2 = $.JSArray_methods.get$iterator(t1); t2.moveNext$0();)
-        t2.get$current().dispose$0();
-      $.JSArray_methods.clear$0(t1);
-    }
     t1 = $.Duration$(0, 0, 0, this.boundsTimeout, 0, 0);
     t2 = this.get$changeRegistration();
     milliseconds = t1.get$inMilliseconds();
@@ -102,13 +81,13 @@ $$.OpenStreetMap = {"": "LeafletMap;callbackList,initialZoom<,initialLat<,initia
   getBounds$0: function() {
     var t1 = {};
     t1.bBox_0 = null;
-    $.scoped(new $.OpenStreetMap_getBounds_anon(t1, this));
+    $.scoped(new $.LeafletMap_getBounds_anon(t1, this));
     return t1.bBox_0;
   },
   getZoom$0: function() {
     var t1 = {};
     t1.zoom_0 = null;
-    $.scoped(new $.OpenStreetMap_getZoom_anon(t1, this));
+    $.scoped(new $.LeafletMap_getZoom_anon(t1, this));
     return t1.zoom_0;
   },
   removeFeatures$1: function(vessel) {
@@ -128,179 +107,165 @@ $$.OpenStreetMap = {"": "LeafletMap;callbackList,initialZoom<,initialLat<,initia
       $.remove$0$ax(vessel.get$feature());
     }
   },
-  clearFeatureLayer$0: function() {
-    $.scoped(new $.OpenStreetMap_clearFeatureLayer_anon(this));
-  },
   closePopup$0: function(_) {
-    $.scoped(new $.OpenStreetMap_closePopup_anon(this));
+    $.scoped(new $.LeafletMap_closePopup_anon(this));
   },
   openPopup$1: function(popup) {
-    $.scoped(new $.OpenStreetMap_openPopup_anon(this, popup));
+    $.scoped(new $.LeafletMap_openPopup_anon(this, popup));
   },
-  OpenStreetMap$4$height$width: function(elementid, mapOptions, height, width) {
-    if (0 >= mapOptions.length)
-      throw $.ioore(0);
-    this.initialLat = $.get$latitude$x(mapOptions[0]);
-    if (0 >= mapOptions.length)
-      throw $.ioore(0);
-    this.initialLon = $.get$longitude$x(mapOptions[0]);
-    if (1 >= mapOptions.length)
-      throw $.ioore(1);
-    this.initialZoom = mapOptions[1];
-    if (2 >= mapOptions.length)
-      throw $.ioore(2);
-    this.boundsTimeout = $.$mul$n(mapOptions[2], 1000);
+  LeafletMap$4: function(elementid, mapOptions, initOptions, tileLayerOptions) {
+    this.boundsTimeout = $.$mul$n($.$index$asx(initOptions, "boundsTimeout"), 1000);
+    $.scoped(new $.anon5(this, elementid, mapOptions, initOptions, tileLayerOptions));
+    this.changeRegistration$0();
   }
 };
 
-$$.OpenStreetMap_loadMap_anon = {"": "Closure;this_0,tileURL_1,osmAttrib_2,subDomains_3",
+$$.anon5 = {"": "Closure;this_0,elementid_1,mapOptions_2,initOptions_3,tileLayerOptions_4",
   call$0: function() {
-    var t1, mapOptions, tileLayerOptions, t2, osm, mouseOptions;
-    t1 = $.makeLiteralMap(["closePopupOnClick", false, "markerZoomAnimation", false, "zoomAnimation", false, "worldCopyJump", true, "maxZoom", 18, "minZoom", 3]);
-    $._enterScopeIfNeeded();
-    mapOptions = $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t1)));
-    t1 = $.makeLiteralMap(["attribution", this.osmAttrib_2, "subdomains", this.subDomains_3]);
-    $._enterScopeIfNeeded();
-    tileLayerOptions = $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t1)));
+    var t1, t2, t3, t4, osm, mouseOptions, t5;
     t1 = this.this_0;
     $._enterScopeIfNeeded();
-    t1.set$_liblib4$_map($.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Map(), $._pruneUndefined(t1.get$_elementid(), mapOptions, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
+    t2 = $.getInterceptor$ax(t1);
+    t2.set$map(t1, $.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Map(), $._pruneUndefined(this.elementid_1, this.mapOptions_2, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
     $._enterScopeIfNeeded();
-    t1.set$_featureLayerGroup($.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$LayerGroup(), $._pruneUndefined($.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
-    t1.get$_liblib4$_map().addLayer$1(t1.get$_featureLayerGroup());
-    t2 = t1.get$_featureLayerGroup();
-    $._jsGlobalize.callSync$1($._serialize(t2.toJs$0()));
+    t1.set$featureLayerGroup($.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$LayerGroup(), $._pruneUndefined($.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
+    t2.get$map(t1).addLayer$1(t1.get$featureLayerGroup());
+    t3 = t1.get$featureLayerGroup();
+    $._jsGlobalize.callSync$1($._serialize(t3.toJs$0()));
     $._enterScopeIfNeeded();
-    osm = $.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$TileLayer(), $._pruneUndefined(this.tileURL_1, tileLayerOptions, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined));
-    t1.get$_liblib4$_map().addLayer$1(osm);
-    t2 = $.makeLiteralMap(["numDigits", 5]);
+    t3 = $._deserialize($._jsPortSync.callSync$1([])).get$L().get$TileLayer();
+    t4 = this.tileLayerOptions_4;
+    osm = $.Proxy_Proxy$withArgList(t3, $._pruneUndefined($.$index$asx(t4, "tileURL"), t4, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined));
+    t2.get$map(t1).addLayer$1(osm);
+    t4 = this.initOptions_3;
+    t3 = $.getInterceptor$asx(t4);
+    mouseOptions = t3.$index(t4, "mousePosition");
+    if ($.$eq(mouseOptions, false) !== true) {
+      $._enterScopeIfNeeded();
+      $.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Control().get$MousePosition(), $._pruneUndefined(mouseOptions, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)).addTo$1(t2.get$map(t1));
+    }
+    t5 = t2.get$map(t1);
     $._enterScopeIfNeeded();
-    mouseOptions = $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t2)));
-    $._enterScopeIfNeeded();
-    $.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Control().get$MousePosition(), $._pruneUndefined(mouseOptions, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)).addTo$1(t1.get$_liblib4$_map());
-    t2 = t1.get$_liblib4$_map();
-    $._enterScopeIfNeeded();
-    t2.setView$2($.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$LatLng(), $._pruneUndefined(t1.get$initialLat(), t1.get$initialLon(), $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)), t1.get$initialZoom());
-    t2 = t1.get$_liblib4$_map();
-    $._jsGlobalize.callSync$1($._serialize(t2.toJs$0()));
-    $.on$2$x(t1.get$_liblib4$_map(), "moveend", $.Callback$many(t1.get$moveendHandler(), false));
+    t5.setView$2($.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$LatLng(), $._pruneUndefined(t3.$index(t4, "lat"), t3.$index(t4, "lon"), $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)), t3.$index(t4, "zoom"));
+    t4 = t2.get$map(t1);
+    $._jsGlobalize.callSync$1($._serialize(t4.toJs$0()));
+    $.on$2$x(t2.get$map(t1), "moveend", $.Callback$many(t1.get$moveendHandler(), false));
   },
   $isFunction: true
 };
 
-$$.OpenStreetMap_getBounds_anon = {"": "Closure;box_0,this_1",
+$$.LeafletMap_getBounds_anon = {"": "Closure;box_0,this_1",
   call$0: function() {
-    var bBox = this.this_1.get$_liblib4$_map().getBounds$0().toBBoxString$0();
+    var bBox = $.get$map$ax(this.this_1).getBounds$0().toBBoxString$0();
     this.box_0.bBox_0 = bBox;
   },
   $isFunction: true
 };
 
-$$.OpenStreetMap_getZoom_anon = {"": "Closure;box_0,this_1",
+$$.LeafletMap_getZoom_anon = {"": "Closure;box_0,this_1",
   call$0: function() {
-    var zoom = this.this_1.get$_liblib4$_map().getZoom$0();
+    var zoom = $.get$map$ax(this.this_1).getZoom$0();
     this.box_0.zoom_0 = zoom;
   },
   $isFunction: true
 };
 
-$$.OpenStreetMap_clearFeatureLayer_anon = {"": "Closure;this_0",
+$$.LeafletMap_closePopup_anon = {"": "Closure;this_0",
   call$0: function() {
-    this.this_0.get$_featureLayerGroup().clearLayers$0();
+    $.closePopup$0$x($.get$map$ax(this.this_0));
   },
   $isFunction: true
 };
 
-$$.OpenStreetMap_closePopup_anon = {"": "Closure;this_0",
+$$.LeafletMap_openPopup_anon = {"": "Closure;this_0,popup_1",
   call$0: function() {
-    $.closePopup$0$x(this.this_0.get$_liblib4$_map());
+    $.get$map$ax(this.this_0).openPopup$1(this.popup_1.get$_popup());
   },
   $isFunction: true
 };
 
-$$.OpenStreetMap_openPopup_anon = {"": "Closure;this_0,popup_1",
+$$.Coord = {"": "Object;latitude>,longitude>"};
+
+$$.Popup = {"": "Object;_popup@",
+  Popup$3: function(latlng, $content, options) {
+    $.scoped(new $.anon1(this, latlng, $content, options));
+  }
+};
+
+$$.anon1 = {"": "Closure;this_0,latlng_1,content_2,options_3",
   call$0: function() {
-    var t1, t2, t3;
+    var popupOptions, t1;
+    popupOptions = this.options_3;
+    $._enterScopeIfNeeded();
+    popupOptions.$indexSet(popupOptions, "offset", $.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Point(), $._pruneUndefined($.$index$asx(popupOptions.$index(popupOptions, "offset"), 0), $.$index$asx(popupOptions.$index(popupOptions, "offset"), 1), $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
+    $._enterScopeIfNeeded();
+    popupOptions = $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(popupOptions)));
     t1 = this.this_0;
-    t2 = t1.get$_liblib4$_map();
-    t3 = this.popup_1;
-    t2.openPopup$1(t3);
-    t1.set$_popup(t3);
+    $._enterScopeIfNeeded();
+    t1.set$_popup($.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Popup(), $._pruneUndefined(popupOptions, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
+    t1.get$_popup().setLatLng$1(this.latlng_1);
+    t1.get$_popup().setContent$1(this.content_2);
+    t1 = t1.get$_popup();
+    $._jsGlobalize.callSync$1($._serialize(t1.toJs$0()));
   },
   $isFunction: true
 };
 
-$$.MapFeature = {"": "Object;_mapFeature@,animated@,popupContent?",
-  mouseoverHandler$1: function(ll) {
-    var popupOptions = $.makeLiteralMap(["closeButton", false, "autoPan", false, "maxWidth", 150, "offset", [50, -50]]);
-    $.Popup$(ll, this.popupContent, popupOptions).addToMap$0();
-  },
+$$.MapFeature = {"": "Object;_mapFeature@,animated@,popupContent@",
   addListeners$0: function() {
-    var t1, t2, t3, t4;
-    t1 = new $.MapFeature_addListeners_onClickHandler(this);
-    t2 = new $.MapFeature_addListeners_onMouseoutHandler(this);
-    t3 = new $.MapFeature_addListeners_onMouseoverHandler(this);
-    t4 = this.callbacks;
-    t4.push($.Callback$many(t1, false));
-    t4.push($.Callback$many(t3, false));
-    t4.push($.Callback$many(t2, false));
-    t2 = this._mapFeature;
-    if (0 >= t4.length)
+    var t1, t2;
+    t1 = new $.MapFeature_addListeners_onMouseoutHandler();
+    t2 = this._callbacks;
+    t2.push($.Callback$many(new $.MapFeature_addListeners_onMouseoverHandler(this), false));
+    t2.push($.Callback$many(t1, false));
+    t1 = this._mapFeature;
+    if (0 >= t2.length)
       throw $.ioore(0);
-    $.on$2$x(t2, "click", t4[0]);
-    t2 = this._mapFeature;
-    if (1 >= t4.length)
+    $.on$2$x(t1, "mouseover", t2[0]);
+    t1 = this._mapFeature;
+    if (1 >= t2.length)
       throw $.ioore(1);
-    $.on$2$x(t2, "mouseover", t4[1]);
-    t2 = this._mapFeature;
-    if (2 >= t4.length)
-      throw $.ioore(2);
-    $.on$2$x(t2, "mouseout", t4[2]);
+    $.on$2$x(t1, "mouseout", t2[1]);
   },
-  addToMap$2: function(animation, pContent) {
-    $.scoped(new $.MapFeature_addToMap_anon(this, animation, pContent));
+  addToMap$2: function(animation, popupText) {
+    $.scoped(new $.MapFeature_addToMap_anon(this, animation, popupText));
   },
   remove$0: function(_) {
     $.scoped(new $.MapFeature_remove_anon(this));
   }
 };
 
-$$.MapFeature_addListeners_onClickHandler = {"": "Closure;this_0",
+$$.MapFeature_addListeners_onMouseoutHandler = {"": "Closure;",
   call$1: function(e) {
-    this.this_0;
     $.closePopup$0$x($.LMap);
   },
   $isFunction: true
 };
 
-$$.MapFeature_addListeners_onMouseoutHandler = {"": "Closure;this_1",
+$$.MapFeature_addListeners_onMouseoverHandler = {"": "Closure;this_0",
   call$1: function(e) {
-    this.this_1;
-    $.closePopup$0$x($.LMap);
-  },
-  $isFunction: true
-};
-
-$$.MapFeature_addListeners_onMouseoverHandler = {"": "Closure;this_2",
-  call$1: function(e) {
-    var ll = e.get$latlng();
+    var ll, popupOptions, popup;
+    ll = e.get$latlng();
     $._enterScopeIfNeeded();
     ll = $.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$LatLng(), $._pruneUndefined(ll.get$lat(), ll.get$lng(), $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined));
-    this.this_2.mouseoverHandler$1(ll);
+    popupOptions = $.makeLiteralMap(["closeButton", false, "autoPan", false, "maxWidth", 150, "offset", [50, -50]]);
+    popup = $.Popup$(ll, this.this_0.get$popupContent(), popupOptions);
+    $.closePopup$0$x($.LMap);
+    $.LMap.openPopup$1(popup);
   },
   $isFunction: true
 };
 
-$$.MapFeature_addToMap_anon = {"": "Closure;this_0,animation_1,pContent_2",
+$$.MapFeature_addToMap_anon = {"": "Closure;this_0,animation_1,popupText_2",
   call$0: function() {
     var t1, t2;
-    t1 = this.pContent_2;
+    t1 = this.popupText_2;
     if (t1.length > 0) {
       t2 = this.this_0;
       t2.set$popupContent(t1);
       t2.addListeners$0();
     }
-    t1 = $.LMap.get$_featureLayerGroup();
+    t1 = $.LMap.get$featureLayerGroup();
     t2 = this.this_0;
     t1.addLayer$1(t2.get$_mapFeature());
     if (this.animation_1) {
@@ -313,12 +278,12 @@ $$.MapFeature_addToMap_anon = {"": "Closure;this_0,animation_1,pContent_2",
 
 $$.MapFeature_remove_anon = {"": "Closure;this_0",
   call$0: function() {
-    $.LMap.get$_featureLayerGroup().removeLayer$1(this.this_0.get$_mapFeature());
+    $.LMap.get$featureLayerGroup().removeLayer$1(this.this_0.get$_mapFeature());
   },
   $isFunction: true
 };
 
-$$.Polyline = {"": "MapFeature;_mapFeature,callbacks,animated,popupContent",
+$$.Polyline = {"": "MapFeature;_mapFeature,_callbacks,animated,popupContent",
   Polyline$2: function(vectorPoints, options) {
     $.scoped(new $.anon4(this, vectorPoints, options));
   }
@@ -348,16 +313,16 @@ $$.anon4 = {"": "Closure;this_0,vectorPoints_1,options_2",
   $isFunction: true
 };
 
-$$.AnimatedPolygon = {"": "MapFeature;_mapFeature,callbacks,animated,popupContent",
+$$.AnimatedPolygon = {"": "MapFeature;_mapFeature,_callbacks,animated,popupContent",
   stopAnimation$0: function() {
     $.scoped(new $.AnimatedPolygon_stopAnimation_anon(this));
   },
-  AnimatedPolygon$3: function(vectorPoints, opts, vmmsi) {
-    $.scoped(new $.anon3(this, vectorPoints, opts));
+  AnimatedPolygon$2: function(vectorPoints, options) {
+    $.scoped(new $.anon3(this, vectorPoints, options));
   }
 };
 
-$$.anon3 = {"": "Closure;this_0,vectorPoints_1,opts_2",
+$$.anon3 = {"": "Closure;this_0,vectorPoints_1,options_2",
   call$0: function() {
     var latlng, points, t1, x, t2, t3;
     $._enterScopeIfNeeded();
@@ -372,7 +337,7 @@ $$.anon3 = {"": "Closure;this_0,vectorPoints_1,opts_2",
     t1 = this.this_0;
     $._enterScopeIfNeeded();
     t2 = $._deserialize($._jsPortSync.callSync$1([])).get$L().get$AnimatedPolygon();
-    t3 = this.opts_2;
+    t3 = this.options_2;
     $._enterScopeIfNeeded();
     t1.set$_mapFeature($.Proxy_Proxy$withArgList(t2, $._pruneUndefined(points, $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t3))), $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
     t1 = t1.get$_mapFeature();
@@ -388,8 +353,8 @@ $$.AnimatedPolygon_stopAnimation_anon = {"": "Closure;this_0",
   $isFunction: true
 };
 
-$$.CircleMarker = {"": "MapFeature;_mapFeature,callbacks,animated,popupContent",
-  CircleMarker$3: function(vectorPoint, options, vMmsi) {
+$$.CircleMarker = {"": "MapFeature;_mapFeature,_callbacks,animated,popupContent",
+  CircleMarker$2: function(vectorPoint, options) {
     $.scoped(new $.anon2(this, vectorPoint, options));
   }
 };
@@ -414,37 +379,6 @@ $$.anon2 = {"": "Closure;this_0,vectorPoint_1,options_2",
   $isFunction: true
 };
 
-$$.Popup = {"": "Object;_popup@",
-  addToMap$0: function() {
-    $.closePopup$0$x($.LMap);
-    $.LMap.openPopup$1(this._popup);
-  },
-  Popup$3: function(ll, $content, options) {
-    $.scoped(new $.anon1(this, ll, $content, options));
-  }
-};
-
-$$.anon1 = {"": "Closure;this_0,ll_1,content_2,options_3",
-  call$0: function() {
-    var popupOptions, t1;
-    popupOptions = this.options_3;
-    $._enterScopeIfNeeded();
-    popupOptions.$indexSet(popupOptions, "offset", $.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Point(), $._pruneUndefined($.$index$asx(popupOptions.$index(popupOptions, "offset"), 0), $.$index$asx(popupOptions.$index(popupOptions, "offset"), 1), $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
-    $._enterScopeIfNeeded();
-    popupOptions = $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(popupOptions)));
-    t1 = this.this_0;
-    $._enterScopeIfNeeded();
-    t1.set$_popup($.Proxy_Proxy$withArgList($._deserialize($._jsPortSync.callSync$1([])).get$L().get$Popup(), $._pruneUndefined(popupOptions, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined, $.C__Undefined)));
-    t1.get$_popup().setLatLng$1(this.ll_1);
-    t1.get$_popup().setContent$1(this.content_2);
-    t1 = t1.get$_popup();
-    $._jsGlobalize.callSync$1($._serialize(t1.toJs$0()));
-  },
-  $isFunction: true
-};
-
-$$.Coord = {"": "Object;latitude>,longitude>"};
-
 $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,sog,true_heading,dim_port,dim_stern,dim_bow,dim_starboard,draught,brng,time_received,time_captured,vector<,polygon<,feature<,MINIMUM_SPEED",
   updatePosition$1: function(json) {
     var t1 = $.getInterceptor$asx(json);
@@ -456,7 +390,7 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
     this.true_heading = t1.$index(json, "true_heading");
   },
   paintToMap$2: function(zoom, callback) {
-    var t1, moving, shipStatics, vectorPoints, t2, vectorLength, vectorWidth, animationPartsSize, t3, t4, t5, t6, t7;
+    var t1, moving, t2, shipStatics, vectorPoints, vectorLength, vectorWidth, animationPartsSize, t3, t4, t5, t6, t7;
     if (typeof zoom !== "number")
       return this.paintToMap$2$bailout(1, zoom, callback);
     if (this.pos != null) {
@@ -464,21 +398,18 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
       if (typeof t1 !== "number")
         return this.paintToMap$2$bailout(2, zoom, callback, t1);
       moving = t1 >= this.MINIMUM_SPEED && t1 !== 102.3;
-      t1 = $.LMap.getZoom$0();
-      if (typeof t1 !== "number")
-        return this.paintToMap$2$bailout(4, zoom, callback, t1, moving);
-      if (t1 > 11) {
+      if (zoom > 11) {
         if (this.cog == null) {
-          t1 = this.true_heading;
-          if (typeof t1 !== "number")
-            return this.paintToMap$2$bailout(5, zoom, callback, t1, moving);
-          t1 = t1 !== 0 && t1 !== 511;
+          t2 = this.true_heading;
+          if (typeof t2 !== "number")
+            return this.paintToMap$2$bailout(4, zoom, callback, $.JSNumber_methods, t2, moving);
+          t2 = t2 !== 0 && t2 !== 511;
         } else
-          t1 = true;
-        shipStatics = t1 && this.dim_port != null && this.dim_stern != null;
+          t2 = true;
+        shipStatics = t2 && this.dim_port != null && this.dim_stern != null;
       } else
         shipStatics = false;
-      this.brng = $.calcAngle(this.sog, this.cog, this.true_heading);
+      this.brng = $.calcAngle(t1, this.cog, this.true_heading);
       t1 = this.brng;
       if (typeof t1 !== "number")
         $.throwExpression($.ArgumentError$(t1));
@@ -490,7 +421,7 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
       vectorPoints = $.List_List($, null);
       t1 = this.pos;
       if (typeof t1 !== "string" && (typeof t1 !== "object" || t1 === null || t1.constructor !== Array && !$.getInterceptor(t1).$isJavaScriptIndexingBehavior))
-        return this.paintToMap$2$bailout(7, zoom, callback, t1, moving, shipStatics, vectorPoints);
+        return this.paintToMap$2$bailout(6, zoom, callback, $.JSNumber_methods, t1, moving, vectorPoints, shipStatics);
       if (1 >= t1.length)
         throw $.ioore(1);
       t2 = t1[1];
@@ -500,20 +431,12 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
       if (moving) {
         t1 = this.sog;
         if (typeof t1 !== "number")
-          return this.paintToMap$2$bailout(9, zoom, callback, t1, moving, shipStatics, vectorPoints);
+          return this.paintToMap$2$bailout(8, zoom, callback, $.JSNumber_methods, t1, moving, vectorPoints, shipStatics);
         vectorLength = t1 * 0.51444 * 30;
-        t1 = this.pos;
-        if (typeof t1 !== "string" && (typeof t1 !== "object" || t1 === null || t1.constructor !== Array && !$.getInterceptor(t1).$isJavaScriptIndexingBehavior))
-          return this.paintToMap$2$bailout(10, zoom, callback, t1, moving, shipStatics, vectorPoints, 0, vectorLength);
-        if (1 >= t1.length)
-          throw $.ioore(1);
-        t2 = t1[1];
-        if (0 >= t1.length)
-          throw $.ioore(0);
-        vectorPoints.push($.destinationPoint(t2, t1[0], this.cog, vectorLength));
+        vectorPoints.push($.destinationPoint(this.pos, this.cog, vectorLength));
         t1 = this.sog;
         if (typeof t1 !== "number")
-          return this.paintToMap$2$bailout(12, zoom, callback, t1, moving, shipStatics, vectorPoints, 0, vectorLength);
+          return this.paintToMap$2$bailout(9, zoom, callback, $.JSNumber_methods, t1, moving, vectorPoints, shipStatics, 0, vectorLength);
         vectorWidth = t1 > 30 ? 5 : 2;
         this.vector = $.Polyline$(vectorPoints, $.makeLiteralMap(["color", "red", "weight", vectorWidth]));
         this.vector.addToMap$2(false, "");
@@ -526,25 +449,25 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
           t5 = this.brng;
           t6 = $.get$shipTypeColors();
           if (typeof t6 !== "string" && (typeof t6 !== "object" || t6 === null || t6.constructor !== Array && !$.getInterceptor(t6).$isJavaScriptIndexingBehavior))
-            return this.paintToMap$2$bailout(13, 0, callback, t1, moving, 0, vectorPoints, t2, 0, animationPartsSize, t6, t3, t4, t5);
+            return this.paintToMap$2$bailout(10, 0, callback, t1, t2, moving, vectorPoints, 0, t3, 0, t5, animationPartsSize, t4, t6);
           t7 = this.ship_type;
           if (t7 !== (t7 | 0))
             throw $.iae(t7);
           if (t7 < 0 || t7 >= t6.length)
             throw $.ioore(t7);
-          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", t6[t7], "fillOpacity", 0.6, "clickable", false]), this.mmsi);
+          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", t6[t7], "fillOpacity", 0.6, "clickable", false]));
         }
         t1 = this.brng;
         t2 = $.LMap.getZoom$0();
         t3 = $.get$shipTypeColors();
         if (typeof t3 !== "string" && (typeof t3 !== "object" || t3 === null || t3.constructor !== Array && !$.getInterceptor(t3).$isJavaScriptIndexingBehavior))
-          return this.paintToMap$2$bailout(14, 0, callback, t1, moving, 0, vectorPoints, t2, 0, animationPartsSize, 0, t3);
+          return this.paintToMap$2$bailout(11, 0, callback, t1, t2, moving, vectorPoints, 0, t3, 0, 0, animationPartsSize);
         t4 = this.ship_type;
         if (t4 !== (t4 | 0))
           throw $.iae(t4);
         if (t4 < 0 || t4 >= t3.length)
           throw $.ioore(t4);
-        this.feature = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "brng", t1, "zoom", t2, "color", "black", "weight", 1, "fill", true, "fillColor", t3[t4], "fillOpacity", 0.8, "clickable", true]), this.mmsi);
+        this.feature = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "brng", t1, "zoom", t2, "color", "black", "weight", 1, "fill", true, "fillColor", t3[t4], "fillOpacity", 0.8, "clickable", true]));
       } else {
         if (shipStatics) {
           t1 = this.dim_stern;
@@ -554,26 +477,26 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
           t5 = this.brng;
           t6 = $.get$shipTypeColors();
           if (typeof t6 !== "string" && (typeof t6 !== "object" || t6 === null || t6.constructor !== Array && !$.getInterceptor(t6).$isJavaScriptIndexingBehavior))
-            return this.paintToMap$2$bailout(15, 0, callback, t1, moving, 0, vectorPoints, t2, 0, 0, t6, t3, t4, t5);
+            return this.paintToMap$2$bailout(12, 0, callback, t1, t2, moving, vectorPoints, 0, t3, 0, t5, 0, t4, t6);
           t7 = this.ship_type;
           if (t7 !== (t7 | 0))
             throw $.iae(t7);
           if (t7 < 0 || t7 >= t6.length)
             throw $.ioore(t7);
-          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", t6[t7], "fillOpacity", 0.6, "clickable", false, "zoom", false]), this.mmsi);
+          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", t6[t7], "fillOpacity", 0.6, "clickable", false, "zoom", false]));
         }
         if (0 >= vectorPoints.length)
           throw $.ioore(0);
         t1 = vectorPoints[0];
         t2 = $.get$shipTypeColors();
         if (typeof t2 !== "string" && (typeof t2 !== "object" || t2 === null || t2.constructor !== Array && !$.getInterceptor(t2).$isJavaScriptIndexingBehavior))
-          return this.paintToMap$2$bailout(16, 0, callback, t1, moving, 0, 0, t2);
+          return this.paintToMap$2$bailout(13, 0, callback, t1, t2, moving);
         t3 = this.ship_type;
         if (t3 !== (t3 | 0))
           throw $.iae(t3);
         if (t3 < 0 || t3 >= t2.length)
           throw $.ioore(t3);
-        this.feature = $.CircleMarker$(t1, $.makeLiteralMap(["radius", 5, "fill", true, "fillColor", t2[t3], "fillOpacity", 0.8, "color", "#000000", "opacity", 0.4, "weight", 2.5]), this.mmsi);
+        this.feature = $.CircleMarker$(t1, $.makeLiteralMap(["radius", 5, "fill", true, "fillColor", t2[t3], "fillOpacity", 0.8, "color", "#000000", "opacity", 0.4, "weight", 2.5]));
       }
       t1 = this.polygon;
       if (t1 != null)
@@ -582,14 +505,14 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
     }
     callback.call$0();
   },
-  paintToMap$2$bailout: function(state0, zoom, callback, t1, moving, shipStatics, vectorPoints, t2, vectorLength, animationPartsSize, t6, t3, t4, t5) {
+  paintToMap$2$bailout: function(state0, zoom, callback, t1, t2, moving, vectorPoints, shipStatics, t3, vectorLength, t5, animationPartsSize, t4, t6) {
     switch (state0) {
       case 0:
       case 1:
         state0 = 0;
       default:
         var vectorWidth;
-        if (state0 === 16 || state0 === 15 || state0 === 14 || state0 === 13 || state0 === 12 || state0 === 11 || state0 === 10 || state0 === 9 || state0 === 8 || state0 === 7 || state0 === 6 || state0 === 5 || state0 === 4 || state0 === 3 || state0 === 2 || state0 === 0 && this.pos != null)
+        if (state0 === 13 || state0 === 12 || state0 === 11 || state0 === 10 || state0 === 9 || state0 === 8 || state0 === 7 || state0 === 6 || state0 === 5 || state0 === 4 || state0 === 3 || state0 === 2 || state0 === 0 && this.pos != null)
           switch (state0) {
             case 0:
               t1 = this.sog;
@@ -614,95 +537,84 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
                 }
               else
                 moving = false;
-              t1 = $.LMap.getZoom$0();
-            case 4:
-              state0 = 0;
+              t1 = $.getInterceptor$n(zoom);
             default:
-              if (state0 === 6 || state0 === 5 || state0 === 0 && $.$gt$n(t1, 11) === true)
+              if (state0 === 5 || state0 === 4 || state0 === 0 && t1.$gt(zoom, 11) === true)
                 switch (state0) {
                   case 0:
                   default:
-                    if (state0 === 6 || state0 === 5 || state0 === 0 && this.cog == null)
+                    if (state0 === 5 || state0 === 4 || state0 === 0 && this.cog == null)
                       switch (state0) {
                         case 0:
-                          t1 = this.true_heading;
-                        case 5:
+                          t2 = this.true_heading;
+                        case 4:
                           state0 = 0;
-                        case 6:
-                          if (state0 === 6 || state0 === 0 && t1 != null)
+                        case 5:
+                          if (state0 === 5 || state0 === 0 && t2 != null)
                             switch (state0) {
                               case 0:
-                              case 6:
-                                if (state0 === 6 || state0 === 0 && $.$eq(t1, 0) !== true)
+                              case 5:
+                                if (state0 === 5 || state0 === 0 && $.$eq(t2, 0) !== true)
                                   switch (state0) {
                                     case 0:
-                                      t1 = this.true_heading;
-                                    case 6:
+                                      t2 = this.true_heading;
+                                    case 5:
                                       state0 = 0;
-                                      t1 = $.$eq(t1, 511) !== true;
+                                      t2 = $.$eq(t2, 511) !== true;
                                   }
                                 else
-                                  t1 = false;
+                                  t2 = false;
                             }
                           else
-                            t1 = false;
+                            t2 = false;
                       }
                     else
-                      t1 = true;
-                    shipStatics = t1 && this.dim_port != null && this.dim_stern != null;
+                      t2 = true;
+                    shipStatics = t2 && this.dim_port != null && this.dim_stern != null;
                 }
               else
                 shipStatics = false;
               this.brng = $.calcAngle(this.sog, this.cog, this.true_heading);
-              t1 = this.brng;
-              if (typeof t1 !== "number")
-                $.throwExpression($.ArgumentError$(t1));
-              Math.cos(t1);
-              t1 = this.brng;
-              if (typeof t1 !== "number")
-                $.throwExpression($.ArgumentError$(t1));
-              Math.sin(t1);
+              t2 = this.brng;
+              if (typeof t2 !== "number")
+                $.throwExpression($.ArgumentError$(t2));
+              Math.cos(t2);
+              t2 = this.brng;
+              if (typeof t2 !== "number")
+                $.throwExpression($.ArgumentError$(t2));
+              Math.sin(t2);
               vectorPoints = $.List_List($, null);
-              t1 = this.pos;
+              t2 = this.pos;
+            case 6:
+              state0 = 0;
+              t2 = $.$index$asx(t2, 1);
+              t3 = this.pos;
             case 7:
               state0 = 0;
-              t1 = $.$index$asx(t1, 1);
-              t2 = this.pos;
+              vectorPoints.push($.Coord$(t2, $.$index$asx(t3, 0)));
             case 8:
-              state0 = 0;
-              vectorPoints.push($.Coord$(t1, $.$index$asx(t2, 0)));
             case 9:
             case 10:
             case 11:
             case 12:
             case 13:
-            case 14:
-            case 15:
-            case 16:
-              if (state0 === 14 || state0 === 13 || state0 === 12 || state0 === 11 || state0 === 10 || state0 === 9 || state0 === 0 && moving)
+              if (state0 === 11 || state0 === 10 || state0 === 9 || state0 === 8 || state0 === 0 && moving)
                 switch (state0) {
                   case 0:
-                    t1 = this.sog;
+                    t2 = this.sog;
+                  case 8:
+                    state0 = 0;
+                    vectorLength = $.$mul$n($.$mul$n(t2, 0.51444), 30);
+                    vectorPoints.push($.destinationPoint(this.pos, this.cog, vectorLength));
+                    t2 = this.sog;
                   case 9:
                     state0 = 0;
-                    vectorLength = $.$mul$n($.$mul$n(t1, 0.51444), 30);
-                    t1 = this.pos;
-                  case 10:
-                    state0 = 0;
-                    t1 = $.$index$asx(t1, 1);
-                    t2 = this.pos;
-                  case 11:
-                    state0 = 0;
-                    vectorPoints.push($.destinationPoint(t1, $.$index$asx(t2, 0), this.cog, vectorLength));
-                    t1 = this.sog;
-                  case 12:
-                    state0 = 0;
-                    vectorWidth = $.$gt$n(t1, 30) === true ? 5 : 2;
+                    vectorWidth = $.$gt$n(t2, 30) === true ? 5 : 2;
                     this.vector = $.Polyline$(vectorPoints, $.makeLiteralMap(["color", "red", "weight", vectorWidth]));
                     this.vector.addToMap$2(false, "");
-                    animationPartsSize = $.$div$n(vectorLength, $.$mul$n(zoom, 10));
-                  case 13:
-                    if (state0 === 13 || state0 === 0 && shipStatics)
+                    animationPartsSize = $.$div$n(vectorLength, t1.$mul(zoom, 10));
+                  case 10:
+                    if (state0 === 10 || state0 === 0 && shipStatics)
                       switch (state0) {
                         case 0:
                           t1 = this.dim_stern;
@@ -711,22 +623,22 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
                           t4 = this.dim_starboard;
                           t5 = this.brng;
                           t6 = $.get$shipTypeColors();
-                        case 13:
+                        case 10:
                           state0 = 0;
-                          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", $.$index$asx(t6, this.ship_type), "fillOpacity", 0.6, "clickable", false]), this.mmsi);
+                          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", $.$index$asx(t6, this.ship_type), "fillOpacity", 0.6, "clickable", false]));
                       }
                     t1 = this.brng;
                     t2 = $.LMap.getZoom$0();
                     t3 = $.get$shipTypeColors();
-                  case 14:
+                  case 11:
                     state0 = 0;
-                    this.feature = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "brng", t1, "zoom", t2, "color", "black", "weight", 1, "fill", true, "fillColor", $.$index$asx(t3, this.ship_type), "fillOpacity", 0.8, "clickable", true]), this.mmsi);
+                    this.feature = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "distance", animationPartsSize, "interval", 400, "brng", t1, "zoom", t2, "color", "black", "weight", 1, "fill", true, "fillColor", $.$index$asx(t3, this.ship_type), "fillOpacity", 0.8, "clickable", true]));
                 }
               else
                 switch (state0) {
                   case 0:
-                  case 15:
-                    if (state0 === 15 || state0 === 0 && shipStatics)
+                  case 12:
+                    if (state0 === 12 || state0 === 0 && shipStatics)
                       switch (state0) {
                         case 0:
                           t1 = this.dim_stern;
@@ -735,17 +647,17 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
                           t4 = this.dim_starboard;
                           t5 = this.brng;
                           t6 = $.get$shipTypeColors();
-                        case 15:
+                        case 12:
                           state0 = 0;
-                          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", $.$index$asx(t6, this.ship_type), "fillOpacity", 0.6, "clickable", false, "zoom", false]), this.mmsi);
+                          this.polygon = $.AnimatedPolygon$(vectorPoints, $.makeLiteralMap(["autoStart", false, "dim_stern", t1, "dim_port", t2, "dim_bow", t3, "dim_starboard", t4, "brng", t5, "color", "blue", "weight", 3, "fill", true, "fillColor", $.$index$asx(t6, this.ship_type), "fillOpacity", 0.6, "clickable", false, "zoom", false]));
                       }
                     if (0 >= vectorPoints.length)
                       throw $.ioore(0);
                     t1 = vectorPoints[0];
                     t2 = $.get$shipTypeColors();
-                  case 16:
+                  case 13:
                     state0 = 0;
-                    this.feature = $.CircleMarker$(t1, $.makeLiteralMap(["radius", 5, "fill", true, "fillColor", $.$index$asx(t2, this.ship_type), "fillOpacity", 0.8, "color", "#000000", "opacity", 0.4, "weight", 2.5]), this.mmsi);
+                    this.feature = $.CircleMarker$(t1, $.makeLiteralMap(["radius", 5, "fill", true, "fillColor", $.$index$asx(t2, this.ship_type), "fillOpacity", 0.8, "color", "#000000", "opacity", 0.4, "weight", 2.5]));
                 }
               t1 = this.polygon;
               if (t1 != null)
@@ -756,7 +668,7 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
     }
   },
   createPopupContent$0: function() {
-    var t1, mouseOverPopup, time, timeString;
+    var t1, mouseOverPopup;
     t1 = this.name;
     mouseOverPopup = t1 != null ? "<div class='mouseOverPopup'><table><tr><td colspan='2'><b>" + $.S(t1) + "</b></nobr></td></tr>" : "<div class='mouseOverPopup'><table>";
     t1 = this.imo;
@@ -766,25 +678,25 @@ $$.Vessel = {"": "Object;pos,mmsi,msgid,ship_type,nav_status,name,imo,dest,cog,s
       mouseOverPopup = mouseOverPopup + "<tr><td>NavStatus: &nbsp;</td><td><nobr>" + $.S($.$index$asx($.get$nav_stati(), this.nav_status)) + "</nobr></td></tr>";
     t1 = this.sog;
     if (t1 != null)
-      mouseOverPopup = mouseOverPopup + "<tr><td>Speed: &nbsp;</td><td><nobr>" + $.S($.toString$0(t1)) + "</nobr></td></tr>";
+      mouseOverPopup = mouseOverPopup + "<tr><td>Speed: &nbsp;</td><td><nobr>" + $.S($.toString$0(t1)) + " kn</nobr></td></tr>";
     t1 = this.true_heading;
     if (t1 != null && $.$eq(t1, 511) !== true)
-      mouseOverPopup = mouseOverPopup + "<tr><td>Heading: &nbsp;</td><td><nobr>" + $.S($.toString$0(this.true_heading)) + "</nobr></td></tr>";
-    t1 = this.cog;
-    if (t1 != null)
-      mouseOverPopup = mouseOverPopup + "<tr><td>Course: &nbsp;</td><td><nobr>" + $.S($.toString$0(t1)) + "</nobr></td></tr>";
-    time = $.DateTime$fromMillisecondsSinceEpoch(this.time_received, false);
-    timeString = $.JSString_methods.substring$2(time.toString$0(time), 0, 16);
-    mouseOverPopup = mouseOverPopup + "<tr><td>TimeReceived: &nbsp;</td><td><nobr>" + timeString + "</nobr></td></tr>";
+      mouseOverPopup = mouseOverPopup + "<tr><td>Heading: &nbsp;</td><td><nobr>" + $.S($.toString$0(this.true_heading)) + " \u00b0</nobr></td></tr>";
+    else {
+      t1 = this.cog;
+      if (t1 != null)
+        mouseOverPopup = mouseOverPopup + "<tr><td>Course: &nbsp;</td><td><nobr>" + $.S($.toString$0(t1)) + " \u00b0</nobr></td></tr>";
+    }
+    mouseOverPopup = mouseOverPopup + "<tr><td>TimeReceived: &nbsp;</td><td><nobr>" + $.getDate(this.time_received) + "</nobr></td></tr>";
     t1 = this.dest;
     if (t1 != null)
       mouseOverPopup = mouseOverPopup + "<tr><td>Dest</td><td>" + $.S(t1) + "</b></nobr></td></tr>";
     t1 = this.draught;
     if (t1 != null)
-      mouseOverPopup = mouseOverPopup + "<tr><td>draught</td><td>" + $.S($.toString$0($.$div$n(t1, 10))) + "</b></nobr></td></tr>";
+      mouseOverPopup = mouseOverPopup + "<tr><td>draught</td><td>" + $.S($.toString$0($.$div$n(t1, 10))) + " m</b></nobr></td></tr>";
     t1 = this.dim_bow;
     if (t1 != null && this.dim_port != null)
-      mouseOverPopup = mouseOverPopup + "<tr><td>length, width</td><td>" + $.S($.toString$0($.$add$ns(this.dim_stern, t1))) + "," + $.S($.toString$0($.$add$ns(this.dim_starboard, this.dim_port))) + "</b></nobr></td></tr>";
+      mouseOverPopup = mouseOverPopup + "<tr><td>length</td><td>" + $.S($.toString$0($.$add$ns(this.dim_stern, t1))) + " m</b></nobr></td></tr>";
     return ($.$index$asx($.get$shipTypes(), this.ship_type) != null ? mouseOverPopup + "<tr><td>ship_type</td><td>" + $.S($.$index$asx($.get$shipTypes(), this.ship_type)) + "</b></nobr></td></tr>" : mouseOverPopup) + "</table></div>";
   },
   Vessel$1: function(jsonObject) {
@@ -816,7 +728,7 @@ $$.main_anon = {"": "Closure;box_0",
   call$0: function() {
     if ($.LMap == null) {
       var t1 = this.box_0;
-      $.initMap(t1.initialZoom_0, t1.initialLon_1, t1.initialLat_2);
+      $.initMap(t1.initialLat_2, t1.initialLon_1, t1.initialZoom_0);
     }
   },
   $isFunction: true
@@ -867,8 +779,10 @@ $$.initWebSocket_anon1 = {"": "Closure;",
     var json, t1;
     json = $.parse($.get$data$x(evt), null);
     t1 = $.getInterceptor$asx(json);
-    if ($.$eq(t1.$index(json, "type"), "vesselsInBoundsEvent") === true)
+    if ($.$eq(t1.$index(json, "type"), "vesselsInBoundsEvent") === true) {
+      $.time = $.DateTime$_now();
       $.processVesselsInBounds(t1.$index(json, "vessels"));
+    }
     if ($.$eq(t1.$index(json, "type"), "vesselPosEvent") === true)
       $.processVesselPositionEvent(t1.$index(json, "vessel"));
   },
@@ -965,9 +879,6 @@ $$.Callback = {"": "Object;_manualDispose,_liblib3$_id,_liblib3$_callback",
   },
   toJs$0: function() {
     return $.FunctionProxy$_internal($.get$_proxiedObjectTable().get$sendPort(), this._liblib3$_id);
-  },
-  dispose$0: function() {
-    $.get$_proxiedObjectTable().invalidate$1(this._liblib3$_id);
   },
   Callback$many$2$withThis: function(f, withThis) {
     this._liblib3$_callback = new $.anon0(f, withThis);
@@ -1139,16 +1050,6 @@ $$._ProxiedObjectTable = {"": "Object;_name,_nextId,_deletedCount,_registry<,_li
     var t1 = this._globalIds;
     return t1.add$1(t1, id);
   },
-  invalidate$1: function(id) {
-    var t1, old, t2;
-    t1 = this._registry;
-    old = t1.$index(t1, id);
-    t2 = this._globalIds;
-    t2.remove$1(t2, id);
-    t1.remove$1(t1, id);
-    this._deletedCount = this._deletedCount + 1;
-    return old;
-  },
   add$1: function(_, x) {
     var t1, t2, id;
     $._enterScopeIfNeeded();
@@ -1252,6 +1153,9 @@ $$.ListIterable = {"": "IterableBase;",
   },
   map$1: function(_, f) {
     return $.MappedListIterable$(this, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   skip$1: function(_, count) {
     return $.SubListIterable$(this, count, null, null);
@@ -2728,6 +2632,9 @@ $$.JSArray = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   skip$1: function(receiver, n) {
     return $.SubListIterable$(receiver, n, null, null);
   },
@@ -2866,7 +2773,7 @@ $$.JSFixedArray = {"": "JSMutableArray;"};
 
 $$.JSExtendableArray = {"": "JSMutableArray;"};
 
-$$.JSInvocationMirror = {"": "Object;memberName,_internalName,_kind,_liblib5$_arguments,_namedArgumentNames,_namedIndices",
+$$.JSInvocationMirror = {"": "Object;memberName,_internalName,_kind,_liblib4$_arguments,_namedArgumentNames,_namedIndices",
   get$isGetter: function() {
     return $.$eq(this._kind, 1);
   },
@@ -2881,7 +2788,7 @@ $$.JSInvocationMirror = {"": "Object;memberName,_internalName,_kind,_liblib5$_ar
     if (this.get$isGetter() === true)
       return;
     list = [];
-    t1 = this._liblib5$_arguments;
+    t1 = this._liblib4$_arguments;
     if (typeof t1 !== "string" && (typeof t1 !== "object" || t1 === null || t1.constructor !== Array && !$.getInterceptor(t1).$isJavaScriptIndexingBehavior))
       return this.get$positionalArguments$bailout(1, t1, list);
     t2 = t1.length;
@@ -2912,7 +2819,7 @@ $$.JSInvocationMirror = {"": "Object;memberName,_internalName,_kind,_liblib5$_ar
     if (typeof t1 !== "string" && (typeof t1 !== "object" || t1 === null || t1.constructor !== Array && !$.getInterceptor(t1).$isJavaScriptIndexingBehavior))
       return this.get$namedArguments$bailout(1, t1, map);
     namedArgumentCount = t1.length;
-    t2 = this._liblib5$_arguments;
+    t2 = this._liblib4$_arguments;
     if (typeof t2 !== "string" && (typeof t2 !== "object" || t2 === null || t2.constructor !== Array && !$.getInterceptor(t2).$isJavaScriptIndexingBehavior))
       return this.get$namedArguments$bailout(3, t1, map, namedArgumentCount, t2);
     namedArgumentsStartIndex = t2.length - namedArgumentCount;
@@ -2939,7 +2846,7 @@ $$.JSInvocationMirror = {"": "Object;memberName,_internalName,_kind,_liblib5$_ar
         namedArgumentCount = $.get$length$asx(t1);
       case 2:
         state0 = 0;
-        t2 = this._liblib5$_arguments;
+        t2 = this._liblib4$_arguments;
       case 3:
         var namedArgumentsStartIndex, t3, t4, t5, t6, i;
         state0 = 0;
@@ -3666,6 +3573,9 @@ $$.Stream = {"": "Object;",
   map$1: function(_, convert) {
     return $._MapStream$(this, convert);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   forEach$1: function(_, action) {
     var t1, future, t2, t3;
     t1 = {};
@@ -4353,7 +4263,7 @@ $$.HashSet = {"": "_HashSetBase;_liblib$_length,_strings,_nums,_rest,_elements",
   },
   remove$1: function(_, object) {
     var rest, bucket, index;
-    if (typeof object === "string" && object !== "__proto__")
+    if (object !== "__proto__")
       return this._removeHashTableEntry$2(this._strings, object);
     else if (false)
       return this._removeHashTableEntry$2(this._nums, object);
@@ -4361,7 +4271,7 @@ $$.HashSet = {"": "_HashSetBase;_liblib$_length,_strings,_nums,_rest,_elements",
       rest = this._rest;
       if (rest == null)
         return false;
-      bucket = rest[$.get$hashCode$(object) & 0x3ffffff];
+      bucket = rest[$.JSString_methods.get$hashCode(object) & 0x3ffffff];
       index = $.HashSet__findBucketIndex(bucket, object);
       if (index < 0)
         return false;
@@ -4444,6 +4354,9 @@ $$.HashSet = {"": "_HashSetBase;_liblib$_length,_strings,_nums,_rest,_elements",
 $$.IterableBase = {"": "Object;",
   map$1: function(_, f) {
     return $.MappedIterable$(this, f, $.getRuntimeTypeArgument(this, this.$asIterableBase, 0), null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   forEach$1: function(_, f) {
     var t1;
@@ -4723,6 +4636,9 @@ $$.ListBase = {"": "Object;",
   },
   map$1: function(_, f) {
     return $.MappedListIterable$(this, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   skip$1: function(_, count) {
     return $.SubListIterable$(this, count, null, null);
@@ -5392,6 +5308,9 @@ $$.DateTime = {"": "Object;millisecondsSinceEpoch,isUtc",
   add$1: function(_, duration) {
     return $.DateTime$fromMillisecondsSinceEpoch($.$add$ns(this.millisecondsSinceEpoch, duration.get$inMilliseconds()), this.isUtc);
   },
+  difference$1: function(other) {
+    return $.Duration$(0, 0, 0, $.$sub$n(this.millisecondsSinceEpoch, other.millisecondsSinceEpoch), 0, 0);
+  },
   get$year: function() {
     return $.Primitives_getYear(this);
   },
@@ -5412,6 +5331,9 @@ $$.DateTime = {"": "Object;millisecondsSinceEpoch,isUtc",
   },
   get$millisecond: function() {
     return $.Primitives_getMilliseconds(this);
+  },
+  DateTime$_now$0: function() {
+    $.Primitives_lazyAsJsDate(this);
   },
   DateTime$fromMillisecondsSinceEpoch$2$isUtc: function(millisecondsSinceEpoch, isUtc) {
     if ($.$gt$n($.abs$0$n(millisecondsSinceEpoch), 8640000000000000) === true)
@@ -5895,6 +5817,9 @@ $$.Object = {"": ";",
   get$longitude: function($receiver) {
     return this.noSuchMethod$1(this, $.createInvocationMirror("longitude", "get$longitude", 1, [], []));
   },
+  get$map: function($receiver) {
+    return this.noSuchMethod$1(this, $.createInvocationMirror("map", "get$map", 1, [], []));
+  },
   get$nodes: function($receiver) {
     return this.noSuchMethod$1(this, $.createInvocationMirror("nodes", "get$nodes", 1, [], []));
   },
@@ -5963,6 +5888,9 @@ $$.Object = {"": ";",
   },
   set$length: function($receiver, $0) {
     return this.noSuchMethod$1(this, $.createInvocationMirror("length=", "set$length", 2, [$0], []));
+  },
+  set$map: function($receiver, $0) {
+    return this.noSuchMethod$1(this, $.createInvocationMirror("map=", "set$map", 2, [$0], []));
   },
   setContent$1: function($0) {
     return this.noSuchMethod$1(this, $.createInvocationMirror("setContent", "setContent$1", 0, [$0], []));
@@ -6111,6 +6039,9 @@ $$._ChildrenElementList = {"": "ListBase;_element,_childElements",
   },
   map$1: function(_, f) {
     return $.map$1$ax(this._childElements, f);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   get$isEmpty: function(_) {
     return this._element.firstElementChild == null;
@@ -7485,6 +7416,9 @@ $$.FilteredElementList = {"": "ListBase;_node,_childNodes",
   map$1: function(_, f) {
     return $.JSArray_methods.map$1(this.get$_filtered(), f);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   remove$1: function(_, element) {
     var i, t1, indexElement;
     return;
@@ -8089,6 +8023,9 @@ $$.DomMimeTypeArray = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.DomMimeType);
   },
@@ -8179,6 +8116,9 @@ $$.DomPluginArray = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.DomPlugin);
@@ -8272,6 +8212,9 @@ $$.DomStringList = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.String);
@@ -8448,6 +8391,9 @@ $$.FileList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.File);
   },
@@ -8562,6 +8508,9 @@ $$.Float32Array = {"": "ArrayBufferView;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.num);
   },
@@ -8644,6 +8593,9 @@ $$.Float64Array = {"": "ArrayBufferView;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.num);
@@ -8762,6 +8714,9 @@ $$.HtmlAllCollection = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Node);
   },
@@ -8844,6 +8799,9 @@ $$.HtmlCollection = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Node);
@@ -8979,6 +8937,9 @@ $$.Int16Array = {"": "ArrayBufferView;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.$int);
   },
@@ -9062,6 +9023,9 @@ $$.Int32Array = {"": "ArrayBufferView;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.$int);
   },
@@ -9144,6 +9108,9 @@ $$.Int8Array = {"": "ArrayBufferView;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.$int);
@@ -9422,6 +9389,9 @@ $$.NodeList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Node);
   },
@@ -9680,6 +9650,9 @@ $$.SourceBufferList = {"": "EventTarget;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.SourceBuffer);
   },
@@ -9774,6 +9747,9 @@ $$.SpeechGrammarList = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.SpeechGrammar);
@@ -9987,6 +9963,9 @@ $$.TextTrackCueList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.TextTrackCue);
   },
@@ -10069,6 +10048,9 @@ $$.TextTrackList = {"": "EventTarget;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.TextTrack);
@@ -10167,6 +10149,9 @@ $$.TouchList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Touch);
   },
@@ -10262,6 +10247,9 @@ $$.Uint16Array = {"": "ArrayBufferView;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.$int);
   },
@@ -10344,6 +10332,9 @@ $$.Uint32Array = {"": "ArrayBufferView;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.$int);
@@ -10428,6 +10419,9 @@ $$.Uint8Array = {"": "ArrayBufferView;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.$int);
   },
@@ -10507,6 +10501,9 @@ $$.Uint8ClampedArray = {"": "Uint8Array;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.$int);
@@ -10759,6 +10756,9 @@ $$._ClientRectList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Rect);
   },
@@ -10842,6 +10842,9 @@ $$._CssRuleList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.CssRule);
   },
@@ -10924,6 +10927,9 @@ $$._CssValueList = {"": "_CSSValue;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $._CSSValue);
@@ -11010,6 +11016,9 @@ $$._EntryArray = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Entry);
   },
@@ -11092,6 +11101,9 @@ $$._EntryArraySync = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $._EntrySync);
@@ -11176,6 +11188,9 @@ $$._GamepadList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Gamepad);
   },
@@ -11258,6 +11273,9 @@ $$._NamedNodeMap = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Node);
@@ -11342,6 +11360,9 @@ $$._SpeechInputResultList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.SpeechInputResult);
   },
@@ -11425,6 +11446,9 @@ $$._SpeechRecognitionResultList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.SpeechRecognitionResult);
   },
@@ -11507,6 +11531,9 @@ $$._StyleSheetList = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.StyleSheet);
@@ -11822,6 +11849,9 @@ $$.LengthList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Length);
   },
@@ -11918,6 +11948,9 @@ $$.NumberList = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Number);
@@ -12040,6 +12073,9 @@ $$.PathSegList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.PathSeg);
   },
@@ -12156,6 +12192,9 @@ $$.StringList = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.String);
@@ -12296,6 +12335,9 @@ $$.TransformList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Transform);
   },
@@ -12388,6 +12430,9 @@ $$._ElementInstanceList = {"": "Interceptor;",
   },
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
+  },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
   },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.ElementInstance);
@@ -12594,6 +12639,9 @@ $$.SqlResultSetRowList = {"": "Interceptor;",
   map$1: function(receiver, f) {
     return $.MappedListIterable$(receiver, f, null, null);
   },
+  get$map: function(receiver) {
+    return new $.BoundClosure$i1(this, "map$1", receiver);
+  },
   toList$1$growable: function(receiver, growable) {
     return $.List_List$from(receiver, growable, $.Map);
   },
@@ -12685,12 +12733,19 @@ $$.BoundClosure$i0 = {"": "Closure;self,target,receiver",
 Isolate.$finishClasses($$, $, null);
 $$ = null;
 
-$.OpenStreetMap$ = function(elementid, mapOptions, height, width) {
-  var t1 = $.List_List($, $.Callback);
-  $.setRuntimeTypeInfo(t1, [$.Callback]);
-  t1 = new $.OpenStreetMap(t1, null, null, null, null, null, null, null, null, null, null, null);
-  t1.LeafletMap$3$height$width(elementid, height, width);
-  t1.OpenStreetMap$4$height$width(elementid, mapOptions, height, width);
+$.LeafletMap$ = function(elementid, mapOptions, initOptions, tileLayerOptions) {
+  var t1 = new $.LeafletMap(null, null, null, null);
+  t1.LeafletMap$4(elementid, mapOptions, initOptions, tileLayerOptions);
+  return t1;
+};
+
+$.Coord$ = function(latitude, longitude) {
+  return new $.Coord(latitude, longitude);
+};
+
+$.Popup$ = function(latlng, $content, options) {
+  var t1 = new $.Popup(null);
+  t1.Popup$3(latlng, $content, options);
   return t1;
 };
 
@@ -12700,32 +12755,32 @@ $.Polyline$ = function(vectorPoints, options) {
   return t1;
 };
 
-$.AnimatedPolygon$ = function(vectorPoints, opts, vmmsi) {
+$.AnimatedPolygon$ = function(vectorPoints, options) {
   var t1 = new $.AnimatedPolygon(null, $.List_List($, null), false, "");
-  t1.AnimatedPolygon$3(vectorPoints, opts, vmmsi);
+  t1.AnimatedPolygon$2(vectorPoints, options);
   return t1;
 };
 
-$.CircleMarker$ = function(vectorPoint, options, vMmsi) {
+$.CircleMarker$ = function(vectorPoint, options) {
   var t1 = new $.CircleMarker(null, $.List_List($, null), false, "");
-  t1.CircleMarker$3(vectorPoint, options, vMmsi);
+  t1.CircleMarker$2(vectorPoint, options);
   return t1;
-};
-
-$.Popup$ = function(ll, $content, options) {
-  var t1 = new $.Popup(null);
-  t1.Popup$3(ll, $content, options);
-  return t1;
-};
-
-$.Coord$ = function(latitude, longitude) {
-  return new $.Coord(latitude, longitude);
 };
 
 $.Vessel$ = function(jsonObject) {
   var t1 = new $.Vessel(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.4);
   t1.Vessel$1(jsonObject);
   return t1;
+};
+
+$.getDate = function(timeReceived) {
+  var t1, timeString, month, day, time;
+  t1 = $.DateTime$fromMillisecondsSinceEpoch(timeReceived, false);
+  timeString = t1.toString$0(t1);
+  month = $.JSString_methods.substring$2(timeString, 5, 7);
+  day = $.JSString_methods.substring$2(timeString, 8, 10);
+  time = $.JSString_methods.substring$2(timeString, 10, 16);
+  return day + "." + month + ". " + time;
 };
 
 $.calcAngle = function(sog, cog, true_heading) {
@@ -12739,39 +12794,40 @@ $.calcAngle = function(sog, cog, true_heading) {
   return $.$mul$n($.$negate$n(direction), 0.017453292519943295);
 };
 
-$.destinationPoint = function(lat, lng, cog, dist) {
-  var brng, lat1, lon1, t1, t2, t3, t4, lat2, lon2;
+$.destinationPoint = function(pos, cog, dist) {
+  var brng, t1, lat, lon, t2, t3, t4, lat_dest, lon_dest;
   dist /= 6371000;
   brng = $.$mul$n(cog, 0.017453292519943295);
-  lat1 = $.$mul$n(lat, 0.017453292519943295);
-  lon1 = $.$mul$n(lng, 0.017453292519943295);
-  t1 = typeof lat1 !== "number";
+  t1 = $.getInterceptor$asx(pos);
+  lat = $.$mul$n(t1.$index(pos, 1), 0.017453292519943295);
+  lon = $.$mul$n(t1.$index(pos, 0), 0.017453292519943295);
+  t1 = typeof lat !== "number";
   if (t1)
-    $.throwExpression($.ArgumentError$(lat1));
-  t2 = Math.sin(lat1);
+    $.throwExpression($.ArgumentError$(lat));
+  t2 = Math.sin(lat);
   if (t1)
-    $.throwExpression($.ArgumentError$(lat1));
-  t3 = Math.cos(lat1);
+    $.throwExpression($.ArgumentError$(lat));
+  t3 = Math.cos(lat);
   t4 = typeof brng !== "number";
   if (t4)
     $.throwExpression($.ArgumentError$(brng));
   t2 = t2 * Math.cos(dist) + t3 * Math.sin(dist) * Math.cos(brng);
-  lat2 = Math.asin(t2);
+  lat_dest = Math.asin(t2);
   if (t4)
     $.throwExpression($.ArgumentError$(brng));
   t2 = Math.sin(brng);
   if (t1)
-    $.throwExpression($.ArgumentError$(lat1));
-  t2 = t2 * Math.sin(dist) * Math.cos(lat1);
+    $.throwExpression($.ArgumentError$(lat));
+  t2 = t2 * Math.sin(dist) * Math.cos(lat);
   t3 = Math.cos(dist);
   if (t1)
-    $.throwExpression($.ArgumentError$(lat1));
-  t1 = Math.sin(lat1);
-  t1 = t3 - t1 * Math.sin(lat2);
-  lon2 = $.$add$ns(lon1, Math.atan2(t2, t1));
-  if ($.JSDouble_methods.get$isNaN(lat2) || $.get$isNaN$n(lon2) === true)
+    $.throwExpression($.ArgumentError$(lat));
+  t1 = Math.sin(lat);
+  t1 = t3 - t1 * Math.sin(lat_dest);
+  lon_dest = $.$add$ns(lon, Math.atan2(t2, t1));
+  if ($.JSDouble_methods.get$isNaN(lat_dest) || $.get$isNaN$n(lon_dest) === true)
     return;
-  return $.Coord$(lat2 * 57.29577951308232, $.$mul$n(lon2, 57.29577951308232));
+  return $.Coord$(lat_dest * 57.29577951308232, $.$mul$n(lon_dest, 57.29577951308232));
 };
 
 $.initTypeMaps = function() {
@@ -12910,19 +12966,24 @@ $.main = function() {
   $.initWebSocket(2, new $.main_anon(t1));
 };
 
-$.initMap = function(zoom, lon, lat) {
-  var height, width;
-  height = $.toString$0(window.innerHeight);
-  width = $.toString$0(window.innerWidth);
-  height += " px";
-  width += " px";
-  $.LMap = $.OpenStreetMap$("map", [$.Coord$(lat, lon), zoom, 300], height, width);
-  $.LMap.loadMap$0();
+$.initMap = function(initialLat, initialLon, initialZoom) {
+  var t1, initOptions, mapOptions;
+  t1 = $.makeLiteralMap(["numDigits", 5]);
+  $._enterScopeIfNeeded();
+  t1 = $.makeLiteralMap(["lat", initialLat, "lon", initialLon, "zoom", initialZoom, "boundsTimeout", 300, "mousePosition", $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t1)))]);
+  $._enterScopeIfNeeded();
+  initOptions = $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t1)));
+  t1 = $.makeLiteralMap(["closePopupOnClick", true, "markerZoomAnimation", false, "zoomAnimation", false, "worldCopyJump", true, "maxZoom", 18, "minZoom", 3]);
+  $._enterScopeIfNeeded();
+  mapOptions = $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t1)));
+  t1 = $.makeLiteralMap(["tileURL", "http://{s}.tiles.vesseltracker.com/vesseltracker/{z}/{x}/{y}.png", "attribution", "Map-Data <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-By-SA</a> by <a href=\"http://openstreetmap.org/\">OpenStreetMap</a> contributors target=\"_blank\">MapQuest</a>, <a href=\"http://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>", "subdomains", ["t1", "t2", "t3"]]);
+  $._enterScopeIfNeeded();
+  $.LMap = $.LeafletMap$("map", mapOptions, initOptions, $._deserialize($._jsPortConvert.callSync$1($.Proxy__serializeDataTree(t1))));
 };
 
 $.initWebSocket = function(retrySeconds, callback) {
   $.get$console$x(window).log$1("Connecting to Web socket");
-  $.socket = $.WebSocket_WebSocket("ws://127.0.0.1:8090", $);
+  $.socket = $.WebSocket_WebSocket("ws://192.168.1.214:8090", $);
   $.get$onOpen$x($.socket).listen$1(new $.initWebSocket_anon(callback));
   $.get$onClose$x($.socket).listen$1(new $.initWebSocket_anon0(retrySeconds));
   $.get$onMessage$x($.socket).listen$1(new $.initWebSocket_anon1());
@@ -12936,12 +12997,13 @@ $.processVesselsInBounds = function(jsonArray) {
     return $.processVesselsInBounds$bailout(1, jsonArray, currentZoom);
   $.forEach$1$ax($.get$vessels(), new $.processVesselsInBounds_anon());
   $.clear$0$ax($.get$vessels());
-  $.LMap.clearFeatureLayer$0();
   for (t1 = $.get$iterator$ax(jsonArray); t1.moveNext$0() === true;) {
     x = t1.get$current();
     vessel = $.Vessel$(x);
     vessel.paintToMap$2(currentZoom, new $.processVesselsInBounds_anon0(x, vessel));
   }
+  t1 = $.S($.get$length$asx($.get$vessels())) + "  " + $.S($.DateTime$_now().difference$1($.time).get$inMilliseconds());
+  $.get$console$x(window).log$1(t1);
   if ($.JSNumber_methods.$lt(currentZoom, $.getFirstNegative($.get$ZOOM_SPEED_ARRAY()))) {
     document.querySelector("#zoomSpeed").textContent = "vessels reporting > " + $.S($.$index$asx($.get$ZOOM_SPEED_ARRAY(), currentZoom)) + " knots";
     $.set$display$x(document.querySelector("#zoomSpeed").style, "block");
@@ -12953,12 +13015,13 @@ $.processVesselsInBounds$bailout = function(state0, jsonArray, currentZoom) {
   var t1, x, vessel;
   $.forEach$1$ax($.get$vessels(), new $.processVesselsInBounds_anon());
   $.clear$0$ax($.get$vessels());
-  $.LMap.clearFeatureLayer$0();
   for (t1 = $.get$iterator$ax(jsonArray); t1.moveNext$0() === true;) {
     x = t1.get$current();
     vessel = $.Vessel$(x);
     vessel.paintToMap$2(currentZoom, new $.processVesselsInBounds_anon0(x, vessel));
   }
+  t1 = $.S($.get$length$asx($.get$vessels())) + "  " + $.S($.DateTime$_now().difference$1($.time).get$inMilliseconds());
+  $.get$console$x(window).log$1(t1);
   if ($.$lt$n(currentZoom, $.getFirstNegative($.get$ZOOM_SPEED_ARRAY())) === true) {
     document.querySelector("#zoomSpeed").textContent = "vessels reporting > " + $.S($.$index$asx($.get$ZOOM_SPEED_ARRAY(), currentZoom)) + " knots";
     $.set$display$x(document.querySelector("#zoomSpeed").style, "block");
@@ -12980,10 +13043,10 @@ $.processVesselPositionEvent = function(json) {
   t1.vessel_0.paintToMap$2($.LMap.getZoom$0(), new $.processVesselPositionEvent_anon(t1, json));
 };
 
-$.getFirstNegative = function(sZA) {
+$.getFirstNegative = function(zs_Array) {
   var x;
-  for (x = 0; x < sZA.length; ++x)
-    if ($.get$isNegative$n(sZA[x]) === true)
+  for (x = 0; x < zs_Array.length; ++x)
+    if ($.get$isNegative$n(zs_Array[x]) === true)
       return x;
 };
 
@@ -13914,6 +13977,10 @@ $.Primitives_objectTypeName = function(object) {
   return t1.codeUnitAt$1($name, 0) === 36 ? t1.substring$1($name, 1) : $name;
 };
 
+$.Primitives_dateNow = function() {
+  return Date.now();
+};
+
 $.Primitives__fromCharCodeApply = function(array) {
   var end, t1, result, i, subarray, t2;
   end = array.length;
@@ -13960,6 +14027,12 @@ $.Primitives_stringFromCharCodes = function(charCodes) {
       return $.Primitives_stringFromCodePoints(charCodes);
   }
   return $.Primitives__fromCharCodeApply(charCodes);
+};
+
+$.Primitives_lazyAsJsDate = function(receiver) {
+  if (receiver.date === void 0)
+    receiver.date = new Date(receiver.millisecondsSinceEpoch);
+  return receiver.date;
 };
 
 $.Primitives_getYear = function(receiver) {
@@ -14974,6 +15047,12 @@ $.DateTime$fromMillisecondsSinceEpoch = function(millisecondsSinceEpoch, isUtc) 
   return t1;
 };
 
+$.DateTime$_now = function() {
+  var t1 = new $.DateTime($.Primitives_dateNow(), false);
+  t1.DateTime$_now$0();
+  return t1;
+};
+
 $.Duration$ = function(days, hours, microseconds, milliseconds, minutes, seconds) {
   var t1 = $.$mul$n(milliseconds, 1000);
   if (typeof t1 !== "number")
@@ -15601,11 +15680,12 @@ $.EventStreamProvider_open = new $.EventStreamProvider("open");
 $.C_CloseToken = new $.CloseToken();
 $.JSInt_methods = $.JSInt.prototype;
 $.EventStreamProvider_error = new $.EventStreamProvider("error");
+$.C__Undefined = new $._Undefined();
 $.Duration_0 = new $.Duration(0);
 $.EventStreamProvider_close = new $.EventStreamProvider("close");
-$.C__Undefined = new $._Undefined();
 $.LMap = null;
 $.socket = null;
+$.time = null;
 $.encounteredError = false;
 $._jsPortSync = null;
 $._jsPortCreate = null;
@@ -15793,17 +15873,14 @@ $.get$isNegative$n = function(receiver) {
 $.get$iterator$ax = function(receiver) {
   return $.getInterceptor$ax(receiver).get$iterator(receiver);
 };
-$.get$latitude$x = function(receiver) {
-  return $.getInterceptor$x(receiver).get$latitude(receiver);
-};
 $.get$length$asx = function(receiver) {
   return $.getInterceptor$asx(receiver).get$length(receiver);
 };
 $.get$location$x = function(receiver) {
   return $.getInterceptor$x(receiver).get$location(receiver);
 };
-$.get$longitude$x = function(receiver) {
-  return $.getInterceptor$x(receiver).get$longitude(receiver);
+$.get$map$ax = function(receiver) {
+  return $.getInterceptor$ax(receiver).get$map(receiver);
 };
 $.get$nodes$x = function(receiver) {
   return $.getInterceptor$x(receiver).get$nodes(receiver);
@@ -17168,7 +17245,7 @@ function init() {
         }
       }
     }
-    var objectClassObject = collectedClasses.Object, shortNames = "get$L,call$0,call$1,call$2,call$3,call$4,eval$1,get$sb,push$1,then$1,toJs$0,addTo$1,get$Map,get$_id,get$lat,get$lng,get$_key,listen$1,lookup$1,toJson$0,dispose$0,enqueue$3,get$Point,get$Popup,get$_next,loadMap$0,process$0,set$_next,addLayer$1,callSync$1,get$LatLng,get$_popup,get$_state,get$_value,get$latlng,get$vector,moveNext$0,set$_popup,set$_state,set$_value,_callback$2,_dispatch$1,_sendData$1,exitScope$0,get$Control,get$current,get$feature,get$polygon,openPopup$1,set$_handle,_sendError$1,_sendValue$1,catchError$1,enterScope$0,get$Polyline,get$animated,get$isWorker,get$sendPort,invalidate$1,paintToMap$2,set$animated,toSendPort$0,unregister$1,_setGlobals$0,clearLayers$0,get$TileLayer,get$_callback,get$_duration,get$_previous,get$_registry,get$_workerId,removeLayer$1,set$_previous,addListeners$0,get$LayerGroup,get$_elementid,get$_isolateId,get$initialLat,get$initialLon,runIteration$0,toBBoxString$0,_checkReplyTo$1,get$_futurePort,get$_mapFeature,get$initialZoom,set$_mapFeature,get$CircleMarker,get$_receivePort,get$topEventLoop,removeFeatures$1,set$popupContent,updatePosition$1,get$MousePosition,get$_liblib4$_map,get$_nextListener,get$_scopeIndices,get$nextIsolateId,set$_liblib4$_map,set$_nextListener,set$nextIsolateId,get$_liblib0$_name,get$currentContext,get$inMilliseconds,get$moveendHandler,mouseoverHandler$1,clearFeatureLayer$0,get$AnimatedPolygon,_liblib2$_callback$1,get$activeTimerCount,set$activeTimerCount,get$_featureLayerGroup,get$_hasUnhandledError,get$_resultOrListeners,set$_featureLayerGroup".split(","), longNames = "L,call,call,call,call,call,eval,sb,push,then,toJs,addTo,Map,_id,lat,lng,_key,listen,lookup,toJson,dispose,enqueue,Point,Popup,_next,loadMap,process,_next=,addLayer,callSync,LatLng,_popup,_state,_value,latlng,vector,moveNext,_popup=,_state=,_value=,_callback,_dispatch,_sendData,exitScope,Control,current,feature,polygon,openPopup,_handle=,_sendError,_sendValue,catchError,enterScope,Polyline,animated,isWorker,sendPort,invalidate,paintToMap,animated=,toSendPort,unregister,_setGlobals,clearLayers,TileLayer,_callback,_duration,_previous,_registry,_workerId,removeLayer,_previous=,addListeners,LayerGroup,_elementid,_isolateId,initialLat,initialLon,runIteration,toBBoxString,_checkReplyTo,_futurePort,_mapFeature,initialZoom,_mapFeature=,CircleMarker,_receivePort,topEventLoop,removeFeatures,popupContent=,updatePosition,MousePosition,_map,_nextListener,_scopeIndices,nextIsolateId,_map=,_nextListener=,nextIsolateId=,_name,currentContext,inMilliseconds,moveendHandler,mouseoverHandler,clearFeatureLayer,AnimatedPolygon,_callback,activeTimerCount,activeTimerCount=,_featureLayerGroup,_hasUnhandledError,_resultOrListeners,_featureLayerGroup=".split(",");
+    var objectClassObject = collectedClasses.Object, shortNames = "get$L,call$0,call$1,call$2,call$3,call$4,eval$1,get$sb,push$1,then$1,toJs$0,addTo$1,get$Map,get$_id,get$lat,get$lng,get$_key,listen$1,lookup$1,toJson$0,enqueue$3,get$Point,get$Popup,get$_next,process$0,set$_next,addLayer$1,callSync$1,get$LatLng,get$_popup,get$_state,get$_value,get$latlng,get$vector,moveNext$0,set$_popup,set$_state,set$_value,_callback$2,_dispatch$1,_sendData$1,exitScope$0,get$Control,get$current,get$feature,get$polygon,openPopup$1,set$_handle,_sendError$1,_sendValue$1,catchError$1,enterScope$0,get$Polyline,get$animated,get$isWorker,get$sendPort,paintToMap$2,set$animated,toSendPort$0,unregister$1,_setGlobals$0,get$TileLayer,get$_callback,get$_duration,get$_previous,get$_registry,get$_workerId,removeLayer$1,set$_previous,addListeners$0,get$LayerGroup,get$_isolateId,runIteration$0,toBBoxString$0,_checkReplyTo$1,get$_futurePort,get$_mapFeature,set$_mapFeature,get$CircleMarker,get$_receivePort,get$popupContent,get$topEventLoop,removeFeatures$1,set$popupContent,updatePosition$1,get$MousePosition,get$_nextListener,get$_scopeIndices,get$nextIsolateId,set$_nextListener,set$nextIsolateId,get$_liblib0$_name,get$currentContext,get$inMilliseconds,get$moveendHandler,get$AnimatedPolygon,_liblib2$_callback$1,get$activeTimerCount,set$activeTimerCount,get$featureLayerGroup,set$featureLayerGroup,get$_hasUnhandledError,get$_resultOrListeners".split(","), longNames = "L,call,call,call,call,call,eval,sb,push,then,toJs,addTo,Map,_id,lat,lng,_key,listen,lookup,toJson,enqueue,Point,Popup,_next,process,_next=,addLayer,callSync,LatLng,_popup,_state,_value,latlng,vector,moveNext,_popup=,_state=,_value=,_callback,_dispatch,_sendData,exitScope,Control,current,feature,polygon,openPopup,_handle=,_sendError,_sendValue,catchError,enterScope,Polyline,animated,isWorker,sendPort,paintToMap,animated=,toSendPort,unregister,_setGlobals,TileLayer,_callback,_duration,_previous,_registry,_workerId,removeLayer,_previous=,addListeners,LayerGroup,_isolateId,runIteration,toBBoxString,_checkReplyTo,_futurePort,_mapFeature,_mapFeature=,CircleMarker,_receivePort,popupContent,topEventLoop,removeFeatures,popupContent=,updatePosition,MousePosition,_nextListener,_scopeIndices,nextIsolateId,_nextListener=,nextIsolateId=,_name,currentContext,inMilliseconds,moveendHandler,AnimatedPolygon,_callback,activeTimerCount,activeTimerCount=,featureLayerGroup,featureLayerGroup=,_hasUnhandledError,_resultOrListeners".split(",");
     for (var j = 0; j < shortNames.length; j++) {
       var type = 0;
       var short = shortNames[j];
