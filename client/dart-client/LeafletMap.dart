@@ -50,9 +50,9 @@ class LeafletMap {
   changeRegistration(){
     int zoom = getZoom();
     var boundsArray = getBounds().split(",");
-    var _southWest = {"lng":double.parse(boundsArray[0]),"lat":double.parse(boundsArray[1])};
-    var _northEast= {"lng":double.parse(boundsArray[2]),"lat":double.parse(boundsArray[3])};
-    var bounds = {"_southWest": _southWest,"_northEast":_northEast};
+    Map _southWest = {"lng":double.parse(boundsArray[0]),"lat":double.parse(boundsArray[1])};
+    Map _northEast= {"lng":double.parse(boundsArray[2]),"lat":double.parse(boundsArray[3])};
+    Map bounds = {"_southWest": _southWest,"_northEast":_northEast};
 
     Map message = new Map();
     message['function'] = 'register';
