@@ -33,8 +33,8 @@ Das zweite Beispiel zeigt die Situation bei niedriger Zoomstufe (Abb. \ref{Nords
 
 Schließlich ist in hohen Zoomstufen eine Beobachtung von aktuellen Schiffsmanövern möglich, wie im Beispiel \ref{Schleppmanöver} das Schleppen eines Frachtschiffes durch zwei Schleppschiffe. Durch die hohe Frequenz der Positions-Meldungen bei fahrenden Schiffe und mithilfe der eingebauten Animation erlebt der Betrachter die Szene wie in einem Animationsfilm.\\
 
-Mit dieser Implementierung wurde auch die wichtige nicht funktionale Anforderung nach einer zeitnahen Umsetzung erfüllt. Der Prototyp wird auf github als privates Repository gehostet und konnte nach der Übergabe (Ende Januar) vom Unternehmen vesseltracker für Weiterentwicklungen der Webanwendung und Kundenprojekte verwendet werden. 
-Desweiteren ist die gesamte Anwendung mit open source Produkten entwickelt worden und verwendet das von vom Unternehmen gehostete Kartenmaterial.\newline
+Mit dieser Implementierung wurde auch die wichtige nicht funktionale Anforderung nach einer zeitnahen Umsetzung erfüllt. Der Prototyp wird auf github als privates Repository gehostet und wurde im Februar 2012 an das Unternehmen vesseltracker übergeben.
+Desweiteren ist die gesamte Anwendung mit open source Produkten entwickelt worden und verwendet das von der Vesseltracker gehostete Kartenmaterial.\newline
 Die Anwendung wurde auf den unten angegebenen Browserclients in den angegebenen Versionen positiv auf Funktionalität getestet und unterstützt damit die gängisten Browser in den einschlägigen Versionen \footnote{http://www.browser-statistik.de/statistiken/versionen/}:
 \begin{itemize}
 \item Firefox Version 15.0.1 und 20.0
@@ -43,20 +43,8 @@ Die Anwendung wurde auf den unten angegebenen Browserclients in den angegebenen 
 \item Safari 6.0.4
 \end {itemize}
 
-Die Latenzzeit zwischen dem Empfang der AIS-Positions-Meldung durch den Rohdatenserver und der Propagierung derselben Position auf der Karte sollte unterhalb 500 msec liegen. 
-\begin {wraptable}{r}{3in}
-\begin{center}
-\begin{tabular}{| l|r|}\hline
-& [msec]\\\hline
-Mittelwert & 237 \\
-Maximum & 701\\
-Minimum & 23\\\hline
-\end{tabular}
-\caption[Latenzzeit von Positionsmeldungen in der RealtimeAnwendung]{Latenzzeit von Positionsmeldungen in der Realtime-Anwendung}
-\label{Latenzeit_RealtimeApp}
-\end{center}
- \end {wraptable}
-Untersucht wurde die Latenzzeit anhand der ‘time\_received’, die vom Rohdatenserver jeder AIS-Message als Zeitstempel beim Empfang hinzugefügt wird. Auf dem Rohdatenserver läuft ein ntp-Daemon zur Zeitsynchronisation. Ebenso ein Daemon wurde auf dem Client, auf dem der Browser läuft gestartet und ein Zeitstempel genommen, nachdem das Schiff mit der neuen Position auf die Karte gerendert wurde. Weil die Latenzzeit direkt abhängig ist von der Anzahl der Meldungen, die pro Zeit vom Client emfangen werden, wurde als Referenz eine Ansicht des Hamburger Hafens gewählt in Zoomstufe 12, der niedrigsten Zoomstufe, in der noch Schiffe jeder Geschwindigkeit angezeigt werden. Die Ergebnisse (Tabelle \ref{Latenzzeit}) liegen mit dem Mittelwert gut innerhalb der geforderten Geschwindigkeit.
+Die Latenzzeit zwischen dem Empfang der AIS-Positions-Meldung durch den Rohdatenserver und der Propagierung derselben Position auf der Karte sollte unterhalb 500 msec liegen. Hier sei verwiesen auf die Ergebnisse in Abschnitt \ref{socket.io- vs html5-Server}, Abbildung \ref{Latenzzeit socket.io}). Die Ergebnisse liegen vollständig innerhalb der geforderten Geschwindigkeit.
+
 
 Die Anzahl der Verbindungen, die der Server gleichzeitig bedienen kann, ist mit einem node.js-Script getestet worden, das alle 500 ms eine neue Clientverbindung erstellt, bis 750 Clients verbunden sind. Der Aufbau der Verbindung geschah auch mit steigender Verbindungsanzahl zuverlässig, jedoch ist in der Abbildung erkennbar, dass die Anzahl der Fälle zunimmt, in denen ein Client lange auf Antwort warten muss.
 \\Eine Skalierung der Serveranwendung ist seitens des socket.io-Servers kein Problem. Statt einen einzigen Worker-Prozess zu generieren, können auch mehrere Worker-Prozesse parallel gestartet werden, die alle dieselbe mongo-Datenbank-Collection abfragen und sich bei derselben redis-Datenbank im Channel ‘positionUpdate’ registrieren können. Allerdings muss sichergestellt sein, z.B.  über unterschiedliche Ports oder unterschiedliche (virtuelle) Server, dass ein verbundener Client mit jedem neuen Request auf demselben Worker-Prozess landet.
@@ -77,13 +65,20 @@ Die Anzahl der Verbindungen, die der Server gleichzeitig bedienen kann, ist mit 
 \end{figure}
 %-------------------------------------------------------------------------------------------------------------------------------------------
 \section{Vergleichende Evaluation der Javascript- und der Dart-Anwendung}
-Die in Google Dart geschriebene Client-Anwendung soll nun mit dem in Javascript programmierten Client verglichen werden. Die in den Abschnitten  \ref{Strategie-Korrektur} und \ref{Vergleichbarkeit} begründete zusätzliche Implementierung eines HTML5-kompatiblen node.js-Websocket-Servers muss nun in einem ersten Schritt mit dem node.js-socket.io-Server verglichen werden. Für diesen und alle folgenden Tests wurde auf dem Rohdatenserver ein Port eingerichtet, der nur die Daten von drei AIS-Antennen (Hamburg, Wedel, Geesthacht) ausgibt. Dies war notwendig, um den als Server verwendeten Arbeitsplatzrechner (MHz und 1 GB Arbeitsspeicher) nicht zu überlasten. Dadurch entstünde eine zusätzliche Latenzzeit wegen des kontinuierlichen Anwachsens der Messagequeues auf dem Server, die die Ergebnisse verzerrt.
+Für alle folgenden Tests wurde auf dem Rohdatenserver ein Port eingerichtet, der nur die Daten von drei AIS-Antennen (Hamburg, Wedel, Geesthacht) ausgibt. Dies war notwendig, weil der als Server (und Client) verwendete Arbeitsplatzrechner (HP 530 Notebook PC mit 1,8 GHz Intel Celeron Processor und 1,5 GB Arbeitsspeicher) mit der Datenmenge, die der Rohdatenserver ausgibt, überfordert ist. Dadurch wächst die Messagequeue des Node.js-Servers und erzeugt eine zusätzliche Latenzzeit, die die Ergebnisse verzerrt.
+
+Die in den Abschnitten  \ref{Strategie-Korrektur} und \ref{Vergleichbarkeit} begründete zusätzliche Implementierung eines HTML5-kompatiblen node.js-Websocket-Servers muss nun in einem ersten Schritt mit dem node.js-socket.io-Server verglichen werden. Anschließend wird die in Google Dart geschriebene Client-Anwendung mit dem in Javascript programmierten Client verglichen.
 %-------------------------------------------------------------------------------------------------------------------------------------------
 \subsection{Node.js - socket.io-Socket-Server vs. node.js-Websocket-Server}\label{socket.io- vs html5-Server}
 \subsubsection{Implementierungsaufwand}
-Im Implementierungsaufwand unterscheiden sich beide Server- und Client-Anwendungen kaum (Anzahl zeilen code).  Einige Features der socket.io-Bibliotheken (z.B. die Clientverwaltung, Parameter für ‘Production’ und ‘Development’-Umgebung bezüglich Log-Leveln, Client-Minifikation oder Client-Zip) sind praktisch und müssten in der Alternativimplementierung für den Einsatz in einer produktiven Umgebung anderweitig gelöst werden. Durch die in socket.io eingeführten Events vermindert sich der Kommunikationsaufwand zwischen Server und Client geringfügig, was in diesem Fall einer datenintensiven Anwendung mit großen Datenmengen pro Nachricht wenig zu Buche schlägt.
+Im Implementierungsaufwand unterscheiden sich beide Server- und Client-Anwendungen kaum. Die Unterschiede in Zeilen Code betragen weniger als 10 Zeilen.\\
+Einige Features der socket.io-Bibliotheken (z.B. die Clientverwaltung, Parameter für ‘Production’ und ‘Development’-Umgebung bezüglich Log-Leveln, Client-Minifikation oder Client-Zip) sind praktisch und müssten in der Alternativimplementierung für den Einsatz in einer produktiven Umgebung anderweitig gelöst werden. Durch die in socket.io eingeführten Events vermindert sich der Kommunikationsaufwand zwischen Server und Client geringfügig, was in diesem Fall einer datenintensiven Anwendung mit großen Datenmengen pro Nachricht wenig zu Buche schlägt.
 \subsection{Latenzzeit}
-Die Leistungsfähigkeit beider Implementierungen wird verglichen, indem wieder wie in Tabelle \ref{Latenzeit_RealtimeApp} die Zeit gemessen wird, die eine Positionsmeldung braucht für den Weg vom Rohdatenserver bis zur Präsentation auf der Karte. Um eine ähnliche Situation in beiden Szenarien abzubilden, wurde jeweils eine bestimmte Position in Hafen Hamburg angesteuert und ein Timer in die Client-Anwendung integriert, der jeweils nach einer Minute um eine Stufe herauszoomt. Da ab Zoomlevel 11 und kleiner nur noch Schiffe mit einer jeweils definierten Mindestgeschwindigkeit angezeigt werden, nahm die Anzahl empfangener Schiffe von dieser Zoomstufe an wieder ab. Zur Auswertung wird auf dem Client ein LogFile geschrieben, das pro Nachricht, deren ‘time\_received’ und einen aktuellen Zeitstempel schreibt.  Die Differenz wird als Latenzzeit interpretiert. Anschließend wird über das Logfile berechnet, wieviele Positionsmeldungen in einer Minute an den Client gesendet wurden. Darüber ist es möglich, die Latenzzeit gegen die Anzahl empfangener Positionsmeldungen pro Minute darzustellen, wie in Abbildung \ref{Latenzzeit socket.io} und \ref{Latenzzeit HTML5} zu sehen.
+Die Leistungsfähigkeit beider Implementierungen wird verglichen, indem die Zeit gemessen wird, die eine Positionsmeldung braucht für den Weg vom Rohdatenserver bis zur Präsentation auf der Karte.
+Auf dem Rohdatenserver wird jeder AIS-Message beim Empfang ein Zeitstempel (time\_received) hinzugefügt. Dazu läuft auf dem Rohdatenserver ein ntp-Daemon zur Zeitsynchronisation. Ebenso ein Daemon läuft auf dem Client, auf dem der Browser gestartet wird. Ein Zeitstempel wird genommen, nachdem das Schiff mit der neuen Position auf die Karte gerendert wurde. Die Latenzzeit berechnet sich dann aus der Differenz zwischen der time\_received und diesem Zeitstempel. \\
+Weil die Latenzzeit abhängig ist von der Anzahl der Meldungen, die pro Zeit vom Client emfangen werden, wurde als Referenz eine Ansicht des Hamburger Hafens gewählt in Zoomstufe 12, der niedrigsten Zoomstufe, in der noch Schiffe jeder Geschwindigkeit angezeigt werden.
+ 
+   Um eine ähnliche Situation in beiden Szenarien abzubilden, wurde jeweils eine bestimmte Position in Hafen Hamburg angesteuert und ein Timer in die Client-Anwendungen integriert, der jeweils nach einer Minute um eine Stufe herauszoomt. Da ab Zoomlevel 11 und kleiner nur noch Schiffe mit einer jeweils definierten Mindestgeschwindigkeit angezeigt werden, nahm die Anzahl empfangener Schiffe von dieser Zoomstufe an wieder ab. Zur Auswertung wird auf dem Client ein LogFile geschrieben, das für jede Positionsmeldung, deren ‘time\_received’ und einen aktuellen Zeitstempel schreibt.  Die Differenz wird als Latenzzeit interpretiert. Anschließend wird über das Logfile berechnet, wieviele Positionsmeldungen in einer Minute an den Client gesendet wurden. Darüber ist es möglich, die Latenzzeit gegen die Anzahl empfangener Positionsmeldungen pro Minute darzustellen, wie in Abbildung \ref{Latenzzeit socket.io} und \ref{Latenzzeit HTML5} zu sehen.
 \begin {figure}[H]
 \begin{center}
   \includegraphics[width=4.5in]{images/latency_timeReceived_socket_io.png}
@@ -99,8 +94,8 @@ Die Leistungsfähigkeit beider Implementierungen wird verglichen, indem wieder w
 \caption{HTML5-Websocket-Server: Latenzzeit der Positionsmeldungen und Anzahl empfangener Schiffe}
 \label {Latenzzeit HTML5}
 \end {figure}
-Es ist offensichtlich, dass die Geschwindigkeit in der Darstellung von der Anzahl empfangener Nachrichten linear abhängt.
-Darüber hinaus ist zu erkennen, dass beide Implementierungen ihre Aufgabe in ähnlicher Geschwindigkeit erledigen. 
+Es ist offensichtlich, dass die Geschwindigkeit in der Darstellung von der Anzahl empfangener Nachrichten linear abhängt.Darüber hinaus ist zu erkennen, dass beide Implementierungen ihre Aufgabe in ähnlicher Geschwindigkeit erledigen.
+Das bedeutet, dass die HTML5-Node.js-Anwendung in ihrer Leistungsfähigkeit der socket.io-Node.js-Anwendung gleichwertig ist und wir im nächsten Abschnitt diese Anwendung ohne Einschränkungen als repräsentative Javascript-Lösung verwenden können.
 
 \subsection{Browserunterstützung}
 Für die  node.js-HTML5-Websocket-Anwendung wird wie für die socket.io-Websocket-Anwendung in Abschnitt \ref{Evaluation der Anwendung} die Unterstützung durch die gängigsten Browser getestet. Die Ergebnisse sind in Tabelle \ref{Browserclients-Vergleich} gegenübergestellt.
@@ -117,72 +112,50 @@ Safari&6.0.4 & websocket&websocket\\
 \caption[Unterstützung von Browserclients im Vergleich socket.io vs. HTML5]{Unterstützung von Browserclients im Vergleich socket.io vs. HTML5}
 \label{Browserclients-Vergleich}
 \end{table}
+Erwartungsgemäß unterstützen alle gängigen aktuellen Browser HTML5-kompatible Websockets \footnote{http://caniuse.com/\#search=websocket}. Für ältere Browser ohne Websocket-Unterstützung wie den IE 9 bietet socket.io einen Fallback auf Adobe Flashsockets (siehe Listing \ref{flashsocket}), über den die Anwendung ausgeführt werden kann, während in der HTML5-Anwendung der Browser mit einem Scriptfehler die Anwendung beendet.
+\begin{lstlisting}[caption=socket.io Client-Request in Internet Explorer 9, label=flashsocket]
+Anforderung     GET /socket.io/static/flashsocket/WebSocketMain.swf HTTP/1.1
+Accept  */*
+Accept-Language de-DE
+Referer http://192.168.1.214:8090/ais-socket.io_js.html
+x-flash-version 10,0,32,18
+Accept-Encoding gzip, deflate
+User-Agent      Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)
+Host    192.168.1.214:8090                            
+\end{lstlisting}
 
+%-----------------------------------------------------------------------------------------------------------------------------------------------
+\newpage
 \section{Javascript-Client vs. Dart-Client} 
 \subsection{Implementierungsaufwand}
-Beim Programmieren bietet Dart nach einer kurzen Einarbeitung einige Erleichterungen gegenüber der Javascript-Programmierung. Besonders ist das objektorientierte Programmieren in Dart sehr viel intuitiver möglich als in Javascript, wie leicht in Abbildung \ref{} zu erkennen. Javascript bietet zwar zahlreiche Lösungen, um Objektorientiertheit herzustellen über Funktionen als Objekte oder Konstrukte wie das Revealing Module Pattern, das aber verlangt javascript-spezifisches Hintergrundwissen und schafft keine vergleichbare Struktur.
-Die Dart-Implementierung der Anwendung wird an dem Punkt etwas aufwendiger, wo über das Paket js-interop die Javascript-Dateien integriert werden und Proxies und Callback-Funktionen geschrieben werden müssen zur Kommunikation zwischen dem Javascript- und dem Dart-Namensraum.
-Mit dem dart2js-Compiler ließ sich der Dart-Client-Code zu Javascript kompilieren und war dann auch auf Browsern ohne Dart VM ausführbar.
-\subsection{Performance}
-Um die unterschiedliche Performance des Javascript-Client, des eigentlichen Dart-Clients und des zu Javascript kompilierten Dart-Clients zu vergleichen, wurde der VesselInBounds-Event genutzt. Gemessen wurde die Zeit, die benötigt wird, um nach Empfang eines VesselInBounds-Events alle in der Message enthaltenen Schiffe auf die Karte zu rendern. Verglichen wurden die Clients in den Browsern Dartium, Chrome und Firefox.
-\begin{itemize}
-\item Google Dartium interpretiert den originären Dart-Client mit der Dart VM. Beim Aufruf des Javascript-Clients wird der Javascript-Code mit der V8-Javascript-Engine interpretiert.
-\item Google Chrome  mit der V8-Javascript-Engine führt beim Aufruf des Dart-Clients den zu javascript kompilierten Dart-Code aus und beim Aufruf des Javascript-Clients den originären Javascript-Code.
-\item ebenso führt Firefox mit der SpiderMonkey Javascript Engine den zu Javascript kompilierten Dart-Client-Code, bzw. den originären Javascript-Client-Code aus.
-\end {itemize}
-
-
-\begin {figure}[H]
+Beim Programmieren bietet Dart nach einer kurzen Einarbeitung einige Erleichterungen gegenüber der Javascript-Programmierung, z.B. mit dem TimeFormatter. Besonders ist das objektorientierte Programmieren in Dart sehr viel intuitiver möglich als in Javascript, wie in Abbildung \ref{fig:Übersicht Dart-Files} zu erkennen. Javascript bietet zwar zahlreiche Lösungen, um Objektorientiertheit herzustellen z.B. über Funktionen als Objekte und Konstrukte wie das Revealing Module Pattern, dadurch wird das Programmieren aber komplizierter und fehleranfälliger, weil die Features objektorienter Sprachen sozusagen per Hand gepflegt werden müssen. Die entstehenden Strukturen sind weniger klar als in Dart.
+\begin {wraptable}{r}{2in}
 \begin{center}
-  \includegraphics[height=2.3in]{images/Dartium.png}
+\begin{tabular}{ l|c}
+Client&Zeilen Code\\\hline
+Javascript& 611 \\
+Dart& 867\\
+\end{tabular}
 \end{center}
- \caption{Dauer des Renders in Dartium}
-\end {figure}
+\end{wraptable}
+Die Dart-Implementierung der Anwendung wird an dem Punkt etwas aufwendiger, wo über das Paket js-interop die Javascript-Dateien integriert werden und Proxies und Callback-Funktionen geschrieben werden müssen zur Kommunikation zwischen dem Javascript- und dem Dart-Namensraum. Der quantitative Mehraufwand spiegelt sich auch in einem signifikanten Unterschied in der Anzahl Zeilen Code.
+Mit dem dart2js-Compiler ließ sich der Dart-Client-Code zu Javascript kompilieren und war dann auch auf Browsern ohne Dart VM ausführbar. Allerdings traten dabei gelegentlich Fehler auf, die teilweise auf Bugs zurückzuführen waren und mit dem nächsten Update behoben waren oder Fehler, die durch Änderungen im Dart-Code zu behoben werden mussten, obwohl der Dart-Code von der Dart VM korrekt interpretiert wurde. Dazu ein Beispiel:\\
+Wird innerhalb des Javascript-Scopes eine Methode auf einen javascript-Proxy (hier \_map) aufgerufen und ein proxy zurückgegeben, dann ist es möglich, auf diesen Proxy, der in diesem Fall vom Typ LatLngBounds ist, eine Methode der Klasse LatLngBounds aufzurufen (siehe Listing \ref{LeafletMap.dart}. Im zu Javascript kompilierten Dart-Code lief die Anwendung damit jedoch in einen Fehler:\\
+=> TypeError: t1.get\$\_map(...).getBounds\$0(...).getSouthWest\$0 is not a function
 
-
-\begin {figure}[H]
-\begin{center}
-  \includegraphics[height=2.3in]{images/Chrome.png}
-\end{center}
- \caption{Dauer des Renders in Chrome}
-\end {figure}
-
-
-\begin {figure}[H]
-\begin{center}
-  \includegraphics[height=2.3in]{images/Firefox.png}
-\end{center}
- \caption{Dauer des Renders in Firefox}
-\end {figure}
-
-Insgesamt ist erkennbar, dass der Javascript-Code schneller ausgeführt wird als der Dart-Code. Am schnellsten führt die V8-Javascript-Engine in Dartium und Chrome den originären Javascript-Code aus. Firefox mit der Spidermonkey-Javascript-Engine benötigt deutlich länger. Auffällig ist, dass der Dart-Code von der Dart VM in Dartium langsamer ausgeführt wird als der zu Javascript kompilierte Code in Chrome. 
-
-
-
-\subsection{Browserunterstützung}
-\subsubsection{Dartium}
-
-\subsubsection{Firefox, Chrome, IE, Safari}
-
-Der dart-Client kompiliert den in Dart geschriebenen Code zu Javascript.
-
-Dabei traten Fehler auf, die unter Dartium (also im originalen Dart-Code) nicht auftraten.
-1. Wird innerhalb des Javascript-Scopes eine Methode auf einen javascript-Proxy (hier \_map) aufgerufen und ein proxy wird zurückgegeben, dann ist es nicht möglich auf diesen Proxy, der in diesem Fall vom Typ LatLngBounds sein müsste, eine Methode der Klasse LatLngBounds aufzurufen. => TypeError: t1.get\$\_map(...).getBounds\$0(...).getSouthWest\$0 is not a function
-
-dart-client: web/leaflet\_maps.dart
-
+\begin{lstlisting}[caption= LeafletMap.dart, label= LeafletMap.dart]
   List getBounds(){
     var south, west, north, east;
     js.scoped((){
-    south= \_map.getBounds().getSouthWest().lng;
-        west = \_map.getBounds().getSouthWest().lat;
-        north = \_map.getBounds().getNorthEast().lng;
-        east = \_map.getBounds().getNorthEast().lat;
+    south= _map.getBounds().getSouthWest().lng;
+        west = _map.getBounds().getSouthWest().lat;
+        north = _map.getBounds().getNorthEast().lng;
+        east = _map.getBounds().getNorthEast().lat;
  });
 return [west, south, east, north];
-    
-In diesem Fall wird einfach als work-Around eine andere Methode verwendet (getBBoxString), die einen String mit den Bounds zurückgibt. Aus den Teilen dieses Strings werden mit der Methode parse(string) der Klasse double die Werte der Eckpunkte der Bounds generiert.
-
+\end{lstlisting}
+Mit einem work-Around wird das Problem umschifft, indem über die Methode ‘getBBoxString’ ein String mit den Bounds geholt wird. Aus den Teilen dieses Strings sind anschließend die Bounds für die ‘register’-Nachricht zu extrahieren (Listing \ref{LeafletMap.dart mit workaround}).
+\begin{lstlisting}[caption= LeafletMap.dart mit workaround, label= LeafletMap.dart mit workaround]
 String getBounds(){
     String bBox;
     js.scoped((){
@@ -190,35 +163,118 @@ String getBounds(){
     });
     return bBox;
   }
+  
+  changeRegistration(){
+    int zoom = getZoom();
+    var boundsArray = getBounds().split(",");
+    Map _southWest = {"lng":double.parse(boundsArray[0]),"lat":double.parse(boundsArray[1])};
+    Map _northEast= {"lng":double.parse(boundsArray[2]),"lat":double.parse(boundsArray[3])};
+    Map bounds = {"_southWest": _southWest,"_northEast":_northEast};
 
- Weil dadurch der message-Parameter 'bounds' kein number-Array, sondern ein String ist, muss im html5-Server der String einmal zum Float geparst werden.
+    Map message = new Map();
+    message['function'] = 'register';
+    message['zoom'] =  zoom;
+    message['bounds'] = bounds;
+    socket.send(stringify(message));
+    
+    boundsTimeoutTimer = new Timer(new Duration(milliseconds:boundsTimeout),changeRegistration);  
+  }
+\end{lstlisting}
+
+\subsection{Performance}
+Um die Performance des Javascript-Clients mit der des eigentlichen Dart-Clients und des zu Javascript kompilierten Dart-Clients zu vergleichen, wurde der VesselInBounds-Event genutzt. Gemessen wurde die Zeit, die benötigt wird, um nach Empfang eines VesselInBounds-Events alle in der Message enthaltenen Schiffe auf die Karte zu rendern. Verglichen wurden die Clients in den Browsern Dartium, Chrome und Firefox.
+\begin{itemize}
+\item Google Dartium interpretiert den originären Dart-Client mit der Dart VM. Beim Aufruf des Javascript-Clients in Dartium wird der Javascript-Code mit der V8-Javascript-Engine interpretiert.
+\item Google Chrome  mit der V8-Javascript-Engine führt beim Aufruf des Dart-Clients den zu javascript kompilierten Dart-Code aus und beim Aufruf des Javascript-Clients den originären Javascript-Code.
+\item ebenso führt Firefox mit der SpiderMonkey Javascript Engine den zu Javascript kompilierten Dart-Client-Code, bzw. den originären Javascript-Client-Code aus.
+\end {itemize}
+\newpage
+In einer ersten Testserie wurden die Browserclients auf dem HP 530 Notebook PC mit 1,8 GHz Intel Celeron Processor und 1,5 GB Arbeitsspeicher ausgeführt, auf dem auch die Server-Anwendung läuft.
+
+\begin {figure}[H]
+\begin{center}
+  \includegraphics[height=2.3in]{images/Dartium.png}
+\end{center}
+ \caption{Verarbeitungsdauer in Dartium, Testserie 1}
+\end {figure}
 
 
+\begin {figure}[H]
+\begin{center}
+  \includegraphics[height=2.3in]{images/Chrome.png}
+\end{center}
+ \caption{Verarbeitungsdauer in Chrome, Testserie 1}
+\end {figure}
 
-2. Ein Feld ("IMO") wird auf null und auf > 0 geprüft.
 
+\begin {figure}[H]
+\begin{center}
+  \includegraphics[height=2.3in]{images/Firefox.png}
+\end{center}
+ \caption{Verarbeitungsdauer in Firefox, Testserie 1}
+\end {figure}
+
+\newpage
+In einer zweiten Test-Serie wurden die Browser-Clients auf einem Mac Book Pro 10 mit 2,3 Ghz Intel Core Processor und 8 GB Arbeitsspeicher ausgeführt.
+ 
+\begin {figure}[H]
+\begin{center}
+  \includegraphics[height=2.3in]{images/DartiumOnMac.png}
+\end{center}
+ \caption{Verarbeitungsdauer in Dartium, Testserie 2}
+\end {figure}
+
+
+\begin {figure}[H]
+\begin{center}
+  \includegraphics[height=2.3in]{images/ChromeOnMac.png}
+\end{center}
+ \caption{Verarbeitungsdauer in Chrome, Testserie 2}
+\end {figure}
+
+
+\begin {figure}[H]
+\begin{center}
+  \includegraphics[height=2.3in]{images/FirefoxOnMac.png}
+\end{center}
+ \caption{Verarbeitungsdauer in Firefox, Testserie 2}
+\end {figure}
+
+Insgesamt ist erkennbar, dass der Javascript-Code schneller ausgeführt wird als der Dart-Code. Am schnellsten führt die V8-Javascript-Engine in Dartium und Chrome den originären Javascript-Code aus. Firefox mit der Spidermonkey-Javascript-Engine benötigt deutlich länger.\\ Auffällig ist, dass der Dart-Code von der Dart VM in Dartium langsamer ausgeführt wird als der zu Javascript kompilierte Code.
+In der zweiten Testserie bestätigen sich diese Ergebnisse. Es ist offensichtlich, dass sich die Geschwindigkeit der Darstellung durch einen leistungsstärkeren Client-Rechner verbessern lässt. Hier ist auffällig ist, dass der Dart-Client die eklatanteste Performance-Steigerung durch mehr Rechenleistung erfährt.
+
+\subsection{Browserunterstützung}
+Zusätzlich zu den Browsern, die in den Performance-Tests verwendet, wurde, ist die Anwendung auf IE 10 und Safari positiv auf Funktionalität getestet worden. Das heißt, alle gängigen aktuellen Browser können den zu Javascript kompilierten Dart-Code interpretieren.
 
 \chapter{Fazit}\label{Fazit}
- \section{Ergebnisse }
-\subsection{Die Realtime-Applikation}
 
+\section{Die Realtime-Anwendung}
+Der für die Firma Vesseltracker programmierte Prototyp einer Realtime-Anwendung in Javascript unter Verwendung von node.js mit socket.io ist im Zuge dieser Arbeit im Februar 2013 abgeschlossen worden. Die Anwendung soll in angepasster Form in die Webanwendung der Firma integriert werden. Für einzelne Kunden (z.B. das Maritime Museum Hamburg) ist die Anwendung bereits zugeschnitten und ausgeliefert worden, weitere Kundenprojekte sind geplant.
+Für die bessere Nutzbarkeit der Anwendung sollte eine Möglichkeit geschaffen werden, favorisierte Häfen oder Positionen zu speichern, z.B. in einer aufklappbaren Liste, die dann per Klick angesteuert werden können.
+Zur weiteren Optimierung der Anwendung, sollte die Möglichkeit, die Animation der Richtungsdreiecke und Schiffspolygon über css3-Transition-Funktionen zu realisieren, unbedingt weiterverfolgt werden. Damit könnte die vom Browserclient zu erbringende Rechenleistung erheblich reduziert werden, weil die Objekte nicht neu berechnet und erstellt werden müssten, sondern nur über ihre css-Eigenschaften bewegt werden könnten.
 
-Features, die in die Anwendung integriert werden sollten:
-\begin{itemize}
-\item eine aufklappbare Liste, in die der Nutzer favorisierte Häfen speichern kann, die dann mit einem Klick angesteuert werden können.
-\item eine Legende mit einer Erläuterung der farbigen Schiffssymbole
-\item zur weiteren Optimierung der Anwendung, sollte die Möglichkeit, die Animation der Richtungsdreiecke und Schiffspolygon über css3-Transition-Funktionen zu realisieren, unbedingt weiterverfolgt werden
-\end{itemize}
+\section{Vergleich Javascript und Google Dart}
+Das Erlernen von Dart ist für Umsteiger von Javascript relativ unkompliziert. Von den vielen Features und Möglichkeiten, die Dart bietet, kommt in der Client-Anwendung nur ein kleiner Teil zum Tragen. Der Fokus lag hier nicht auf den Möglichkeiten von Google Dart, sondern auf der Bewältigung einer konkreten Anforderung. \\
+Wie in den Abbildung zur Struktur der Anwendung erkennbar (Abbildung \ref{fig:Übersicht Dart-Files}), ist mit Dart sehr viel einfacher Objektorientiertheit herzustellen. Dadurch wird die Anwendung verständlicher und entsprechend einfacher zu entwerfen, zu schreiben und zu warten.
 
-\subsection{Vergleich Javascript und Google Dart}
+Hilfreich bei der Entwicklung war der DartEditor als Entwicklungsumgebung. Der Compiler gibt bei Syntax-Fehlern aussagekräftige Fehlermeldungen.\\  
+Google Dart befindet sich noch in der Entwicklungsphase, so dass gelegentlich nach den ca. wöchentlichen Versions-Updates von Dart die Anwendung unter der neuen Version nicht mehr lauffähig ist und angepasst werden muss. Belohnt wird dieser Aufwand sozusagen mit einer kontinuierlichen und spürbaren Verbesserung der Performance (Beobachtung im Zeitraum November 2012 bis April 2013).
+Das Einbinden existierender Javascript-Bibliotheken mit js-interop erweitert die Nutzungsmöglichen von Dart ganz entscheidend. Das Arbeiten mit zwei unterschiedlichen Scopes (Javascript und Dart) ist am Anfang sehr fehleranfällig. Fehler sind schwierig zu debuggen, weil auch die Debugger (hier Firebug und der Debugger im DartEditor) nur bis an die Grenzen ihres Namensraumes reichen.
 
-Wie in den Abbildung zur Struktur der Anwendung erkennbar, ist mit Dart sehr viel einfacher Objektorientiertheit herzustellen. Dadurch wird die Anwendung einfacher zu verstehen und entsprechend einfacher zu entwerfen, zu schreiben und zu warten.
-Das Erlernen von Dart ist für Umsteiger von Javascript relativ einfach möglich. Von den vielen Features und Möglichkeiten, die Dart bietet, kommt in der Client-Anwendung zwar nur ein kleiner Teil zum Tragen. Das Ziel war hier nicht das Ausschöpfen der Möglichkeiten von Google Dart, sondern die Realisierung eines kleinen Projektes alternativ in Google Dart.
-Sehr hilfreich war der DartEditor als Entwicklungsumgebung, dessen Compiler bei Syntax-Fehlern aussagekräftige Warnungen ausgibt. 
-Google Dart befindet sich noch in der Entwicklungsphase, so dass gelegentlich nach den ca. wöchentlichen Versions-Updates von Dart die Anwendung unter der neuen Version nicht mehr lauffähig ist und angepasst werden muss. Belohnt wird der Aufwand sozusagen mit einer kontinuierlichen Verbesserung der Performance im Laufe des letzten halben Jahres.
-Das Einbinden existierender Javascript-Bibliotheken mit js-interop erweitert die Nutzungsmöglichen von Dart ganz entscheidend. Das Arbeiten mit zwei unterschiedlichen Scopes (Javascript und Dart) ist aber am Anfang sehr fehleranfällig. Und die Fehler sind schwierig zu debuggen, weil die Debugger (hier Firebug und der Debugger im DartEditor) nicht über die Grenzen des Namensraumes wechseln können.
-
+Dass in Testserie 2 die Ausführung des Dart-Codes besonders von der besseren Rechenleistung profitiert hat, lässt vermuten, dass die Kommunikation zwischen den Namensräumen innerhalb der Anwendung über Proxies und Callback-Funktionen auch in der Ausführung des Programms einen deutlich höheren Rechenaufwand erzeugt.
+Die in dieser Arbeit geschriebene Realtime-Anwendung ist für den ausführenden Client ohnehin sehr rechenintensiv.
+\begin{enumerate}
+\item werden mit hoher Frequenz Objekte erstellt und gelöscht (besonders durch die Animation der Polygone und Richtungsdreiecke), 
+\item werden häufig Events im Dart-Scope erzeugt (Vessel-Position-Events auf dem Websocket), die Aktionen im Javascript-Scope notwendig machen und
+\item werden bei Benutzeraktionen Events im Javascript-Scope erzeugt (mouseover/mouseout/moveend-Event), die Aktionen im Dart-Scope notwendig machen.
+\end{enumerate}
 \section{Ausblick}
-Legende
--Satellitendaten in die Anwendung einbinden
-%http://en.wikipedia.org/wiki/Comparison_of_layout_engines_%28ECMAScript%29#ECMAScript_version_support
+
+Google Dart bleibt zwar in der Performance noch hinter Javascript zurück. Bei der bisherigen Geschwindigkeit der Entwicklung, insbesondere im Hinblick auf die erlebte Performance-Steigerung, hat Google Dart aber das Potential, Javascript Konkurrenz zu machen.
+Die Einbindung von Javascript-Bibliotheken in Dart ist eine gute Möglichkeit, an die bestehende WebWelt anzuknüpfen. Der Mehraufwand, der durch die beiden Sprachräume entsteht, ist aber nicht wegzuoptimieren.
+Momentan sind zwei große Fragen zu identifizieren, die vermutlich für die Zukunft von Dart entscheidend sein werden.
+Wie wird die OpenSource Entwicklergemeinde die Sprache aufnehmen, das heißt wird es in Zukunft mehr in Dart geschriebene Bibliotheken geben, vergleichbar Javascript? 
+\\
+Wie werden sich die anderen großen Mitspieler wie Mozilla, Microsoft und Apple zu Dart positionieren, das heißt, wird es in Zukunft auch in anderern Browsern Dart Virtual Machines geben? \footnote{http://www.2ality.com/2011/09/google-dart.html}.
+
+
