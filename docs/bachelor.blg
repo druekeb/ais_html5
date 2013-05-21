@@ -6,44 +6,44 @@ A level-1 auxiliary file: VergleichendeEvaluation.aux
 The style file: alphadin_martin.bst
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: literatur.bib
-You've used 7 entries,
+You've used 8 entries,
             4793 wiz_defined-function locations,
-            929 strings with 7207 characters,
-and the built_in function-call counts, 3071 in all, are:
-= -- 311
-> -- 60
-< -- 57
-+ -- 60
-- -- 18
-* -- 161
-:= -- 518
-add.period$ -- 12
-call.type$ -- 7
-change.case$ -- 28
-chr.to.int$ -- 7
-cite$ -- 7
-duplicate$ -- 111
-empty$ -- 255
-format.name$ -- 41
-if$ -- 654
+            933 strings with 7334 characters,
+and the built_in function-call counts, 3515 in all, are:
+= -- 355
+> -- 68
+< -- 68
++ -- 71
+- -- 21
+* -- 186
+:= -- 588
+add.period$ -- 14
+call.type$ -- 8
+change.case$ -- 32
+chr.to.int$ -- 8
+cite$ -- 8
+duplicate$ -- 126
+empty$ -- 290
+format.name$ -- 47
+if$ -- 747
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 36
-newline$ -- 52
-num.names$ -- 21
-pop$ -- 46
+missing$ -- 42
+newline$ -- 58
+num.names$ -- 24
+pop$ -- 53
 preamble$ -- 1
-purify$ -- 42
+purify$ -- 48
 quote$ -- 0
-skip$ -- 176
+skip$ -- 204
 stack$ -- 0
-substring$ -- 141
-swap$ -- 19
-text.length$ -- 16
-text.prefix$ -- 6
+substring$ -- 164
+swap$ -- 22
+text.length$ -- 18
+text.prefix$ -- 7
 top$ -- 0
-type$ -- 74
+type$ -- 86
 warning$ -- 0
-while$ -- 23
-width$ -- 9
-write$ -- 101
+while$ -- 26
+width$ -- 10
+write$ -- 114

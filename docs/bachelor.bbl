@@ -36,6 +36,12 @@
 rt-1727116.html}.
 \newblock \,Version:\,October 12 2012
 
+\bibitem[Rau11]{google-dart}
+{Rauschmayer}, Dr.~A.:
+\newblock \emph{Google Dart to 'ultimately ... replace JavaScript'}.
+\newblock \url{http://www.2ality.com/2011/09/google-dart.html}.
+\newblock \,Version:\,September 2011
+
 \bibitem[Tei12]{teixeira}
 {Teixeira}, Pedro:
 \newblock \emph{Professional Node.js}.

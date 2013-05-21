@@ -1,4 +1,4 @@
-\chapter{Ergebnisse}
+\chapter{Ergebnisse}\label{Ergebnisse}
 
 \section{Evaluation der Anwendung}\label{Evaluation der Anwendung}
 \subsection{Funktionale Anforderungen}
@@ -131,24 +131,27 @@ Host    192.168.1.214:8090
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 \newpage
-\subsection{Javascript-Client vs. Dart-Client} 
+\subsection{Vergleich des Javascript-Clients mit dem Dart-Client} 
 \subsubsection{Implementierungsaufwand}
-Beim Programmieren bietet Dart nach einer kurzen Einarbeitung einige Erleichterungen gegenüber der Javascript-Programmierung, z.B. mit dem TimeFormatter. Besonders ist das objektorientierte Programmieren in Dart sehr viel intuitiver möglich als in Javascript, wie in Abbildung \ref{fig:Übersicht Dart-Files} zu erkennen. Javascript bietet zwar zahlreiche Lösungen, um Objektorientiertheit herzustellen z.B. über Funktionen als Objekte und Konstrukte wie das Revealing Module Pattern, dadurch wird das Programmieren aber komplizierter und fehleranfälliger, weil die Features objektorienter Sprachen sozusagen per Hand gepflegt werden müssen. Die entstehenden Strukturen sind weniger klar als in Dart.
+Beim Programmieren des Dart-Clients fällt am positivsten auf, dass die objektorientierte Gestaltung in Dart sehr viel intuitiver möglich als in Javascript, wie in Abbildung \ref{fig:Übersicht Dart-Files} zu erkennen. Javascript bietet zwar zahlreiche Lösungen, um Objektorientierung zu ermöglichen über Funktionen als Objekte und Konstrukte wie das Revealing Module Pattern, dadurch wird das Programmieren aber komplizierter und fehleranfälliger, weil die Features objektorienter Sprachen sozusagen per Hand gepflegt werden müssen. Die entstehenden Strukturen sind weniger transparent und selbsterklärend als in Dart.
 \begin {wraptable}{r}{2in}
 \begin{center}
+\small
+\texttt{
 \begin{tabular}{ l|c}
 Client&Zeilen Code\\\hline
 Javascript& 611 \\
 Dart& 867\\
 \end{tabular}
+}
 \end{center}
 \end{wraptable}
 Die Dart-Implementierung der Anwendung wird an dem Punkt etwas aufwändiger, wo über das Paket js-interop die Javascript-Dateien integriert werden und Proxies und Callback-Funktionen geschrieben werden müssen zur Kommunikation zwischen dem Javascript- und dem Dart-Namensraum. Der quantitative Mehraufwand spiegelt sich auch in einem signifikanten Unterschied in der Anzahl Zeilen Code.
-Mit dem dart2js-Compiler ließ sich der Dart-Client-Code zu Javascript kompilieren und war dann auch auf Browsern ohne Dart VM ausführbar. Allerdings traten dabei gelegentlich Fehler auf, die teilweise auf Bugs zurückzuführen waren und mit dem nächsten Update behoben waren oder Fehler, die durch Änderungen im Dart-Code zu behoben werden mussten, obwohl der Dart-Code von der Dart VM korrekt interpretiert wurde. Dazu ein Beispiel:\\
-Wird innerhalb des Javascript-Scopes eine Methode auf einen javascript-Proxy (hier \_map) aufgerufen und ein proxy zurückgegeben, dann ist es möglich, auf diesen Proxy, der in diesem Fall vom Typ LatLngBounds ist, eine Methode der Klasse LatLngBounds aufzurufen (siehe Listing \ref{LeafletMap.dart}. Im zu Javascript kompilierten Dart-Code lief die Anwendung damit jedoch in einen Fehler:\\
-=> TypeError: t1.get\$\_map(...).getBounds\$0(...).getSouthWest\$0 is not a function
+Mit dem dart2js-Compiler ließ sich der Dart-Client-Code zu Javascript kompilieren und war dann auch auf Browsern ohne Dart VM ausführbar. Allerdings traten dabei gelegentlich Fehler auf, die teilweise auf Bugs zurückzuführen waren und mit dem nächsten Update behoben waren oder Fehler, die durch Änderungen im Dart-Code behoben werden mussten, obwohl der Dart-Code von der Dart VM korrekt interpretiert wurde. Dazu ein Beispiel:\\
+Wird innerhalb des Javascript-Kontexts eine Methode auf einen Javascript-Proxy (hier \_map) aufgerufen und ein js.Proxy zurückgegeben, dann ist es möglich, auf diesen Proxy, der in diesem Fall vom Typ LatLngBounds ist, eine Methode der Klasse LatLngBounds aufzurufen (siehe Listing \ref{LeafletMap.dart}). Im zu Javascript kompilierten Dart-Code lief die Anwendung damit jedoch in einen Fehler:\\
+“=> TypeError: t1.get\$\_map(...).getBounds\$0(...).getSouthWest\$0 is not a function”\\
 
-\begin{lstlisting}[caption= LeafletMap.dart, label= LeafletMap.dart]
+\begin{lstlisting}[caption= LeafletMap.dart mit ursprünglicher Abfrage des Bounds-Objektes, label= LeafletMap.dart]
   List getBounds(){
     var south, west, north, east;
     js.scoped((){
@@ -158,9 +161,26 @@ Wird innerhalb des Javascript-Scopes eine Methode auf einen javascript-Proxy (hi
         east = _map.getBounds().getNorthEast().lat;
  });
 return [west, south, east, north];
+}
+
+ changeRegistration(){
+    int zoom = getZoom();
+    var boundsList = getBounds();
+    Map _southWest = {"lng":boundsList[0],"lat":boundsList[1]};
+    Map _northEast= {"lng":boundsList[2],"lat":boundsList[3]};
+    Map bounds = {"_southWest": _southWest,"_northEast":_northEast};
+
+    Map message = new Map();
+    message['function'] = 'register';
+    message['zoom'] =  zoom;
+    message['bounds'] = bounds;
+    socket.send(stringify(message));
+    
+    boundsTimeoutTimer = new Timer(new Duration(milliseconds:boundsTimeout),changeRegistration);  
+  }
 \end{lstlisting}
-Mit einem work-Around wird das Problem umschifft, indem über die Methode ‘getBBoxString’ ein String mit den Bounds geholt wird. Aus den Teilen dieses Strings sind anschließend die Bounds für die ‘register’-Nachricht zu extrahieren (Listing \ref{LeafletMap.dart mit workaround}).
-\begin{lstlisting}[caption= LeafletMap.dart mit workaround, label= LeafletMap.dart mit workaround]
+Mithilfe eines Workarounds wird das Problem behoben. Und zwar wird über die Methode ‘getBBoxString’ ein String mit den Bounds vom Bounds-Objekt geholt. Aus den Teilen dieses Strings sind anschließend die Double-Werte für die Bounds zu parsen für die ‘register’-Nachricht an den Server (Listing \ref{LeafletMap.dart mit workaround}).
+\begin{lstlisting}[caption= LeafletMap.dart mit workaround über BBoxString, label= LeafletMap.dart mit workaround über BBoxString]
 String getBounds(){
     String bBox;
     js.scoped((){
@@ -250,37 +270,56 @@ In der zweiten Testserie bestätigen sich diese Ergebnisse. Es ist offensichtlic
 
 \subsubsection{Browserunterstützung}
 Zusätzlich zu den Browsern, die in den Performance-Tests verwendet, wurde, ist die Anwendung auf IE 10 und Safari positiv auf Funktionalität getestet worden. Das heißt, alle gängigen aktuellen Browser können den zu Javascript kompilierten Dart-Code interpretieren.
-
+%----------------------------------------------------------------------------------------------------------------------------------------------
 \chapter{Fazit}\label{Fazit}
+%----------------------------------------------------------------------------------------------------------------------------------------------
 
-\section{Die Realtime-Anwendung}
-Der für die Firma Vesseltracker programmierte Prototyp einer Realtime-Anwendung in Javascript unter Verwendung von node.js mit socket.io ist im Zuge dieser Arbeit im Februar 2013 abgeschlossen worden. Die Anwendung soll in angepasster Form in die Webanwendung der Firma integriert werden. Für einzelne Kunden (z.B. das Maritime Museum Hamburg) ist die Anwendung bereits zugeschnitten und ausgeliefert worden, weitere Kundenprojekte sind geplant.
+\section{Die Real-Time-Anwendung}
+Der für die Firma Vesseltracker programmierte Prototyp einer Real-Time-Anwendung in Javascript unter Verwendung von node.js mit socket.io ist im Zuge dieser Arbeit Ende Februar 2013 abgeschlossen worden. Die Anwendung soll in angepasster Form in die Webanwendung der Firma integriert werden. Für einzelne Kunden (z.B. das Maritime Museum Hamburg) ist die Anwendung bereits zugeschnitten und ausgeliefert worden, weitere Kundenprojekte sind geplant.
 Für die bessere Nutzbarkeit der Anwendung sollte eine Möglichkeit geschaffen werden, favorisierte Häfen oder Positionen zu speichern, z.B. in einer aufklappbaren Liste, die dann per Klick angesteuert werden können.
-Zur weiteren Optimierung der Anwendung, sollte die Möglichkeit, die Animation der Richtungsdreiecke und Schiffspolygon über css3-Transition-Funktionen zu realisieren, unbedingt weiterverfolgt werden. Damit könnte die vom Browserclient zu erbringende Rechenleistung erheblich reduziert werden, weil die Objekte nicht neu berechnet und erstellt werden müssten, sondern nur über ihre css-Eigenschaften bewegt werden könnten.
+Zur weiteren Optimierung der Anwendung, sollte die Möglichkeit, die Animation der Richtungsdreiecke und Schiffspolygone über css3-Transition-Funktionen zu realisieren, unbedingt weiterverfolgt werden. Damit könnte die vom Browserclient zu erbringende Rechenleistung erheblich reduziert werden, weil die Objekte nicht neu berechnet und erstellt werden müssten, sondern nur über ihre css-Eigenschaften bewegt werden könnten.
+%----------------------------------------------------------------------------------------------------------------------------------------------
 
 \section{Vergleich Javascript und Google Dart}
 Das Erlernen von Dart ist für Umsteiger von Javascript relativ unkompliziert. Von den vielen Features und Möglichkeiten, die Dart bietet, kommt in der Client-Anwendung nur ein kleiner Teil zum Tragen. Der Fokus lag hier nicht auf den Möglichkeiten von Google Dart, sondern auf der Bewältigung einer konkreten Anforderung. \\
-Wie in den Abbildung zur Struktur der Anwendung erkennbar (Abbildung \ref{fig:Übersicht Dart-Files}), ist mit Dart sehr viel einfacher Objektorientiertheit herzustellen. Dadurch wird die Anwendung verständlicher und entsprechend einfacher zu entwerfen, zu schreiben und zu warten.
+Wie in den Abbildungen zur Struktur der Anwendung erkennbar (Abbildung \ref{fig:Übersicht Dart-Files}), ist mit Dart sehr viel einfacher Objektorientiertheit herzustellen. Dadurch wird die Anwendung verständlicher und entsprechend einfacher zu entwerfen, zu schreiben und zu warten.
 
 Hilfreich bei der Entwicklung war der DartEditor als Entwicklungsumgebung. Der Compiler gibt bei Syntax-Fehlern aussagekräftige Fehlermeldungen.\\  
 Google Dart befindet sich noch in der Entwicklungsphase, so dass gelegentlich nach den ca. wöchentlichen Versions-Updates von Dart die Anwendung unter der neuen Version nicht mehr lauffähig ist und angepasst werden muss. Belohnt wird dieser Aufwand sozusagen mit einer kontinuierlichen und spürbaren Verbesserung der Performance (Beobachtung im Zeitraum November 2012 bis April 2013).
-Das Einbinden existierender Javascript-Bibliotheken mit js-interop erweitert die Nutzungsmöglichen von Dart ganz entscheidend. Das Arbeiten mit zwei unterschiedlichen Scopes (Javascript und Dart) ist am Anfang sehr fehleranfällig. Fehler sind schwierig zu debuggen, weil auch die Debugger (hier Firebug und der Debugger im DartEditor) nur bis an die Grenzen ihres Namensraumes reichen.
+Das Einbinden existierender Javascript-Bibliotheken mit js-interop erweitert die Nutzungsmöglichen von Dart ganz entscheidend. Das Arbeiten in zwei unterschiedlichen Kontexten (Javascript und Dart) ist am Anfang sehr fehleranfällig. Fehler sind schwierig zu debuggen, weil auch die Debugger (hier Firebug und der Debugger im DartEditor) nur jeweils bis an die Grenzen dieses Kontextes reichen.
 
 Dass in Testserie 2 die Ausführung des Dart-Codes besonders von der besseren Rechenleistung profitiert hat, lässt vermuten, dass die Kommunikation zwischen den Namensräumen innerhalb der Anwendung über Proxies und Callback-Funktionen auch in der Ausführung des Programms einen deutlich höheren Rechenaufwand erzeugt.
 Die in dieser Arbeit geschriebene Realtime-Anwendung ist für den ausführenden Client ohnehin sehr rechenintensiv.
 \begin{enumerate}
 \item werden mit hoher Frequenz Objekte erstellt und gelöscht (besonders durch die Animation der Polygone und Richtungsdreiecke), 
-\item werden häufig Events im Dart-Scope erzeugt (Vessel-Position-Events auf dem Websocket), die Aktionen im Javascript-Scope notwendig machen und
-\item werden bei Benutzeraktionen Events im Javascript-Scope erzeugt (mouseover/mouseout/moveend-Event), die Aktionen im Dart-Scope notwendig machen.
+\item werden häufig Events im Dart-Kontext erzeugt (Vessel-Position-Events auf dem Websocket), die Aktionen im Javascript-Kontext notwendig machen und
+\item werden bei Benutzeraktionen Events im Javascript-Kontext erzeugt (mouseover-, mouseout- oder moveend-Event), die Aktionen im Dart-Kontext notwendig machen.
 \end{enumerate}
+%----------------------------------------------------------------------------------------------------------------------------------------------
 
 \section{Ausblick}
 
-Google Dart bleibt zwar in der Performance noch hinter Javascript zurück. Bei der bisherigen Geschwindigkeit der Entwicklung, insbesondere im Hinblick auf die erlebte Performance-Steigerung, hat Google Dart aber das Potential, Javascript Konkurrenz zu machen.
-Die Einbindung von Javascript-Bibliotheken in Dart ist eine gute Möglichkeit, an die bestehende WebWelt anzuknüpfen. Der Mehraufwand, der durch die beiden Sprachräume entsteht, ist aber nicht wegzuoptimieren.
-Momentan sind zwei große Fragen zu identifizieren, die vermutlich für die Zukunft von Dart entscheidend sein werden.
-Wie wird die OpenSource Entwicklergemeinde die Sprache aufnehmen, das heißt wird es in Zukunft mehr in Dart geschriebene Bibliotheken geben, vergleichbar Javascript? 
+Google Dart bleibt zwar in der Performance noch hinter Javascript zurück. Bei der bisherigen Geschwindigkeit der Entwicklung, insbesondere im Hinblick auf die erlebte Performance-Steigerung, hat Google Dart durchaus das Potential, Javascript Konkurrenz zu machen.
+Die Einbindung von Javascript-Bibliotheken in Dart ist eine gute Möglichkeit, an die bestehende Web-Welt anzuknüpfen. Der Mehraufwand, der durch die Kommunikation zwischen den beiden Kontexten entsteht, ist aber in der Implementierung erheblich, ebenso wie die höhere Rechenlast im Browser-Client.\\
+Vermutlich wird die Zukunft von Dart sich an zwei großen Fragen entscheiden:
+
+\begin{itemize}
+\item Wie wird die OpenSource Entwicklergemeinde die Sprache aufnehmen, das heißt werden in Zukunft  Dart-Bibliotheken in ähnlicher Vielzahl und Diversität entwickelt werden wie in Javascript? 
 \\
-Wie werden sich die anderen großen Mitspieler wie Mozilla, Microsoft und Apple zu Dart positionieren, das heißt, wird es in Zukunft auch in anderern Browsern Dart Virtual Machines geben? \footnote{http://www.2ality.com/2011/09/google-dart.html}.
+Dr. Axel Rauschmayer beantwortet die Frage, wie quelloffen Google Dart im Vergleich zu Javascript wirklich ist: “
+In contrast, Dart is almost proprietary: It is not developed in the open and only shown to the public once it is finished (Brendan Eich calls this ‘delayed-open’). Plus, all of the developers work for Google. It’s great that it is free and eventually open source, both of which will help its popularity. But it probably will never be nearly as open as JavaScript – Google does not have a good track record when it comes to writing specifications for things it open-sources. A recently leaked Android email reminds us that Google is not always as innocent about openness as they sound. Quoting it verbatim:
+\begin{itemize}
+    \item Do not develop in the open. Instead, make source code available after innovation is complete
+    \item Lead device concept: Give early access to the software to partners who build and distribute devices to our specification (ie, Motorola and Verizon). They get a non-contractual time to market advantage and in return they align to our standard.
+    \end{itemize}“\cite{google-dart}
+\item Wie werden sich die anderen großen Mitspieler auf dem Browsermarkt wie Mozilla, Microsoft und Apple zu Dart positionieren\footnote{http://www.netzwelt.de/news/89916-dart-google-streitet-microsoft-apple-mozilla.html}. , das heißt, wird es in Zukunft auch in anderern Browsern Dart Virtual Machines geben?
+Dr. Axel Rauschmayer äußert sich dazu: “If you are a competing browser vendor, your prospects for adopting Dart are as follows:
+\begin{itemize}
+\item    It is difficult to integrate into your existing infrastructure (as you couldn’t give early feedback).
+\item    Its development is mainly controlled by Google.
+\item    You give Google a head start of over two years.
+\end{itemize}
+“\cite{google-dart}.
+\end{itemize}
 
 

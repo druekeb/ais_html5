@@ -57,7 +57,7 @@ Die Vesseltracker.com GmbH ist ein Schiffsmonitoring und -reporting-Dienstleiste
   \begin{center}
     \includegraphics[width=0.58\textwidth]{images/Exposee_graphik_Webapp}
   \end{center}
-  \caption{Vesseltracker\_Webapplikation}
+  \caption{Architektur der Web-Anwendung der Vesseltracker.com-GmbH}
 \end{wrapfigure}
 
 Vesseltracker.com unterhält ein Netzwerk von ca. 800 terrestrischen AIS-Antennen, mit denen küstennahe AIS-Meldungen empfangen und via Internet an einen zentralen Rohdatenserver geschickt werden. Der Rohdatenserver verarbeitet die Meldungen und gibt sie umgewandelt und gefiltert an die Anwendungen des Unternehmens weiter.
@@ -70,88 +70,87 @@ Für eine geographische Visualisierung der Schiffspositionen existiert das sogen
 \begin{figure}[H]
   \centering
   \includegraphics[width=6in]{images/Cockpit_Elbe}
-  \caption[Cockpit\_Elbe]{Cockpit\_Elbe}
+  \caption[Ansicht der Elbe hinter Hamburg in der ‘Cockpit’-Anwendung]{Ansicht der Elbe hinter Hamburg in der ‘Cockpit’-Anwendung}
 \end{figure}
 
 \section{Motivation für diese Arbeit}\label{s.Motivation für diese Arbeit}
 
-Aus mehreren Gründen erscheint es angebracht, die geographischen Schiffspositionen nicht nur über die Cockpit-Anwendung anzubieten, sondern alternativ als real-time-Darstellung. 
+Aus mehreren Gründen entstand der Plan, dem Portfolio des Unternehmens neben der existierenden Cockpit-Anwendung eine Real-Time-Darstellung der geographischen Schiffspositionen hinzuzufügen.
 \begin{itemize}
 
-\item Aufgrund der herausragenden Qualität des vesseltracker.com Antennen-Netzwerks sind die verfügbaren AIS-Daten aktuell, aktualisieren sich kontinuierlich und erreichen eine hohe weltweite Abdeckung. Damit ist es möglich, die Schiffsverkehrslage beliebiger Häfen, Wasserstraßen, Küstengebiete weltweit und sekundengenau zu präsentieren. 
+\item Aufgrund der herausragenden Qualität des vesseltracker.com Antennen-Netzwerks sind die verfügbaren terrestrischen AIS-Daten höchst aktuell, aktualisieren sich kontinuierlich und erreichen eine hohe weltweite Abdeckung des Schiffsverkehrs. Damit ist es möglich, die Situation des Schiffsverkehrs in beliebigen Häfen, Wasserstraßen und Küstengebiete weltweit und sekundengenau zu präsentieren. 
 
-\item Ein Phänomen in der menschlichen Wahrnehmung lässt die geplante Anwendung sehr viel zweckmäßiger erscheinen als die bisherige Cockpit-Anwendung. Aufgrund der sogenannten Veränderungsblindheit oder “Change Blindness” werden Veränderungen an einem Objekt (in diesem Fall die Position eines Schiffs-Icons auf der Karte) in der Wahrnehmung überdeckt, wenn im selben Augenblick Veränderungen an der Gesamtsicht vonstatten gehen. Im Cockpit werden nach dem Laden dneuer Positionsdaten alle Schiffsicons neu gerendert und unter Umständen Namens-Fähnchen gelöscht oder hinzugefügt, was zu einem kurzen “Flackern” führt. Dadurch ist es dem Betrachter nahezu unmöglich, die Positionsänderung eines Schiffes auf der Karte nachzuvollziehen.
+\item Real-Time-Anwendungen gewinnen laufend an Bedeutung. Ihre Verbreitung wird durch den Fortschritt der verfügbaren Webtechnologien auf breiter Basis unterstützt. Mitbewerber auf dem Markt für AIS-Daten (z.B. Fleetmon.com) bieten bereits Echtzeit-Darstellungen ihrer AIS-Daten an. Um in diesem Geschäftsfeld weiterhin eine Spitzenposition beanspruchen zu können, sollte auch Vesseltracker eine Real-Time-Anwendung zur Schiffsverfolgung für Desktop-Computer zur Verfügung stellen und in einem nächsten Schritt auch für Mobile Devices.
+\item Ein Phänomen in der menschlichen Wahrnehmung liefert ein weiteres Argument, die Cockpit-Anwendung durch eine Real-Time-Anwendung zu ergänzen oder sogar abzulösen: Aufgrund der sogenannten Veränderungsblindheit oder “Change Blindness” werden Veränderungen an einem Objekt (in diesem Fall die Position eines Schiffs-Icons auf der Karte) in der Wahrnehmung überdeckt, wenn im selben Augenblick Veränderungen an der Gesamtsicht vonstatten gehen. Genau dies geschieht im Cockpit, wenn nach dem Laden neuer Positionsdaten alle Schiffsicons neu gerendert und Namens-Fähnchen gelöscht oder hinzugefügt werden. Dieses kurze “Flackern” macht es dem Betrachter fast unmöglich, die Positionsänderung eines Schiffes auf der Karte mit dem Auge zu verfolgen.
   
-\item Real-time-Anwendungen gewinnen zunehmend an Bedeutung. Ihre Verbreitung wird durch den Fortschritt der verfügbaren Webtechnologien auf breiter Basis unterstützt. Mitbewerber auf dem Markt für AIS-Daten (z.B. Fleetmon.com) bieten bereits Echtzeit-Darstellungen ihrer AIS-Daten an. Um in diesem Geschäftsfeld weiterhin eine Spitzenposition innezuhaben, ist eine Realtime zwingend erforderlich, in einem nächsten Schritt sicher auch als Anwendung für Mobile Devices.
+
 \end{itemize}
 
 
 \section{Aufbau der Arbeit}\label{s.Aufbau der Arbeit}
-Im Kapitel 2 werden mögliche Anwendungs-Szenarien genauer beleuchtet und die funktionalen und nicht funktionalen Anforderungen an die geplante Anwendung herausgestellt. Anschließend wird die Systemarchitektur der geplanten Anwendung grob entworfen.
-In Kapitel 3 wird kurz auf die Grundlagen der verwendeten Technologien eingegangen: die AIS-Technologie, die zur Gewinnung des Datenmaterials verwendet wird und damit für Art und Format der Daten verantwortlich ist; node.js und Google Dart, die bei der Verarbeitung der Daten zum Einsatz kommen; HTML5-Websockets, weil sie für die Verteilung , mongoDB und Redis, weil sie für die Zwischenspeicherung der Daten  eingesetzt werden. Im Zusammenhang mit der Datenpräsentation wird kurz das OpenStreetMap-Projekt vorgestellt als Lieferant des Kartenmaterials, sowie die Leaflet-Bibliotheken, mit deren Hilfe die Schiffsobjekte letztlich in Echtzeit auf der Karte angezeigt werden.
+Im Kapitel \ref{c.Realtime-Schiffsverfolgung per AIS-Daten-Strom} werden mögliche Anwendungs-Szenarien genauer beleuchtet und die funktionalen und nicht funktionalen Anforderungen an die geplante Anwendung herausgestellt. Anschließend wird die Systemarchitektur der geplanten Anwendung grob entworfen.
+In Kapitel \ref{s.Grundlagen} wird kurz auf die technischen Grundlagen eingegangen: die AIS-Technologie, die bei der Gewinnung des Datenmaterials verwendet wird und damit für Art und Format der Daten verantwortlich ist; das Javascript-Framework node.js sowie Google Dart, die bei der Programmierung der Anwendung zum Einsatz kommen; HTML5-Websockets, weil sie für die Verteilung der Daten eingesetzt werden; das OpenStreetMap-Projekt als Lieferant des Kartenmaterials wird kurz vorgestellt, sowie die Leaflet-Bibliotheken, mit deren Hilfe die Schiffsobjekte auf die Karte gerendert werden.
 
-In Kapitel 4 werden zunächst die Gründe für die Auswahl an Implementierungen dargelegt. Anschließend wird die Vorgehensweise bei der Implementierung erläutert und zwar einmal ausführlich für die jeweils erste Server- bzw. Client-Implementierung (socket.io-Server und socket.io-Client) und anschließend nur dort, wo sich die Implementierungen im Kern unterscheiden. Die ausgearbeiteten Implementierungen werden dann in Kapitel 5 getestet und nach verschiedenen Aspekten verglichen.
-Kapitel 6 fasst die Ergebnisse zusammen und gibt einen Ausblick auf mögliche Weiterentwicklungen.
+In Kapitel \ref{s.Implementierungen} werden zunächst die Gründe für die spezifische Auswahl an Implementierungen dargelegt. Anschließend wird die Vorgehensweise bei der Implementierung erläutert und zwar zunächst ausführlich für die jeweils erste Server- bzw. Client-Implementierung (socket.io-Server \ref{socket.io-Server} und socket.io-Client\ref{socket.io-Client}). Anschließend werden für die alternativen Implementierungen nur die Unterschiede herausgestellt. Die fertigen Programme werden dann in Kapitel \ref{Ergebnisse} getestet und nach verschiedenen Aspekten verglichen.
+Kapitel \ref{Fazit} fasst die Ergebnisse zusammen und gibt einen Ausblick auf mögliche Weiterentwicklungen.
 
 %---------------------------------------------------------------------------------------------------------------------------------------------
 
-\chapter{Realtime-Schiffsverfolgung per AIS-Daten-Strom}\label{c.Realtime-Schiffsverfolgung per AIS-Daten-Strom}
+\chapter{Real-Time-Schiffsverfolgung per AIS-Daten-Strom}\label{c.Realtime-Schiffsverfolgung per AIS-Daten-Strom}
 
 \section{ Anwendungsfälle}\label{s.Anwendungsfälle}
 
-Hafendienstleister wie Schlepper, Lotsen oder Festmacher verschaffen sich über einen Monitor einen Überblick über die Arbeitsvorgänge in ihrem jeweiligen Heimathafen, z.B. welche Schlepper welches Schiff schleppen, wo Lotsen an oder von Bord gehen, von welchen Tankern Schiffe betankt werden. Sie kontrollieren die Ausführung der eigenen Aufträge oder auch die der Mitbewerber.
-Die Anwendung läuft hierbei eher statisch, das heißt, Zoomstufe und Kartenausschnitt ändern sich nur selten. Es ist also notwendig, dass die Anwendung sich unabhängig von Interaktionen regelmäßig aktualisiert.
+Hafendienstleister wie Schlepper, Lotsen oder Festmacher verschaffen sich über einen Monitor einen Überblick über die Arbeitsvorgänge in ihrem jeweiligen Heimathafen, z.B. welche Schlepper schleppen welches Schiff, wo gehen Lotsen an oder von Bord, von welchen Tankern Schiffe werden betankt. Sie kontrollieren die Ausführung der eigenen Aufträge oder auch die der Mitbewerber.
+Die Anwendung läuft hierbei eigenständig, das heißt, Zoomstufe und Kartenausschnitt ändern sich nicht oder nur selten. Es ist also notwendig, dass die Anwendung unabhängig von Benutzer-Interaktionen immer die aktuellsten verfügbaren Daten anzeigt.\\
+Ein verwandter Anwendungsfall betrifft Nutzer, für die die Beobachtung, bzw. Überwachung bestimmter Wasserverkehrswege oder Häfen von besonderem Interesse ist. Dies trifft auf Sicherheitsorgane (z.B. die Wasserschutzpolizei), Schiffsfotografen und Nutzer der Passagierschifffahrt zu.\\
+Reedereien beobachten das Einlaufen, Anlegen, Festmachen oder Ablegen und Auslaufen ihrer Schiffe in entfernten Häfen, wo es keine Unternehmensniederlassung gibt. Zum Beispiel kontrollieren sie, wann und an welchen Liegeplätzen ein Schiff wie lange festmacht.
+Dazu ist es zum einen notwendig, auf eine geringe Zoomstufe heraus- und auf einen anderen Hafen wieder hineinzoomen zu können. Zum anderen soll die Anwendung Schnittstellen bieten, um zusätzliche Informationen aus dem vesseltracker.com Datenpool (z.B. Liegeplatzinformationen) anzufordern.\\
+Die vesseltracker.com GmbH nutzt die Real-Time-Anwendung, um die vom Unternehmen angebotenen Daten zu präsentieren und zu bewerben. Dabei ist es wichtig, dass die Anwendung gesendete AIS-Signale im Schnitt in weniger als einer Sekunde auf dem Monitor als Position oder Positionsänderung darstellen kann und dass die Schiffsbewegungen fließend ohne  “Flackern” dargestellt werden. Damit kann vesseltracker.com die größere Genauigkeit und Aktualität der eigenen Daten gegenüber denen anderer Anbieter herausstellen.
 
-Reedereien beobachten das Einlaufen, Anlegen, Festmachen oder Ablegen und Auslaufen ihrer Schiffe in entfernten Häfen, wo es keine Unternehmensniederlassung gibt. Zum Beispiel kontrollieren sie, wann, an welchen Liegeplätzen ein Schiff wie lange festmacht.
-Dazu ist es zum einen notwendig, jederzeit auf eine geringe Zoomstufe heraus- und auf einen anderen Hafen wieder hineinzoomen zu können. Zum anderen soll die Anwendung Schnittstellen bieten, damit zusätzliche Informationen aus dem vesseltracker.com Datenpool (in diesem Fall Liegeplatzinformationen) von der Anwendung abgerufen werden können.
-
-Weitere Anwendungsfälle sind Nutzer aus der Passagierschifffahrt, Schiffsfotografen oder Sicherheitsorgane (z.B. die Wasserschutzpolizei), bei denen die Beobachtung / Überwachung bestimmter Wasserverkehrswege oder Häfen von besonderem Interesse ist.
-
-Die vesseltracker.com GmbH nutzt die Realime-Anwendung, um die vom Unternehmen angebotenen Daten zu präsentieren und zu bewerben. Dabei ist es wichtig, dass die Anwendung gesendete AIS-Signale im Schnitt in weniger als einer Sekunde auf dem Monitor als Position oder Positionsänderung darstellen kann und dass die Schiffsbewegungen fließend ohne das in der Einleitung beschriebene “Flackern” dargestellt werden. Damit kann vesseltracker.com die höhere Genauigkeit und Aktualität der eigenen Daten gegenüber denen anderer Anbieter herausstellen.
-
-Die Anwendungsfälle verdeutlichen noch einmal, dass der zusätzliche Nutzen der Realtimeanwendung gegenüber der Cockpitanwendung nicht ausschließlich im Informationsgehalt liegt. Die Daten im Cockpit sind ja ebenfalls im Minutenbereich aktuell. Der Vorteil liegt vielmehr in der Lebendigkeit der Darstellung. Bewegte Darstellungen binden stärker und für einen längeren Zeitraum die Aufmerksamkeit des Betrachters.
-
+Die Anwendungsfälle verdeutlichen noch einmal, dass der zusätzliche Nutzen der Real-Time-Anwendung gegenüber der Cockpit-Anwendung nicht ausschließlich im Informationsgehalt liegt. Die Daten im Cockpit sind ja ebenfalls im Minutenbereich aktuell. Der Vorteil liegt vielmehr in der Lebendigkeit der Darstellung. Bewegte Darstellungen binden stärker die Aufmerksamkeit des Betrachters und sind deshalb weniger anstrengend zu verfolgen. Dadurch werden sie als angenehmer empfunden.
+\newpage
 \section{Beschreibung der Anforderungen}\label{s.Beschreibung der Anforderungen}
 
-Die funktionalen Anforderungen sind:
+
+\subsection{Funktionale Anforderungen}\label{Funktionale Anforderungen}
 \begin{itemize}
 
 \item als Datenquelle sollen ausschließlich die vom Rohdatenserver als JSON-Datenstrom zur Verfügung gestellten AIS-Informationen dienen
-\item Schiffe sollen an ihrer aktuellen (realtime) Position auf einer Karte im Browser dargestellt werden
+\item Schiffe sollen an ihrer aktuellen (Real-Time-) Position auf einer Karte im Browser dargestellt werden
 \item Positionsänderungen einzelner Schiffe sollen ad hoc sichtbar gemacht werden
 \item die Schiffsbewegungen auf der Karten sollen nicht sprunghaft, sondern fließend erscheinen (Animation der Schiffsbewegungen in dem Zeitraum zwischen zwei Positionsmeldungen)
 \item die Karte soll in 16 Zoomstufen die Maßstäbe von 1:2000 bis 1: 200 Mio abdecken
 \item Schiffe sollen auf der Karte als Icons dargestellt werden, die den Navigationsstatus und gegebenenfalls den Kurs wiederspiegeln
-\item bei hoher Auflösung und ausreichend statischen AIS-Informationen soll ein Schiff als Polygon in die Karte eingezeichnet werden.
-\item bei geringer Auflösung ist ein Überblick über die Verteilung der empfangenen Schiffe zu vermitteln
+\item bei hoher Auflösung / großem Zoom-Level und ausreichend statischen AIS-Informationen soll ein Schiff als Polygon in die Karte eingezeichnet werden.
+\item bei geringer Auflösung / niedrigem Zoom-Level ist ein Überblick über die Verteilung der empfangenen Schiffe zu vermitteln
 \item Detail-Informationen zu jedem Schiff sollen als Popups über das Icon abrufbar sein
 \end{itemize}
 
-Nicht funktionale Anforderungen sind:
+\subsection{Nicht funktionale Anforderungen}\label{Nicht funktionale Anforderungen}
 \begin{itemize}
 \item die von den Antennen empfangenen AIS-Daten sind mit minimaler Verzögerung (< 500 msec) auf der Karte darzustellen
-\item die Anwendung sollte ca. 300 Verbindungen gleichzeitig erlauben und skalierbar sein
-\item als Clients der Anwendung sollten die gängigsten Browser unterstützt werden (IE, Chrome, Firefox, Safari, Opera) 
-\item die Implementierungen werden auf Github als privates repository gehalten
+\item die Anwendung sollte ca. 300 gleichzeitige Client-Verbindungen erlauben und skalierbar sein
+\item als Clients der Anwendung sollten die gängigen Browser in den am meisten verbreiteten Versionen unterstützt werden (Microsoft Internet Explorer, Google Chrome, Moziila Firefox, Apple Safari) 
+\item der Programm-Code wird auf Github als privates repository gehostet
+\item verwendete Software-Module sollten frei zugänglich (open source) sein 
 \item als Kartenmaterial sind die von vesseltracker gehosteten OpenstreetMap-Karten zu verwenden
-\item verwendete Software-Module sollten frei zugänglich sein (open source) 
-\item ein Prototyp der Anwendung soll schnell zur Verfügung stehen. Dieser Prototyp soll Mitarbeitern und Partnern ermöglichen, ihre Anforderungen genauer zu spezifizieren oder sogar neue Anforderungen zu formulieren. 
+\item ein Prototyp der Anwendung soll zeitnah zur Verfügung stehen. Dieser Prototyp soll Mitarbeitern und Kunden ermöglichen, ihre Anforderungen genauer zu spezifizieren oder neue Anforderungen zu formulieren. 
 \end{itemize}
-
+\newpage
 \section{Grobentwurf der Anwendung}\label{s.Grobentwurf der Anwendung}
 
 \begin{wrapfigure}{r}{0.6\textwidth}
   \begin{center}
     \includegraphics[width=0.58\textwidth]{images/Exposee_graphik_Realtimeapp}
   \end{center}
-  \caption{Architektur-Entwurf der Realtime Webapplikation}
+  \caption{Architektur-Entwurf der Real-Time Web-Anwendung}
 \end{wrapfigure}
 Die eingehende Schnittstelle der zu erstellenden Anwendung ist die Verbindung zum Rohdatenserver, die als TCP-Verbindung ausgeführt ist und einen JSON-Datenstrom liefert.
 Die ausgehende Schnittstelle ist der HTTP-Client (Browser).
-Zu erstellen ist also eine Client-Server-Anwendung, in der der Server zweifaches zu leisten hat, nämlich 
+Zu erstellen ist also eine Client-Server-Anwendung, in der der Server zweierlei zu leisten hat, nämlich 
 \begin{enumerate}
- \item eine tcp-socket-Verbindung zum Rohdatenserver zu unterhalten und
-  \item eine bidirektionale Verbindung zum HTTP-Client zu halten, in der der Client jederzeit Änderungen des betrachteten Kartenausschnittes an den Server senden und der Server jederzeit den Client über relevante, aus dem JSON-Datenstrom ausgelesene, Schiffsbewegungen im betrachteten Kartenausschnitt informieren kann.
+ \item eine TCP-Socket-Verbindung zum Rohdatenserver zur Abfrage des AIS-Daten-Stroms zu unterhalten und
+  \item bidirektionale Verbindungen zu vielen HTTP-Clients herzustellen, in der die Clients Änderungen des betrachteten Kartenausschnittes an den Server senden können und der Server jederzeit den Client über relevante, aus dem JSON-Datenstrom ausgelesene, Schiffsbewegungen im betrachteten Kartenausschnitt informieren kann.
 \end{enumerate}
 
 
