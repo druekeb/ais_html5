@@ -7,6 +7,13 @@
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
+\bibitem[Dor04]{changeblindness}
+{Dornhöfer}, Dipl.-Psych. Sascha~M.:
+\newblock \emph{Veränderungsblindheit - Drei explorative Untersuchungen in
+  statischer und dynamischer verkehrsbezogener Umgebung}, Fakultät Mathematik
+  und Naturwissenschaften der Technischen Universität Dresden,
+  Dissertationsschrift, August 2004
+
 \bibitem[Lad12]{builddartapps}
 {Ladd}, Seth:
 \newblock \emph{Dart: Build HTML5 Apps Fast}.
