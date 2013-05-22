@@ -133,7 +133,8 @@ Host    192.168.1.214:8090
 \newpage
 \subsection{Vergleich des Javascript-Clients mit dem Dart-Client} 
 \subsubsection{Implementierungsaufwand}
-Die Möglichkeit des objektorientierten Programmierens in Dart bringt beim Implementieren des Dart-Clients die größte Erleichterung gegenüber der Implementierung in Javascript. Die geschaffene Struktur ist in Abbildung \ref{fig:Übersicht Dart-Files} zu erkennen. Javascript bietet zwar zahlreiche Lösungen, um Objektorientierung nachzubilden, z.B. über Funktionen als Klassen-Objekte und Konstrukte wie das Revealing Module Pattern. Dadurch wird das Programmieren in Javascript aber mit zunehmender Komplexität der Anwendung unübersichtlicher und fehleranfälliger, weil die Features objektorientierter Sprachen sozusagen per Hand gepflegt werden müssen. Die entstehenden Strukturen sind weniger transparent und selbsterklärend als in Dart (\ref{fig:Übersicht Javascript-Files}).
+Die Möglichkeit des objektorientierten Programmierens in Dart bringt beim Implementieren des Dart-Clients die größte Erleichterung gegenüber der Implementierung in Javascript. Die geschaffene Struktur ist in Abbildung \ref{fig:Übersicht Dart-Files} zu erkennen. Javascript bietet zwar zahlreiche Lösungen, um Objektorientierung nachzubilden, z.B. über Funktionen als Klassen-Objekte und Konstrukte wie das Revealing Module Pattern. Dadurch wird das Programmieren in Javascript aber mit zunehmender Komplexität der Anwendung unübersichtlicher und fehleranfälliger, weil die Features objektorientierter Sprachen sozusagen per Hand gepflegt werden müssen. Die entstehenden Strukturen sind weniger transparent und selbsterklärend als in Dart (\ref{fig:Übersicht Javascript-Files}).\\
+
 \begin {wraptable}{r}{2in}
 \begin{center}
 \small
@@ -149,6 +150,7 @@ Dart& 867\\
 \end{center}
 \end{wraptable}
 Die Dart-Implementierung der Anwendung wird an dem Punkt etwas aufwändiger, wo über das Paket js-interop die Javascript-Dateien integriert werden und Proxies und Callback-Funktionen geschrieben werden müssen zur Kommunikation zwischen dem Javascript- und dem Dart-Kontext. Der quantitative Mehraufwand spiegelt sich auch in einem signifikanten Unterschied in der Anzahl Zeilen Code (Tabelle \ref{Zeilen Code}).\\
+
 Mit dem dart2js-Compiler ließ sich der Dart-Client-Code zu Javascript kompilieren und war dann auch auf Browsern ohne Dart VM ausführbar. Dabei traten gelegentlich Fehler auf, die entweder auf Bugs zurückzuführen waren und mit dem nächsten Update behoben waren oder Fehler, die durch Änderungen im Dart-Code behoben werden mussten, obwohl der originäre Dart-Code von der Dart VM korrekt interpretiert wurde. Dazu ein Beispiel:\\
 Wird innerhalb des Javascript-Kontexts eine Methode auf einen Javascript-Proxy (hier \_map) aufgerufen und ein Javascript-Proxy wird zurückgegeben, dann ist es möglich, auf diesen Proxy, der in diesem Fall vom Typ LatLngBounds ist, eine Methode der Klasse LatLngBounds aufzurufen (siehe Listing \ref{LeafletMap.dart}). Im zu Javascript kompilierten Dart-Code lief die Anwendung damit jedoch in einen Fehler:\\
 “=> TypeError: t1.get\$\_map(...).getBounds\$0(...).getSouthWest\$0 is not a function”\\
@@ -181,7 +183,8 @@ return [west, south, east, north];
     boundsTimeoutTimer = new Timer(new Duration(milliseconds:boundsTimeout),changeRegistration);  
   }
 \end{lstlisting}
-Weil kein Bug zu diesem Problem über die Dart-Communiy\footnote{https://www.dartlang.org/community/} zu finden ist, wird das Problem mit einem Workaround behoben. Und zwar wird über die Methode ‘getBBoxString’ des Bounds-Objekt ein String mit den Bounds geholt. Aus diesem String sind anschließend die Double-Werte für die Bounds zu parsen (Listing \ref{LeafletMap.dart mit workaround}).
+Weil kein Bug zu diesem Problem über die Dart-Communiy\footnote{https://www.dartlang.org/community/} zu finden ist, wird das Problem mit einem Workaround behoben. Und zwar wird über die Methode ‘getBBoxString’ des Bounds-Objekt ein String mit den Bounds geholt. Aus diesem String sind anschließend die Double-Werte für die Bounds zu parsen (Listing \ref{LeafletMap.dart mit workaround}).\\
+
 \begin{lstlisting}[caption= LeafletMap.dart mit workaround über BBoxString, label= LeafletMap.dart mit workaround]
 String getBounds(){
     String bBox;

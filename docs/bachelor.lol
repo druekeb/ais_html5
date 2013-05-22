@@ -12,11 +12,11 @@
 \contentsline {lstlisting}{\numberline {4.7}\IeC {\textquoteleft }Revealing Module Pattern\IeC {\textquoteright } in LeafletMap.js}{19}{lstlisting.4.7}
 \contentsline {lstlisting}{\numberline {4.8}Client-Seite der socket.io-Websocket-Verbindung in ais-socket.io.js}{20}{lstlisting.4.8}
 \contentsline {lstlisting}{\numberline {4.9}Aufruf der public function paintToMap des Vessel-Objekts in ais-socket.io.js}{20}{lstlisting.4.9}
-\contentsline {lstlisting}{\numberline {4.10}vom socket.io-Server gesendete Nachricht}{21}{lstlisting.4.10}
+\contentsline {lstlisting}{\numberline {4.10}vom socket.io-Server gesendete Nachricht}{22}{lstlisting.4.10}
 \contentsline {lstlisting}{\numberline {4.11}vom HTML5-Websocket-Server gesendete Nachricht}{22}{lstlisting.4.11}
 \contentsline {lstlisting}{\numberline {4.12}Konstruktor des LeafletMap-Objektes mit Zugriff auf den Javascript-Kontext}{24}{lstlisting.4.12}
 \contentsline {lstlisting}{\numberline {4.13}Konstructor des Dart-Objekts Polyline}{25}{lstlisting.4.13}
-\contentsline {lstlisting}{\numberline {4.14}EventHandling mithilfe von Callback-Funktionen}{25}{lstlisting.4.14}
+\contentsline {lstlisting}{\numberline {4.14}EventHandling mithilfe von Callback-Funktionen}{26}{lstlisting.4.14}
 \contentsline {lstlisting}{\numberline {4.15}Zugriff auf das L.Map-Objekt (im Javascript-Kontext) \IeC {\"u}ber das LeafletMap-Objekt (im Dart-Kontext) in LeafletMap.dart}{26}{lstlisting.4.15}
 \addvspace {10\p@ }
 \contentsline {lstlisting}{\numberline {5.1}socket.io Client-Request in Internet Explorer 9}{32}{lstlisting.5.1}

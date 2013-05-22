@@ -151,6 +151,7 @@ io.sockets.on('connection', function(client) { ...
 \end{lstlisting}
 
 %-------------------------------------------------------------------------------------------------------------------------------
+\newpage
 \subsection{socket.io-Client}\label{socket.io-Client}
 Der socket.io-Client hat folgende Aufgaben.
 \begin{enumerate}
@@ -209,7 +210,7 @@ Deshalb muss auf eine Lösung zurückgegriffen werden, die die MapFeatures des S
 Ein Schiffspolygon berechnet sich aus der Schiffsposition (Positionsangabe in der AIS-Nachricht) und aus der relativen Position des AIS-Transceivers an Bord (Abstand zum Bug, zum Heck, nach Backbord und nach Steuerbord). Um zu wissen, in welche Richtung der Bug eines Schiffes zeigt, wird die AIS-Angabe zur Fahrtrichtung  bei fahrenden Schiffen verwendet (cog = Course over Ground). Aus dieser Richtungsangabe und der übermittelten Geschwindigkeit (sog = Speed over Ground) wird ein Speedvector berechnet, der als Linie auf die Karte gezeichnet wird. Er ist genauso lang wie die Strecke, die das Schiff bei kontinuierlicher Weiterfahrt in den nächsten 30 Sekunden zurücklegen wird. Bei der Erstellung des AnimatedPolygon-Objektes wird dieser Speedvector übergeben, damit das Polygon entlang dieser Linie verschoben werden kann. Über die Optionen ‘distance’ und ‘interval’ wird bestimmt, in wieviele Teilschritte der Vektor unterteilt wird und wieviel Zeit zwischen zwei Animationsschritten liegt. Nach jedem Animationsschritt wird das Polygon neu berechnet, von der Karte gelöscht und neu gezeichnet.
 
 %-------------------------------------------------------------------------------------------------------------------------------------------
-
+\newpage
 \subsection{HTML5-Server}\label{HTML5-Server}
 Diese Server-Implementierung soll genau dieselbe Funktionalität besitzen wie die socket.io-Server-Implementierung (\ref{socket.io-Server}). Lediglich der socket.io-Websocket wird durch einen node.js-Websocket nach der HTML5-Websocket-Spezifikation ausgetauscht\footnote{https://github.com/Worlize/WebSocket-Node} . Dazu wird in der Datei worker.js das entsprechende Paket (‘websocket’) eingebunden.
 Einige Features des socket.io-Paketes müssen jetzt selbst organisiert werden: 
@@ -247,10 +248,14 @@ Die HTML5-Client-Implementierung bietet die gleiche Funktionalität wie die sock
 
 
 Die Implementierung des HTML5-Websocket-Clients in Dart orientiert sich an der Implementierung des HTML5-Websocket-Clients in Javascript. Oberstes Ziel dabei ist es, eine mindestens gleichwertige Funktionalität zu erreichen unter Ausnutzung der sprachspezifischen Vorteile von Google Dart. \\
+
 Die Modularisierung, also die Verteilung der Objekte und Funktionalitäten auf mehrere Dateien, ist in der Dart-Client-Implementierung ähnlich gestaltet wie in Javascript (siehe Abbildungen \ref{fig:Übersicht Javascript-Files} und \ref{fig:Übersicht Dart-Files}). Die verwendeten Javascript-Dateien ‘leaflet-src.js’, ‘L.AnimatedPolygon.js’ und ‘L.Control.Mouseposition.js’ sind identisch mit denen des Javascript-Clients (Abschnitt \ref{HTML5-Client in Javascript}). Um sie aus Dart heraus nutzen zu können, wird das Dart-Paket js-interop (siehe Abschnitt \ref{js-interop}) eingebunden.\\
+
 Eine Dart-Anwendung wird über eine main-Funktion (in ais-htlml5.dart) gestartet. Die main-Funktion initialisiert den HTML5-Websocket-Client. Im Falle eines erfolgreichen Verbindungsaufbaus mit dem HTML5-Websocket-Server wird eine Callback-Funktion ausgeführt, die das LeafletMap-Objekt erstellt. Beide Objekte sind Singletons und bleiben über die Laufzeit der Anwendung erhalten.\\
+
 Das LeafletMap-Objekt kapselt für die Anwendung den Zugriff auf das Javascript L.Map-Objekt der leaflet.js-Bibliothek (siehe Listing \ref{LeafletMapConstructor}). Dafür wechselt es in den Javascript-Kontext der Anwendung und initialisiert in diesem ein L.Map-Objekt und ein L.LayerGroup-Objekt. Beide Objekte werden mit der Anweisung js.retain(...) im Javascript-Kontext als globale Variable eingeführt, so dass sie für jede folgende Funktion im Javascript-Kontext zur Verfügung stehen.\\
-In der Gegenrichtung muss eine Möglichkeit existieren, vom Javascript-Kontext der Anwendung auf den Dart-Code zuzugreifen. Ein Beispiel dafür ist der ‘moveend’-Listener, der Teil der leaflet.js-Bibliothek ist. Für den Javascript-Listener wird im Dart-Kontext ein Callback.many-Objekt erstellt (moveendHandler(e)), das die changeRegistration-Funktion ausführt. Das Callback.many-Objekt kann im Unterschied zum Callback.once-Objekt mehrmals aufgerufen werden. Das heißt, jedes Mal, wenn im Javascript-Kontext der  ‘moveend’-Listener einen  ‘moveend’-Event registriert, ruft er über den Handler die Dart-Funktion changeRegistration() auf. Diese Funktion sendet an den HTML5-Websocket eine Nachricht vom Typ ‘register’ mit den aktuellen Bounds der Karte.
+
+In der Gegenrichtung muss eine Möglichkeit existieren, vom Javascript-Kontext der Anwendung auf den Dart-Code zuzugreifen. Ein Beispiel dafür ist der ‘moveend’-Listener, der Teil der leaflet.js-Bibliothek ist. Für den Javascript-Listener wird im Dart-Kontext ein Callback.many-Objekt erstellt (moveendHandler(e)), das die changeRegistration-Funktion ausführt. Das Callback.many-Objekt kann im Unterschied zum Callback.once-Objekt mehrmals aufgerufen werden. Das heißt, jedes Mal, wenn im Javascript-Kontext der  ‘moveend’-Listener einen  ‘moveend’-Event registriert, ruft er über den Handler die Dart-Funktion changeRegistration() auf. Diese Funktion sendet an den HTML5-Websocket eine Nachricht vom Typ ‘register’ mit den aktuellen Bounds der Karte.\\
 
 \begin{lstlisting}[caption=Konstruktor des LeafletMap-Objektes mit Zugriff auf den Javascript-Kontext, label=LeafletMapConstructor]
 LeafletMap(String elementid, js.Proxy mapOptions, js.Proxy initOptions, js.Proxy tileLayerOptions){
@@ -276,7 +281,9 @@ LeafletMap(String elementid, js.Proxy mapOptions, js.Proxy initOptions, js.Proxy
   }
 \end{lstlisting}
 Der Websocket-Server antwortet auf diese Nachricht mit einer Nachricht vom Typ “VesselsInBoundsEvent” (siehe Listing \ref{websocket-message}).\\
-Diese Nachricht und die “VesselPositionEvent”-Nachricht empfängt und verarbeitet der Dart-Client genauso wie der Javascript-Client in Listing \ref{vessel.paintToMap}. Bei der Ausführung der paintToMap-Methode des Vessel-Objektes allerdings besteht ein wichtiger Unterschied darin, dass in Javascript direkt Map-Feature-Objekte der Leaflet.js Bibliothek (L.Polyline, L.AnimatedPolygon und L.CircleMarker) erzeugt werden, wohingegen in Dart der Konstruktor einer Unterklasse von MapFeature (Polyline, AnimatedPolygon oder CircleMarker) aufgerufen wird. Die Konstruktoren aller Unterklassen von MapFeature wechseln in den Javascript-Kontext, erstellen dort über einen Proxy ein entsprechendes Objekt aus der Leaflet-Bibliothek und stellen dieses als Attribut des MapFeature-Objektes im Dart-Kontext zur Verfügung (siehe Beispiel Klasse Polyline in Listing \ref{Constructor Polyline}).
+
+Diese Nachricht und die “VesselPositionEvent”-Nachricht empfängt und verarbeitet der Dart-Client genauso wie der Javascript-Client in Listing \ref{vessel.paintToMap}. Bei der Ausführung der paintToMap-Methode des Vessel-Objektes allerdings besteht ein wichtiger Unterschied darin, dass in Javascript direkt Map-Feature-Objekte der Leaflet.js Bibliothek (L.Polyline, L.AnimatedPolygon und L.CircleMarker) erzeugt werden, wohingegen in Dart der Konstruktor einer Unterklasse von MapFeature (Polyline, AnimatedPolygon oder CircleMarker) aufgerufen wird. Die Konstruktoren aller Unterklassen von MapFeature wechseln in den Javascript-Kontext, erstellen dort über einen Proxy ein entsprechendes Objekt aus der Leaflet-Bibliothek und stellen dieses als Attribut des MapFeature-Objektes im Dart-Kontext zur Verfügung (siehe Beispiel Klasse Polyline in Listing \ref{Constructor Polyline}).\\
+
 
 \begin{lstlisting}[caption= Konstructor des Dart-Objekts Polyline, label = Constructor Polyline]
 class Polyline extends MapFeature{
@@ -297,7 +304,7 @@ class Polyline extends MapFeature{
   }
 }
 \end{lstlisting}
-Auf diese Weise erhält jedes Vessel-Objekt im Array ‘Vessels’, der alle auf der Karte dargestellten Schiffe enthält, als Attribut .feature und/oder .polygon eine Assoziation zu einer Dart-Klasse, die über einen Proxy die Verwaltung des dazugehörigen Javascript-Objektes im DOM-Baum für die Anwendung kapselt.
+Auf diese Weise erhält jedes Vessel-Objekt im Array ‘Vessels’, der alle auf der Karte dargestellten Schiffe enthält, als Attribut .feature und/oder .polygon eine Assoziation zu einer Dart-Klasse, die über einen Proxy die Verwaltung des dazugehörigen Javascript-Objektes im DOM-Baum für die Anwendung kapselt.\\
 
 Nach demselben Prinzip funktionieren Popups in der Anwendung. Um Popups auf den MapFeature-Objekten über MouseEvents öffnen und schließen zu können, werden auf den mouseover und den mouseout-EventListener des Javascript-Proxies eines jeden MapFeature-Objektes EventHandler als Dart-Callback.many-Funktionen registriert (siehe Listing \ref{EventHandling}). Diese Callback.many-Funktionen führen im Dart-Kontext alle notwendigen Anweisungen aus. Zum Beispiel erstellt der MouseoverHandler ein Dart-Popup-Objekt, das im Konstruktor einen Proxy zu einem L.Popup-Objekt erstellt und als Instanzvariable speichert. Operationen auf dem L.Map-Objekt müssen über das Dart LeafletMap-Objekt ausgeführt werden, das den Javascript-Proxy zum L.Map-Objekt verwaltet. Im Falle des onMouseoverHandlers, wird das Dart-Popup-Objekt der Funktion LMap.openPopup(popup) übergeben, die Funktion wechselt in den Javascript-Kontext und öffnet auf dem L.Map-Objekt den Javascript-Proxy des Popup-Objektes (siehe Listing \ref{LeafletMap-Objekt})
 \\

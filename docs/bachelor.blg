@@ -8,15 +8,15 @@ Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: literatur.bib
 You've used 9 entries,
             4793 wiz_defined-function locations,
-            939 strings with 7600 characters,
-and the built_in function-call counts, 4076 in all, are:
-= -- 428
+            938 strings with 7573 characters,
+and the built_in function-call counts, 4061 in all, are:
+= -- 423
 > -- 76
 < -- 93
 + -- 96
 - -- 24
-* -- 211
-:= -- 682
+* -- 210
+:= -- 679
 add.period$ -- 14
 call.type$ -- 9
 change.case$ -- 36
@@ -25,17 +25,17 @@ cite$ -- 9
 duplicate$ -- 143
 empty$ -- 321
 format.name$ -- 53
-if$ -- 858
+if$ -- 853
 int.to.chr$ -- 1
 int.to.str$ -- 0
 missing$ -- 44
-newline$ -- 62
+newline$ -- 61
 num.names$ -- 27
-pop$ -- 60
+pop$ -- 61
 preamble$ -- 1
 purify$ -- 54
 quote$ -- 0
-skip$ -- 247
+skip$ -- 248
 stack$ -- 0
 substring$ -- 201
 swap$ -- 25
@@ -46,4 +46,4 @@ type$ -- 98
 warning$ -- 0
 while$ -- 29
 width$ -- 11
-write$ -- 126
+write$ -- 124

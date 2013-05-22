@@ -20,7 +20,7 @@
 \newblock
   \url{http://www.drdobbs.com/open-source/dart-build-html5-apps-fast/240005631%
 }.
-\newblock \,Version:\,September 25 2012
+\newblock \,Version:\,September 25, 2012
 
 \bibitem[Men12]{js-interop}
 {Menon}, Vijay:
@@ -32,8 +32,7 @@
 {Malte~Ubl}, Eiji~K.:
 \newblock \emph{Introducing WebSockets: Bringing Sockets to the Web}.
 \newblock \url{http://www.html5rocks.com/en/tutorials/websockets/basics/}.
-\newblock \,Version:\,March 13 2012. --
-\newblock [Online; Stand 13. März 2012]
+\newblock \,Version:\,March 13, 2012
 
 \bibitem[Mü12]{dartvsjs}
 {Müller}, Frank:
@@ -41,7 +40,7 @@
 \newblock
   \url{http://www.heise.de/developer/artikel/Ein-Jahr-JavaScript-Konkurrent-Da%
 rt-1727116.html}.
-\newblock \,Version:\,October 12 2012
+\newblock \,Version:\,October 12, 2012
 
 \bibitem[Rau11]{google-dart}
 {Rauschmayer}, Dr.~A.:
