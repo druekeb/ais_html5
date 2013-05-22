@@ -16,7 +16,7 @@ const WEBSOCKET_SERVER_LOCATION = '192.168.1.214';
 const WEBSOCKET_SERVER_PORT = 8090;
 const ANIMATION_MINIMAL_ZOOMLEVEL =13;
 const RETRY_SECONDS = 2; 
-const BOUNDS_TIMEOUT = 300; //Reload of page every 5 min to get Vessels in Bounds
+const BOUNDS_TIMEOUT = 60; //send a register-message at least every 60 seconds
 
 var LMap;
 Map<String, Vessel> vessels = new Map<String, Vessel>();
